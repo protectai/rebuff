@@ -1,0 +1,7 @@
+../adrenal/server/.env
+.DS_Store
+__pycache__
+node_modules
+.idea/
+.next
+.env
