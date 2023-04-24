@@ -3,10 +3,8 @@
   "version": "2.0.0",
   "private": true,
   "scripts": {
-    "dev": "concurrently \"npm run dev:css\" \"next dev\"",
-    "dev:css": "tailwindcss -w -i ./styles/tailwind.css -o styles/app.css",
+    "dev": "next dev",
     "build": "next build",
-    "build:css": "tailwindcss -m -i ./styles/tailwind.css -o styles/app.css",
     "start": "next start",
     "lint": "next lint"
   },
@@ -15,6 +13,7 @@
     "@emotion/server": "^11.10.0",
     "@mantine/core": "^6.0.8",
     "@mantine/dates": "^6.0.8",
+    "@mantine/ds": "^6.0.8",
     "@mantine/form": "^6.0.8",
     "@mantine/hooks": "^6.0.8",
     "@mantine/next": "^6.0.8",
@@ -25,6 +24,7 @@
     "@supabase/auth-helpers-react": "^0.3.1",
     "@supabase/auth-ui-react": "^0.2.8",
     "@supabase/supabase-js": "^2.8.0",
+    "@tabler/icons-react": "^2.17.0",
     "@types/node": "18.14.0",
     "@types/react": "18.0.28",
     "@types/react-dom": "18.0.11",
@@ -44,7 +44,6 @@
     "@types/cors": "^2.8.12",
     "@types/uuid": "^9.0.1",
     "concurrently": "^7.6.0",
-    "prettier": "^2.8.7",
-    "tailwindcss": "^3.2.7"
+    "prettier": "^2.8.7"
   }
 }
