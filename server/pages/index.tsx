@@ -6,15 +6,14 @@ import {
   Container,
   Grid,
   Space,
-  Table,
-  Tabs,
   Textarea,
   Title,
 } from "@mantine/core";
 import ResultsViewer from "@/components/ResultsViewer";
 import { ApiResponse } from "@/interfaces/api";
 import CodeSamples from "@/components/CodeSamples";
-const Demo: FC = () => {
+import Head from "next/head";
+const Playground: FC = () => {
   const [responses, setResponses] = useState<ApiResponse[]>([]);
   const form = useForm({
     initialValues: {
@@ -46,9 +45,13 @@ const Demo: FC = () => {
 
   return (
     <Container size="lg">
+      <Head>
+        <title>Rebuff Playground</title>
+        <meta property="og:title" content="Rebuff Playground" key="title" />
+      </Head>
       <Space h="xl" />
       <Space h="xl" />
-      <Title order={1}>Adrenal</Title>
+      <Title order={1}>Rebuff.ai</Title>
       <Title order={4}>Prompt Injection Detector</Title>
       <Space h="xl" />
       <form onSubmit={handleSubmit}>
@@ -102,4 +105,4 @@ const Demo: FC = () => {
     </Container>
   );
 };
-export default Demo;
+export default Playground;
