@@ -1,10 +1,18 @@
-import pytest
 import os
 import sys
 
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../rebuff')))
-from rebuff import Rebuff
+import pytest
+
+try:
+    sys.path.insert(
+        0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../rebuff"))
+    )
+except Exception:
+    pass
+
 from unittest.mock import Mock
+
+from rebuff import Rebuff
 
 
 # Define a fixture for the fake API backend
@@ -22,11 +30,7 @@ def fake_api_backend():
 # Define a test for the is_injection_detected method
 def test_is_injection_detected(fake_api_backend, monkeypatch):
     # Stub out the response from the fake API backend
-    response_data = {
-        "heuristicScore": 1,
-        "modelScore": 0.8,
-        "vectorScore": 0
-    }
+    response_data = {"heuristicScore": 1, "modelScore": 0.8, "vectorScore": 0}
     mock_post = Mock(return_value=fake_api_backend(response_data))
     monkeypatch.setattr("requests.post", mock_post)
 
@@ -44,5 +48,5 @@ def test_is_injection_detected(fake_api_backend, monkeypatch):
     mock_post.assert_called_once_with(
         "https://fake-api.rebuff.ai/detect",
         json={"user_input": user_input},
-        headers={"Authorization": "Bearer fake_token"}
+        headers={"Authorization": "Bearer fake_token"},
     )
