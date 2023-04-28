@@ -3,8 +3,6 @@ import sys
 
 import requests
 
-from rebuff import Rebuff
-
 try:
     sys.path.insert(
         0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../rebuff"))
@@ -13,7 +11,10 @@ except NameError:
     pass
 import subprocess
 import time
+
 import pytest
+
+from rebuff import Rebuff
 
 
 # Define a fixture to manage the Next.js server's lifecycle
@@ -29,13 +30,12 @@ def nextjs_server():
         pass
 
     if not server_already_running:
-
         # Get the absolute path to the root of the Git repository
         git_root = subprocess.run(
             ["git", "rev-parse", "--show-toplevel"],
             capture_output=True,
             text=True,
-            check=True
+            check=True,
         ).stdout.strip()
 
         # Start the Next.js server as a subprocess
