@@ -12,3 +12,6 @@ lint:
 format:
 	cd python; isort rebuff/ tests/
 	cd python; black rebuff/ tests/
+
+init:
+	cd python; pip install -e . -U
