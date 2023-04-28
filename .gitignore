@@ -1,7 +1,15 @@
-../adrenal/server/.env
+../rebuff/server/.env
 .DS_Store
 __pycache__
 node_modules
 .idea/
 .next
 .env
+python/__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+python/dist/
+python/build/
