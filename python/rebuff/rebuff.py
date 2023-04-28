@@ -26,3 +26,6 @@ class Rebuff:
 
     def add_canaryword(self, prompt_template):
         pass
+
+    def is_canaryword_leaked(self, completion, canary_word):
+        pass
