@@ -1,9 +1,11 @@
 import pytest
 import os
 import sys
+
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../rebuff')))
 from rebuff import Rebuff
 from unittest.mock import Mock
+
 
 # Define a fixture for the fake API backend
 @pytest.fixture
@@ -13,7 +15,9 @@ def fake_api_backend():
         mock_response.json.return_value = response_data
         mock_response.raise_for_status.return_value = None
         return mock_response
+
     return _fake_api_backend
+
 
 # Define a test for the is_injection_detected method
 def test_is_injection_detected(fake_api_backend, monkeypatch):
