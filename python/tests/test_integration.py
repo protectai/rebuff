@@ -37,6 +37,7 @@ def nextjs_server():
     # Stop the server subprocess after the tests are completed
     server.terminate()
 
+
 def test_integration():
     # Initialize the Rebuff SDK with a real API token and URL
     rb = Rebuff(api_token="real_token", api_url="http://localhost:3000/api/detect")
