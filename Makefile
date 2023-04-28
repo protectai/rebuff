@@ -18,5 +18,5 @@ init:
 
 integration-test:
 	cd server; npm run dev &  # Start the NextJS server
-	cd python; pytest tests/test_integration.py  # Run the integration test
+	cd python; pytest -s tests/test_integration.py  # Run the integration test
 	pkill -f "next dev"  # Stop the NextJS server

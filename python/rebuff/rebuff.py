@@ -23,3 +23,6 @@ class Rebuff:
         response = requests.post(self.api_url, json=data, headers=headers)
         response.raise_for_status()
         return response.json()
+
+    def add_canaryword(self, prompt_template):
+        pass
