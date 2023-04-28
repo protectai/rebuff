@@ -1,5 +1,5 @@
 class Rebuff:
-    def __init__(self, api_token):
+    def __init__(self, api_token, api_url):
         self.api_token = api_token
 
     def is_injection_detected(self, user_input):
