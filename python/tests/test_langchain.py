@@ -1,9 +1,10 @@
 import pytest
-from langchain.prompts import PromptTemplate
-from langchain.llms import OpenAI
 from langchain.chains import LLMChain
-from rebuff import Rebuff
+from langchain.llms import OpenAI
+from langchain.prompts import PromptTemplate
+
 from fixtures import server
+from rebuff import Rebuff
 
 
 # Define the integration test for detecting prompt injection
