@@ -1,5 +1,6 @@
 import requests
 
+
 class Rebuff:
     def __init__(self, api_token, api_url):
         self.api_token = api_token
