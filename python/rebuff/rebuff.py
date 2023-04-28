@@ -8,7 +8,14 @@ class Rebuff:
 
     def is_injection_detected(self, user_input):
         headers = {"Authorization": f"Bearer {self.api_token}"}
-        data = {"user_input": user_input}
+        data = {"action": "detectInjection", "inputText": user_input}
+        response = requests.post(self.api_url, json=data, headers=headers)
+        response.raise_for_status()
+        return response.json()
+
+    def detect_leakage(self, output_text, canary_word):
+        headers = {"Authorization": f"Bearer {self.api_token}"}
+        data = {"action": "detectLeakage", "outputText": output_text, "canaryWord": canary_word}
         response = requests.post(self.api_url, json=data, headers=headers)
         response.raise_for_status()
         return response.json()
