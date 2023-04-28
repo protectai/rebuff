@@ -7,7 +7,7 @@ try:
     sys.path.insert(
         0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../rebuff"))
     )
-except Exception:
+except NameError:
     pass
 
 from unittest.mock import Mock
