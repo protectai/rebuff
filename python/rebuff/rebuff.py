@@ -8,10 +8,12 @@ from pydantic import BaseModel
 
 class DetectApiRequest(BaseModel):
     input_base64: str
-    vectorSimilarity: Optional[float]
     runHeuristicCheck: bool
     runVectorCheck: bool
     runLanguageModelCheck: bool
+    maxHeuristicScore: float
+    maxModelScore: float
+    maxVectorScore: float
 
 
 class DetectApiSuccessResponse(BaseModel):
@@ -40,20 +42,21 @@ class Rebuff:
     def is_injection_detected(
         self,
         user_input: str,
-        max_heuristic_score: float = 0.8,
-        max_vector_score: float = 0.95,
+        max_heuristic_score: float = 0.75,
+        max_vector_score: float = 0.90,
         max_model_score: float = 0.9,
         check_heuristic: bool = True,
         check_vector: bool = True,
         check_llm: bool = True,
-        vector_similarity: float = 0.9,
     ) -> tuple[Union[DetectApiSuccessResponse, DetectApiFailureResponse], bool]:
         request_data = DetectApiRequest(
             input_base64=encode_string(user_input),
-            vectorSimilarity=vector_similarity,
             runHeuristicCheck=check_heuristic,
             runVectorCheck=check_vector,
             runLanguageModelCheck=check_llm,
+            maxVectorScore=max_vector_score,
+            maxModelScore=max_model_score,
+            maxHeuristicScore=max_heuristic_score
         )
         request_json = request_data.json()
         response = requests.post(
@@ -70,10 +73,7 @@ class Rebuff:
         if (
             success_response.heuristicScore > max_heuristic_score
             or success_response.modelScore > max_model_score
-            or any(
-                score > max_vector_score
-                for score in success_response.vectorScore.values()
-            )
+            or success_response.vectorScore['topScore'] > max_vector_score
         ):
             # Injection detected
             return success_response, True

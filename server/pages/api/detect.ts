@@ -26,10 +26,12 @@ function getEnvironmentVariable(key: string): string {
 // Type definitions
 type DetectApiRequest = {
   input_base64: string;
-  similarityThreshold?: number;
-  runHeuristicCheck?: boolean;
-  runVectorCheck?: boolean;
-  runLanguageModelCheck?: boolean;
+  maxVectorScore: number;
+  maxHeuristicScore: number;
+  maxModelScore: number;
+  runHeuristicCheck: boolean;
+  runVectorCheck: boolean;
+  runLanguageModelCheck: boolean;
 };
 
 type DetectApiSuccessResponse = {
@@ -37,11 +39,14 @@ type DetectApiSuccessResponse = {
   modelScore: number;
   vectorScore: {
     topScore: number;
-    overSimilarityThreshold: number;
+    countOverMaxVectorScore: number;
   };
   runHeuristicCheck: boolean;
   runVectorCheck: boolean;
   runLanguageModelCheck: boolean;
+  maxHeuristicScore: number;
+  maxModelScore: number;
+  maxVectorScore: number;
 };
 
 type DetectApiFailureResponse = {
@@ -76,7 +81,7 @@ const openai = new OpenAIApi(
 async function detectPiUsingVectorDatabase(
   input: string,
   similarityThreshold: number
-): Promise<{ topScore: number; overSimilarityThreshold: number }> {
+): Promise<{ topScore: number; countOverMaxVectorScore: number }> {
   try {
     // Create embedding from input
     const emb = await openai.createEmbedding({
@@ -97,7 +102,7 @@ async function detectPiUsingVectorDatabase(
     });
 
     let topScore = 0;
-    let overSimilarityThreshold = 0;
+    let countOverMaxVectorScore = 0;
 
     if (queryResponse.matches != undefined) {
       for (const match of queryResponse.matches) {
@@ -106,19 +111,19 @@ async function detectPiUsingVectorDatabase(
         }
 
         if (match.score >= similarityThreshold) {
-          overSimilarityThreshold++;
-        }
+          countOverMaxVectorScore++;
 
-        if (match.score > topScore) {
-          topScore = match.score;
+          if (match.score > topScore) {
+            topScore = match.score;
+          }
         }
       }
     }
 
-    return { topScore, overSimilarityThreshold };
+    return { topScore, countOverMaxVectorScore };
   } catch (error) {
     console.error("Error in detectPiUsingVectorDatabase:", error);
-    return { topScore: 0, overSimilarityThreshold: 0 };
+    return { topScore: 0, countOverMaxVectorScore: 0 };
   }
 }
 
@@ -301,15 +306,26 @@ export default async function handler(
 
   let {
     input_base64,
-    similarityThreshold = null,
     runHeuristicCheck = true,
     runVectorCheck = true,
     runLanguageModelCheck = true,
+    maxHeuristicScore = null,
+    maxModelScore = null,
+    maxVectorScore = null,
   } = JSON.parse(req.body) as DetectApiRequest;
 
-  // Use default values if the properties are null
-  similarityThreshold =
-    similarityThreshold === null ? SIMILARITY_THRESHOLD : similarityThreshold;
+  if (
+    maxHeuristicScore === null ||
+    maxModelScore === null ||
+    maxVectorScore === null
+  ) {
+    return res.status(400).json({
+      error: "bad_request",
+      message:
+        "maxHeuristicScore, maxModelScore, and maxVectorScore are required",
+    } as DetectApiFailureResponse);
+  }
+
   runHeuristicCheck = runHeuristicCheck === null ? true : runHeuristicCheck;
   runVectorCheck = runVectorCheck === null ? true : runVectorCheck;
   runLanguageModelCheck =
@@ -340,8 +356,8 @@ export default async function handler(
     : 0;
 
   const vectorScore = runVectorCheck
-    ? await detectPiUsingVectorDatabase(inputText, similarityThreshold)
-    : { topScore: 0, overSimilarityThreshold: 0 };
+    ? await detectPiUsingVectorDatabase(inputText, maxVectorScore)
+    : { topScore: 0, countOverMaxVectorScore: 0 };
 
   const response: DetectApiSuccessResponse = {
     heuristicScore,
@@ -350,6 +366,9 @@ export default async function handler(
     runHeuristicCheck,
     runVectorCheck,
     runLanguageModelCheck,
+    maxHeuristicScore,
+    maxVectorScore,
+    maxModelScore,
   };
 
   res.status(200).json(response);
