@@ -76,7 +76,7 @@ class Rebuff:
     ) -> Tuple[str, str]:
         # Generate a canary word if not provided
         if canary_word is None:
-            canary_word = Rebuff.generate_canary_word()
+            canary_word = self.generate_canary_word()
         # Embed the canary word in the specified format
         canary_comment = canary_format.format(canary_word=canary_word)
         # Append the canary comment to the original prompt
@@ -97,7 +97,9 @@ class Rebuff:
             return True
         return False
 
-    def log_leakage(self, prompt: str, completion: str, canary_word: str):
+    def log_leakage(
+        self, prompt: str, completion: str, canary_word: str
+    ) -> None:
         data = {
             "prompt": prompt,
             "completion": completion,
@@ -107,8 +109,8 @@ class Rebuff:
             f"{self.api_url}/api/log_leakage", json=data, headers=self._headers
         )
         response.raise_for_status()
-        return response.json()
+        return
 
 
-def encode_string(self, input: str) -> str:
+def encode_string(input: str) -> str:
     return input.encode("utf-8").hex()
