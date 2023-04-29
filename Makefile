@@ -14,7 +14,7 @@ format:
 	cd python; black rebuff/ tests/
 
 init:
-	cd python; pip install -e . -U
+	cd python; pip install -e '.[dev]' -U
 
 integration-test:
 	cd server; npm run dev &  # Start the NextJS server
