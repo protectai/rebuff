@@ -11,9 +11,9 @@ from typing import Optional, Dict
 class DetectApiRequest(BaseModel):
     input_base64: str
     similarityThreshold: Optional[float]
-    runHeuristicCheck: bool = True
-    runVectorCheck: bool = True
-    runLanguageModelCheck: bool = True
+    runHeuristicCheck: bool
+    runVectorCheck: bool
+    runLanguageModelCheck: bool
 
 
 class DetectApiSuccessResponse(BaseModel):
@@ -35,14 +35,20 @@ class Rebuff:
         self.api_token = api_token
         self.api_url = api_url
 
-    def is_injection_detected(self, user_input: str) -> Union[DetectApiSuccessResponse, DetectApiFailureResponse]:
+    def is_injection_detected(self, user_input: str, check_heuristic: bool = True, check_vector: bool = True, check_llm: bool = True, vector_similarity: float = 0.9) -> Union[DetectApiSuccessResponse, DetectApiFailureResponse]:
         headers = {
             "Authorization": f"Bearer {self.api_token}",
             "Content-Type": "application/json"
         }
         user_input_bytes = user_input.encode("utf-8")
         user_input_base64 = user_input_bytes.hex()
-        request_data = DetectApiRequest(input_base64=user_input_base64)
+        request_data = DetectApiRequest(
+            input_base64=user_input_base64,
+            vectorSimilarity=vector_similarity,
+            runHeuristicCheck=check_heuristic,
+            runVectorCheck=check_vector,
+            runLanguageModelCheck=check_llm
+        )
         request_json = request_data.json()
         response = requests.post(
             f"{self.api_url}/api/detect", json=request_json, headers=headers
