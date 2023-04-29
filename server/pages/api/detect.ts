@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import Cors from "cors";
 import { createClient } from "@supabase/supabase-js";
-import { OpenAIApi, Configuration } from "openai";
+import { Configuration, OpenAIApi } from "openai";
 import { pinecone } from "@/lib/pinecone-client";
 import crypto from "crypto";
 import { render_prompt_for_pi_detection } from "@/lib/templates";
@@ -31,12 +31,19 @@ function getEnvironmentVariable(key: string): string {
 // Type definitions
 type DetectApiRequest = {
   input_base64: string;
+  similarityThreshold?: number;
+  runHeuristicCheck?: boolean;
+  runVectorCheck?: boolean;
+  runLanguageModelCheck?: boolean;
 };
 
 type DetectApiSuccessResponse = {
-  heuristicScore: number;
-  modelScore: number;
-  vectorScore: number;
+  heuristicScore?: number;
+  modelScore?: number;
+  vectorScore?: number;
+  runHeuristicCheck: boolean;
+  runVectorCheck: boolean;
+  runLanguageModelCheck: boolean;
 };
 
 type DetectApiFailureResponse = {
@@ -97,10 +104,13 @@ async function detectPiUsingVectorDatabase(
     const queryResponse = await index.query({
       queryRequest: {
         vector: emb.data.data[0].embedding,
-        topK: 1,
+        topK: 20,
         includeValues: true,
       },
     });
+
+    let topScore = 0;
+    let aboveThresholdCount = 0;
 
     if (queryResponse.matches != undefined) {
       for (const match of queryResponse.matches) {
@@ -109,15 +119,19 @@ async function detectPiUsingVectorDatabase(
         }
 
         if (match.score >= similarityThreshold) {
-          return true;
+          aboveThresholdCount++;
+        }
+
+        if (match.score > topScore) {
+          topScore = match.score;
         }
       }
     }
 
-    return false;
+    return { topScore, aboveThresholdCount };
   } catch (error) {
     console.error("Error in detectPiUsingVectorDatabase:", error);
-    return false;
+    return { topScore: 0, aboveThresholdCount: 0 };
   }
 }
 
@@ -211,8 +225,13 @@ export default async function handler(
       .json({ error: "not_allowed", message: "Method not allowed" });
   }
   const requestBody = parseJson(req.body);
-  const { input_base64 } = requestBody as DetectApiRequest;
-
+  const {
+    input_base64,
+    similarityThreshold = SIMILARITY_THRESHOLD, // Default value if not provided
+    runHeuristicCheck = true, // Default value if not provided
+    runVectorCheck = true, // Default value if not provided
+    runLanguageModelCheck = true, // Default value if not provided
+  } = requestBody as DetectApiRequest;
   if (!input_base64) {
     return res
       .status(400)
@@ -220,21 +239,33 @@ export default async function handler(
   }
 
   const inputText = Buffer.from(input_base64, "base64").toString("utf-8");
-  const isInjection = detectPromptInjectionUsingHeuristicOnInput(inputText);
-  const promptToDetectPiUsingOpenAI = render_prompt_for_pi_detection(inputText);
-  const { completion, error } = await callOpenAiToDetectPI(
-    promptToDetectPiUsingOpenAI
-  );
-  const modelScore = parseFloat(completion);
+  const response: DetectApiSuccessResponse = {
+    runHeuristicCheck,
+    runVectorCheck,
+    runLanguageModelCheck,
+  };
 
-  const isInjectionVector = await detectPiUsingVectorDatabase(
-    inputText,
-    SIMILARITY_THRESHOLD
-  );
+  if (runHeuristicCheck) {
+    const isInjection = detectPromptInjectionUsingHeuristicOnInput(inputText);
+    response.heuristicScore = isInjection ? 1 : 0;
+  }
 
-  res.status(200).json({
-    heuristicScore: isInjection ? 1 : 0,
-    modelScore: modelScore,
-    vectorScore: isInjectionVector ? 1 : 0,
-  });
+  if (runLanguageModelCheck) {
+    const promptToDetectPiUsingOpenAI =
+      render_prompt_for_pi_detection(inputText);
+    const { completion, error } = await callOpenAiToDetectPI(
+      promptToDetectPiUsingOpenAI
+    );
+    response.modelScore = parseFloat(completion);
+  }
+
+  if (runVectorCheck) {
+    const isInjectionVector = await detectPiUsingVectorDatabase(
+      inputText,
+      similarityThreshold
+    );
+    response.vectorScore = isInjectionVector ? 1 : 0;
+  }
+
+  res.status(200).json(response);
 }
