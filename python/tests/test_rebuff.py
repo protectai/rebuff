@@ -5,7 +5,8 @@ import pytest
 
 try:
     sys.path.insert(
-        0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../rebuff"))
+        0,
+        os.path.abspath(os.path.join(os.path.dirname(__file__), "../rebuff")),
     )
 except NameError:
     pass
@@ -35,7 +36,9 @@ def test_is_injection_detected(fake_api_backend, monkeypatch):
     monkeypatch.setattr("requests.post", mock_post)
 
     # Initialize the Rebuff SDK with a fake API token and URL
-    rb = Rebuff(api_token="fake_token", api_url="https://fake-api.rebuff.ai/detect")
+    rb = Rebuff(
+        api_token="fake_token", api_url="https://fake-api.rebuff.ai/detect"
+    )
 
     # Test the is_injection_detected method
     user_input = "Find all users; DROP TABLE users;"

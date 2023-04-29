@@ -1,10 +1,8 @@
 import secrets
-from typing import Union, Tuple
+from typing import Dict, Optional, Tuple, Union
 
 import requests
-
 from pydantic import BaseModel
-from typing import Optional, Dict
 
 
 class DetectApiRequest(BaseModel):
@@ -55,7 +53,9 @@ class Rebuff:
         )
         request_json = request_data.json()
         response = requests.post(
-            f"{self.api_url}/api/detect", json=request_json, headers=self._headers
+            f"{self.api_url}/api/detect",
+            json=request_json,
+            headers=self._headers,
         )
 
         response.raise_for_status()
@@ -64,13 +64,12 @@ class Rebuff:
         success_response = DetectApiSuccessResponse.parse_obj(response_json)
         return success_response
 
-    @staticmethod
-    def generate_canary_word(length: int = 8) -> str:
+    def generate_canary_word(self, length: int = 8) -> str:
         # Generate a secure random hexadecimal canary word
         return secrets.token_hex(length // 2)
 
-    @staticmethod
     def add_canaryword(
+        self,
         prompt_template: str,
         canary_word: Optional[str] = None,
         canary_format: str = "<!-- {canary_word} -->",
@@ -85,27 +84,23 @@ class Rebuff:
         return canary_word, prompt_with_canary
 
     def is_canaryword_leaked(
-        self, completion: str, canary_word: str, log_outcome: bool = True
+        self,
+        prompt: str,
+        completion: str,
+        canary_word: str,
+        log_outcome: bool = True,
     ) -> bool:
         # Check if the canary word appears in the completion
         if canary_word in completion:
             if log_outcome:
-                Rebuff.log_leakage(completion, canary_word)
+                self.log_leakage(prompt, completion, canary_word)
             return True
         return False
 
-    def log_leakage(
-        self, user_input: str, templated_prompt: str, response: str, canary_word: str
-    ):
-        # Log relevant information if a canary word is detected in the response
-        headers = {
-            "Authorization": f"Bearer {self.api_token}",
-            "Content-Type": "application/json",
-        }
+    def log_leakage(self, prompt: str, completion: str, canary_word: str):
         data = {
-            "userInput": user_input,
-            "templatedPrompt": templated_prompt,
-            "response": response,
+            "prompt": prompt,
+            "completion": completion,
             "canaryWord": canary_word,
         }
         response = requests.post(

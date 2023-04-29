@@ -5,7 +5,8 @@ import requests
 
 try:
     sys.path.insert(
-        0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../rebuff"))
+        0,
+        os.path.abspath(os.path.join(os.path.dirname(__file__), "../rebuff")),
     )
 except NameError:
     pass
@@ -37,7 +38,9 @@ def server():
         ).stdout.strip()
 
         # Start the Next.js server as a subprocess
-        server = subprocess.Popen(["npm", "run", "dev"], cwd=f"{git_root}/server")
+        server = subprocess.Popen(
+            ["npm", "run", "dev"], cwd=f"{git_root}/server"
+        )
 
         # Wait for the server to start (adjust the sleep time as needed)
         time.sleep(3)
