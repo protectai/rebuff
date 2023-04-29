@@ -3,9 +3,7 @@ import Cors from "cors";
 import { createClient } from "@supabase/supabase-js";
 import { Configuration, OpenAIApi } from "openai";
 import { pinecone } from "@/lib/pinecone-client";
-import crypto from "crypto";
 import { render_prompt_for_pi_detection } from "@/lib/templates";
-import { v4 as uuidv4 } from "uuid";
 import stringSimilarity from "string-similarity";
 
 // Constants
