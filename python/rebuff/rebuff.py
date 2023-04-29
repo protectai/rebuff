@@ -4,15 +4,25 @@ from typing import Union
 import requests
 from pydantic import BaseModel
 
+from pydantic import BaseModel
+from typing import Optional, Dict
+
 
 class DetectApiRequest(BaseModel):
     input_base64: str
+    similarityThreshold: Optional[float]
+    runHeuristicCheck: bool = True
+    runVectorCheck: bool = True
+    runLanguageModelCheck: bool = True
 
 
 class DetectApiSuccessResponse(BaseModel):
     heuristicScore: float
     modelScore: float
-    vectorScore: float
+    vectorScore: Dict[str, float]
+    runHeuristicCheck: bool
+    runVectorCheck: bool
+    runLanguageModelCheck: bool
 
 
 class DetectApiFailureResponse(BaseModel):

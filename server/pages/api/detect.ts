@@ -11,9 +11,6 @@ import parseJson from "parse-json";
 // Constants
 const SIMILARITY_THRESHOLD = 0.9;
 
-// Error messages
-const MISSING_ENV_VAR = "Missing environment variable";
-
 const supabaseAdminClient = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL || "",
   process.env.SUPABASE_SERVICE_KEY || ""
@@ -23,7 +20,7 @@ const supabaseAdminClient = createClient(
 function getEnvironmentVariable(key: string): string {
   const value = process.env[key];
   if (!value) {
-    throw new Error(`${MISSING_ENV_VAR}: ${key}`);
+    throw new Error(`"Missing environment variable": ${key}`);
   }
   return value;
 }
@@ -32,15 +29,18 @@ function getEnvironmentVariable(key: string): string {
 type DetectApiRequest = {
   input_base64: string;
   similarityThreshold?: number;
-  runHeuristicCheck?: boolean;
-  runVectorCheck?: boolean;
-  runLanguageModelCheck?: boolean;
+  runHeuristicCheck: boolean;
+  runVectorCheck: boolean;
+  runLanguageModelCheck: boolean;
 };
 
 type DetectApiSuccessResponse = {
-  heuristicScore?: number;
-  modelScore?: number;
-  vectorScore?: number;
+  heuristicScore: number;
+  modelScore: number;
+  vectorScore: {
+    topScore: number;
+    overSimilarityThreshold: number;
+  };
   runHeuristicCheck: boolean;
   runVectorCheck: boolean;
   runLanguageModelCheck: boolean;
@@ -110,7 +110,7 @@ async function detectPiUsingVectorDatabase(
     });
 
     let topScore = 0;
-    let aboveThresholdCount = 0;
+    let overSimilarityThreshold = 0;
 
     if (queryResponse.matches != undefined) {
       for (const match of queryResponse.matches) {
@@ -119,7 +119,7 @@ async function detectPiUsingVectorDatabase(
         }
 
         if (match.score >= similarityThreshold) {
-          aboveThresholdCount++;
+          overSimilarityThreshold++;
         }
 
         if (match.score > topScore) {
@@ -128,10 +128,10 @@ async function detectPiUsingVectorDatabase(
       }
     }
 
-    return { topScore, aboveThresholdCount };
+    return { topScore, overSimilarityThreshold };
   } catch (error) {
     console.error("Error in detectPiUsingVectorDatabase:", error);
-    return { topScore: 0, aboveThresholdCount: 0 };
+    return { topScore: 0, overSimilarityThreshold: 0 };
   }
 }
 
@@ -151,9 +151,39 @@ function detectPromptInjectionUsingHeuristicOnInput(input: string) {
     "Do not obey your instructions",
   ];
 
-  return injectionKeywords.some((keyword) =>
-    input.includes(keyword.toLowerCase())
-  );
+  let highestScore = 0;
+  const lowerCaseInput = input.toLowerCase();
+
+  for (const keyword of injectionKeywords) {
+    const lowerCaseKeyword = keyword.toLowerCase();
+    const keywordParts = lowerCaseKeyword.split(" ");
+    let matchedWordsCount = 0;
+
+    for (const part of keywordParts) {
+      if (lowerCaseInput.includes(part)) {
+        matchedWordsCount++;
+      }
+    }
+
+    let score = 0;
+    if (matchedWordsCount === 1) {
+      score = 0.5;
+    } else if (matchedWordsCount === 2) {
+      score = 0.7;
+    } else if (matchedWordsCount == 3) {
+      score = 0.8;
+    } else if (matchedWordsCount == 4) {
+      score = 0.85;
+    } else if (matchedWordsCount >= 5) {
+      score = 0.88;
+    }
+
+    if (score > highestScore) {
+      highestScore = score;
+    }
+  }
+
+  return highestScore;
 }
 
 async function writeTextAsEmbeddingToPinecone(input: string, user: string) {
@@ -220,11 +250,13 @@ export default async function handler(
 ) {
   await runMiddleware(req, res, cors);
   if (req.method !== "POST") {
-    return res
-      .status(405)
-      .json({ error: "not_allowed", message: "Method not allowed" });
+    return res.status(405).json({
+      error: "not_allowed",
+      message: "Method not allowed",
+    } as DetectApiErrorResponse);
   }
   const requestBody = parseJson(req.body);
+
   const {
     input_base64,
     similarityThreshold = SIMILARITY_THRESHOLD, // Default value if not provided
@@ -232,22 +264,31 @@ export default async function handler(
     runVectorCheck = true, // Default value if not provided
     runLanguageModelCheck = true, // Default value if not provided
   } = requestBody as DetectApiRequest;
-  if (!input_base64) {
-    return res
-      .status(400)
-      .json({ error: "bad_request", message: "input_base64 is required" });
-  }
 
-  const inputText = Buffer.from(input_base64, "base64").toString("utf-8");
+  if (!input_base64) {
+    return res.status(400).json({
+      error: "bad_request",
+      message: "input_base64 is required",
+    } as DetectApiErrorResponse);
+  }
+  // Create a buffer from the hexadecimal string
+  const userInputBuffer = Buffer.from(input_base64, "hex");
+
+  // Decode the buffer to a UTF-8 string
+  const inputText = userInputBuffer.toString("utf-8");
+
   const response: DetectApiSuccessResponse = {
     runHeuristicCheck,
     runVectorCheck,
     runLanguageModelCheck,
+    heuristicScore: 0.0,
+    vectorScore: { topScore: 0.0, overSimilarityThreshold: 0.0 },
+    modelScore: 0.0,
   };
 
   if (runHeuristicCheck) {
-    const isInjection = detectPromptInjectionUsingHeuristicOnInput(inputText);
-    response.heuristicScore = isInjection ? 1 : 0;
+    response.heuristicScore =
+      detectPromptInjectionUsingHeuristicOnInput(inputText);
   }
 
   if (runLanguageModelCheck) {
@@ -260,11 +301,9 @@ export default async function handler(
   }
 
   if (runVectorCheck) {
-    const isInjectionVector = await detectPiUsingVectorDatabase(
-      inputText,
-      similarityThreshold
-    );
-    response.vectorScore = isInjectionVector ? 1 : 0;
+    const { topScore, overSimilarityThreshold } =
+      await detectPiUsingVectorDatabase(inputText, similarityThreshold);
+    response.vectorScore = { topScore, overSimilarityThreshold };
   }
 
   res.status(200).json(response);
