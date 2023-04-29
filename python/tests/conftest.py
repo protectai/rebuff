@@ -1,5 +1,6 @@
 import os
 import sys
+from typing import Generator
 
 import requests
 
@@ -18,7 +19,7 @@ import pytest
 
 # Define a fixture to manage the Next.js server's lifecycle
 @pytest.fixture(scope="session")
-def server():
+def server() -> Generator[None, None, None]:
     # Check if the server is already running
     server_already_running = False
     try:
