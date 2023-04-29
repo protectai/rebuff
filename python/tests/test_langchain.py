@@ -8,7 +8,7 @@ from rebuff import Rebuff
 
 @pytest.mark.usefixtures("server")
 # Define the integration test for detecting prompt injection
-def test_detect_prompt_injection(server):
+def test_detect_prompt_injection(server) -> None:
     # Initialize the Rebuff SDK with the actual API token and URL
     rb = Rebuff(
         api_token="actual_token", api_url="https://actual-api.rebuff.ai/detect"

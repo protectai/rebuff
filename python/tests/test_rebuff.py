@@ -1,5 +1,6 @@
 import os
 import sys
+from typing import Any, Callable
 
 import pytest
 
@@ -18,8 +19,8 @@ from rebuff import Rebuff
 
 # Define a fixture for the fake API backend
 @pytest.fixture
-def fake_api_backend():
-    def _fake_api_backend(response_data):
+def fake_api_backend() -> Callable[[Any], Any]:
+    def _fake_api_backend(response_data) -> Mock:
         mock_response = Mock()
         mock_response.json.return_value = response_data
         mock_response.raise_for_status.return_value = None
@@ -29,7 +30,7 @@ def fake_api_backend():
 
 
 # Define a test for the is_injection_detected method
-def test_is_injection_detected(fake_api_backend, monkeypatch):
+def test_is_injection_detected(fake_api_backend, monkeypatch) -> None:
     # Stub out the response from the fake API backend
     response_data = {"heuristicScore": 1, "modelScore": 0.8, "vectorScore": 0}
     mock_post = Mock(return_value=fake_api_backend(response_data))
