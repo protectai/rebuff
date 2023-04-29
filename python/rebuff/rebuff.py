@@ -82,7 +82,20 @@ class Rebuff:
         return canary_word in completion
 
     def log_leakage(self, user_input: str, templated_prompt: str, response: str, canary_word: str):
-        pass
+        # Log relevant information if a canary word is detected in the response
+        headers = {
+            "Authorization": f"Bearer {self.api_token}",
+            "Content-Type": "application/json"
+        }
+        data = {
+            "userInput": user_input,
+            "templatedPrompt": templated_prompt,
+            "response": response,
+            "canaryWord": canary_word
+        }
+        response = requests.post(f"{self.api_url}/api/log_leakage", json=data, headers=headers)
+        response.raise_for_status()
+        return response.json()
 
     def detect_leakage(self, output_text, canary_word):
         headers = {"Authorization": f"Bearer {self.api_token}"}
