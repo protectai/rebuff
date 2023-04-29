@@ -39,14 +39,13 @@ class Rebuff:
         }
 
     def is_injection_detected(
-            self,
-            user_input: str,
-            check_heuristic: bool = True,
-            check_vector: bool = True,
-            check_llm: bool = True,
-            vector_similarity: float = 0.9,
+        self,
+        user_input: str,
+        check_heuristic: bool = True,
+        check_vector: bool = True,
+        check_llm: bool = True,
+        vector_similarity: float = 0.9,
     ) -> Union[DetectApiSuccessResponse, DetectApiFailureResponse]:
-
         request_data = DetectApiRequest(
             input_base64=encode_string(user_input),
             vectorSimilarity=vector_similarity,
@@ -72,9 +71,9 @@ class Rebuff:
 
     @staticmethod
     def add_canaryword(
-            prompt_template: str,
-            canary_word: Optional[str] = None,
-            canary_format: str = "<!-- {canary_word} -->",
+        prompt_template: str,
+        canary_word: Optional[str] = None,
+        canary_format: str = "<!-- {canary_word} -->",
     ) -> Tuple[str, str]:
         # Generate a canary word if not provided
         if canary_word is None:
@@ -85,8 +84,8 @@ class Rebuff:
         prompt_with_canary = prompt_template + "\n" + canary_comment
         return canary_word, prompt_with_canary
 
-    def is_canaryword_leaked(self,
-            completion: str, canary_word: str, log_outcome: bool = True
+    def is_canaryword_leaked(
+        self, completion: str, canary_word: str, log_outcome: bool = True
     ) -> bool:
         # Check if the canary word appears in the completion
         if canary_word in completion:
@@ -96,7 +95,7 @@ class Rebuff:
         return False
 
     def log_leakage(
-            self, user_input: str, templated_prompt: str, response: str, canary_word: str
+        self, user_input: str, templated_prompt: str, response: str, canary_word: str
     ):
         # Log relevant information if a canary word is detected in the response
         headers = {
