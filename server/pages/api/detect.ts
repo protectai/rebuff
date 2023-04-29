@@ -6,6 +6,7 @@ import { pinecone } from "@/lib/pinecone-client";
 import crypto from "crypto";
 import { render_prompt_for_pi_detection } from "@/lib/templates";
 import { v4 as uuidv4 } from "uuid";
+import stringSimilarity from "string-similarity";
 
 // Constants
 const SIMILARITY_THRESHOLD = 0.9;
@@ -140,6 +141,7 @@ function generateInjectionKeywords() {
   ];
 
   const adjectives = [
+    "",
     "prior",
     "previous",
     "preceding",
@@ -161,15 +163,23 @@ function generateInjectionKeywords() {
     "content",
     "text",
     "instructions",
+    "instruction",
     "directives",
+    "directive",
     "commands",
+    "command",
     "context",
     "conversation",
     "input",
+    "inputs",
     "data",
+    "message",
     "messages",
     "communication",
+    "response",
     "responses",
+    "request",
+    "requests",
   ];
 
   // Generate all possible combinations of sentences
@@ -192,36 +202,58 @@ function generateInjectionKeywords() {
 // Generate and print the injection keywords
 const injectionKeywords = generateInjectionKeywords();
 
+// Normalize a string by converting to lowercase and removing extra spaces and punctuation
+function normalizeString(str: string): string {
+  return str
+    .toLowerCase()
+    .replace(/[^\w\s]|_/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+// Return the highest score, ensure the score is normalized between 0 and 1
+// based on the amount of consecutive words matched and the similarity score
 function detectPromptInjectionUsingHeuristicOnInput(input: string): number {
   let highestScore = 0;
-  const lowerCaseInput = input.toLowerCase();
+  const normalizedInput = normalizeString(input);
 
   for (const keyword of injectionKeywords) {
-    const lowerCaseKeyword = keyword.toLowerCase();
-    const keywordParts = lowerCaseKeyword.split(" ");
-    let matchedWordsCount = 0;
+    const normalizedKeyword = normalizeString(keyword);
+    const keywordParts = normalizedKeyword.split(" ");
+    const keywordLength = keywordParts.length;
 
-    for (const part of keywordParts) {
-      if (lowerCaseInput.includes(part)) {
-        matchedWordsCount++;
+    // Generate substrings of similar length in the input string
+    const inputParts = normalizedInput.split(" ");
+    const inputSubstrings = [];
+    for (let i = 0; i <= inputParts.length - keywordLength; i++) {
+      inputSubstrings.push(inputParts.slice(i, i + keywordLength).join(" "));
+    }
+
+    // Calculate the similarity score between the keyword and each substring
+    for (const substring of inputSubstrings) {
+      const similarityScore = stringSimilarity.compareTwoStrings(
+        normalizedKeyword,
+        substring
+      );
+
+      // Calculate the score based on the number of consecutive words matched
+      const matchedWordsCount = keywordParts.filter(
+        (part, index) => substring.split(" ")[index] === part
+      ).length;
+      const maxMatchedWords = 5;
+      const baseScore =
+        matchedWordsCount > 0
+          ? 0.5 + 0.5 * Math.min(matchedWordsCount / maxMatchedWords, 1)
+          : 0;
+
+      // Adjust the score using the similarity score
+      const adjustedScore =
+        baseScore - similarityScore * (1 / (maxMatchedWords * 2));
+
+      // Update the highest score if the current adjusted score is higher
+      if (adjustedScore > highestScore) {
+        highestScore = adjustedScore;
       }
-    }
-
-    let score = 0;
-    if (matchedWordsCount === 1) {
-      score = 0.5;
-    } else if (matchedWordsCount === 2) {
-      score = 0.7;
-    } else if (matchedWordsCount == 3) {
-      score = 0.8;
-    } else if (matchedWordsCount == 4) {
-      score = 0.85;
-    } else if (matchedWordsCount >= 5) {
-      score = 0.88;
-    }
-
-    if (score > highestScore) {
-      highestScore = score;
     }
   }
 
@@ -297,6 +329,7 @@ export default async function handler(
 
   // Decode the buffer to a UTF-8 string
   const inputText = userInputBuffer.toString("utf-8");
+
   const heuristicScore = runHeuristicCheck
     ? detectPromptInjectionUsingHeuristicOnInput(inputText)
     : 0;
