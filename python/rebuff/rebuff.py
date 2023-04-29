@@ -40,11 +40,14 @@ class Rebuff:
     def is_injection_detected(
         self,
         user_input: str,
+        max_heuristic_score: float = 0.8,
+        max_vector_score: float = 0.95,
+        max_model_score: float = 0.9,
         check_heuristic: bool = True,
         check_vector: bool = True,
         check_llm: bool = True,
         vector_similarity: float = 0.9,
-    ) -> Union[DetectApiSuccessResponse, DetectApiFailureResponse]:
+    ) -> tuple[Union[DetectApiSuccessResponse, DetectApiFailureResponse], bool]:
         request_data = DetectApiRequest(
             input_base64=encode_string(user_input),
             vectorSimilarity=vector_similarity,
@@ -63,7 +66,20 @@ class Rebuff:
 
         response_json = response.json()
         success_response = DetectApiSuccessResponse.parse_obj(response_json)
-        return success_response
+
+        if (
+            success_response.heuristicScore > max_heuristic_score
+            or success_response.modelScore > max_model_score
+            or any(
+                score > max_vector_score
+                for score in success_response.vectorScore.values()
+            )
+        ):
+            # Injection detected
+            return success_response, True
+        else:
+            # No injection detected
+            return success_response, False
 
     def generate_canary_word(self, length: int = 8) -> str:
         # Generate a secure random hexadecimal canary word
