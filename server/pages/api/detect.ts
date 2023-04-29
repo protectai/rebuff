@@ -6,21 +6,20 @@ import { pinecone } from "@/lib/pinecone-client";
 import crypto from "crypto";
 import { render_prompt_for_pi_detection } from "@/lib/templates";
 import { v4 as uuidv4 } from "uuid";
-import parseJson from "parse-json";
 
 // Constants
 const SIMILARITY_THRESHOLD = 0.9;
 
 const supabaseAdminClient = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL || "",
-  process.env.SUPABASE_SERVICE_KEY || ""
+  getEnvironmentVariable("NEXT_PUBLIC_SUPABASE_URL"),
+  getEnvironmentVariable("SUPABASE_SERVICE_KEY")
 );
 
 // Add utility function to get and validate environment variables
 function getEnvironmentVariable(key: string): string {
   const value = process.env[key];
   if (!value) {
-    throw new Error(`"Missing environment variable": ${key}`);
+    throw new Error(`Missing environment variable: ${key}`);
   }
   return value;
 }
@@ -29,9 +28,9 @@ function getEnvironmentVariable(key: string): string {
 type DetectApiRequest = {
   input_base64: string;
   similarityThreshold?: number;
-  runHeuristicCheck: boolean;
-  runVectorCheck: boolean;
-  runLanguageModelCheck: boolean;
+  runHeuristicCheck?: boolean;
+  runVectorCheck?: boolean;
+  runLanguageModelCheck?: boolean;
 };
 
 type DetectApiSuccessResponse = {
@@ -52,14 +51,14 @@ type DetectApiFailureResponse = {
 };
 
 const cors = Cors({
-  methods: ["POST", "GET", "HEAD"],
+  methods: ["POST"],
 });
 
 function runMiddleware(
   req: NextApiRequest,
   res: NextApiResponse,
   fn: Function
-) {
+): Promise<any> {
   return new Promise((resolve, reject) => {
     fn(req, res, (result: any) => {
       if (result instanceof Error) {
@@ -71,17 +70,6 @@ function runMiddleware(
   });
 }
 
-function generate_user_specific_secret(user: string, level: number) {
-  // md5 hash of the unhashed string
-  const hashed = crypto
-    .createHash("md5")
-    .update(user + level)
-    .digest("hex");
-
-  // return the first 10 characters of the hash
-  return hashed.substring(0, 10);
-}
-
 const openai = new OpenAIApi(
   new Configuration({ apiKey: getEnvironmentVariable("OPENAI_API_KEY") })
 );
@@ -89,7 +77,7 @@ const openai = new OpenAIApi(
 async function detectPiUsingVectorDatabase(
   input: string,
   similarityThreshold: number
-) {
+): Promise<{ topScore: number; overSimilarityThreshold: number }> {
   try {
     // Create embedding from input
     const emb = await openai.createEmbedding({
@@ -135,7 +123,7 @@ async function detectPiUsingVectorDatabase(
   }
 }
 
-function detectPromptInjectionUsingHeuristicOnInput(input: string) {
+function detectPromptInjectionUsingHeuristicOnInput(input: string): number {
   const injectionKeywords = [
     "Ignore everything above",
     "Ignore the previous",
@@ -186,38 +174,9 @@ function detectPromptInjectionUsingHeuristicOnInput(input: string) {
   return highestScore;
 }
 
-async function writeTextAsEmbeddingToPinecone(input: string, user: string) {
-  try {
-    // Create embedding from input
-    const emb = await openai.createEmbedding({
-      model: "text-embedding-ada-002",
-      input: input,
-    });
-
-    // Get Pinecone Index
-    const index = (await pinecone).Index("pig-index");
-
-    // Insert embedding into index
-    const upsertRes = index.upsert({
-      upsertRequest: {
-        vectors: [
-          {
-            id: uuidv4(),
-            values: emb.data.data[0].embedding,
-            metadata: {
-              input: input,
-              user: user,
-            },
-          },
-        ],
-      },
-    });
-  } catch (error) {
-    console.error("Error in writeTextAsEmbeddingToPinecone:", error);
-  }
-}
-
-async function callOpenAiToDetectPI(promptToDetectPiUsingOpenAI: string) {
+async function callOpenAiToDetectPI(
+  promptToDetectPiUsingOpenAI: string
+): Promise<{ completion: string; error?: string }> {
   try {
     const completion = await openai.createChatCompletion({
       model: "gpt-3.5-turbo",
@@ -255,15 +214,14 @@ export default async function handler(
       message: "Method not allowed",
     } as DetectApiFailureResponse);
   }
-  const requestBody = parseJson(req.body);
 
   const {
     input_base64,
-    similarityThreshold = SIMILARITY_THRESHOLD, // Default value if not provided
-    runHeuristicCheck = true, // Default value if not provided
-    runVectorCheck = true, // Default value if not provided
-    runLanguageModelCheck = true, // Default value if not provided
-  } = requestBody as DetectApiRequest;
+    similarityThreshold = SIMILARITY_THRESHOLD,
+    runHeuristicCheck = true,
+    runVectorCheck = true,
+    runLanguageModelCheck = true,
+  } = req.body as DetectApiRequest;
 
   if (!input_base64) {
     return res.status(400).json({
@@ -271,40 +229,33 @@ export default async function handler(
       message: "input_base64 is required",
     } as DetectApiFailureResponse);
   }
-  // Create a buffer from the hexadecimal string
-  const userInputBuffer = Buffer.from(input_base64, "hex");
 
-  // Decode the buffer to a UTF-8 string
-  const inputText = userInputBuffer.toString("utf-8");
+  // Decode the base64-encoded string
+  const inputText = Buffer.from(input_base64, "base64").toString("utf-8");
+
+  const heuristicScore = runHeuristicCheck
+    ? detectPromptInjectionUsingHeuristicOnInput(inputText)
+    : 0;
+
+  const modelScore = runLanguageModelCheck
+    ? parseFloat(
+        (await callOpenAiToDetectPI(render_prompt_for_pi_detection(inputText)))
+          .completion
+      )
+    : 0;
+
+  const vectorScore = runVectorCheck
+    ? await detectPiUsingVectorDatabase(inputText, similarityThreshold)
+    : { topScore: 0, overSimilarityThreshold: 0 };
 
   const response: DetectApiSuccessResponse = {
+    heuristicScore,
+    modelScore,
+    vectorScore,
     runHeuristicCheck,
     runVectorCheck,
     runLanguageModelCheck,
-    heuristicScore: 0.0,
-    vectorScore: { topScore: 0.0, overSimilarityThreshold: 0.0 },
-    modelScore: 0.0,
   };
-
-  if (runHeuristicCheck) {
-    response.heuristicScore =
-      detectPromptInjectionUsingHeuristicOnInput(inputText);
-  }
-
-  if (runLanguageModelCheck) {
-    const promptToDetectPiUsingOpenAI =
-      render_prompt_for_pi_detection(inputText);
-    const { completion, error } = await callOpenAiToDetectPI(
-      promptToDetectPiUsingOpenAI
-    );
-    response.modelScore = parseFloat(completion);
-  }
-
-  if (runVectorCheck) {
-    const { topScore, overSimilarityThreshold } =
-      await detectPiUsingVectorDatabase(inputText, similarityThreshold);
-    response.vectorScore = { topScore, overSimilarityThreshold };
-  }
 
   res.status(200).json(response);
 }
