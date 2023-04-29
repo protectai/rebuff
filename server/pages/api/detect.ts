@@ -253,7 +253,7 @@ export default async function handler(
     return res.status(405).json({
       error: "not_allowed",
       message: "Method not allowed",
-    } as DetectApiErrorResponse);
+    } as DetectApiFailureResponse);
   }
   const requestBody = parseJson(req.body);
 
@@ -269,7 +269,7 @@ export default async function handler(
     return res.status(400).json({
       error: "bad_request",
       message: "input_base64 is required",
-    } as DetectApiErrorResponse);
+    } as DetectApiFailureResponse);
   }
   // Create a buffer from the hexadecimal string
   const userInputBuffer = Buffer.from(input_base64, "hex");
