@@ -3,8 +3,10 @@
   "version": "2.0.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "concurrently \"npm run dev:css\" \"next dev\"",
+    "dev:css": "tailwindcss -w -i ./styles/tailwind.css -o styles/app.css",
     "build": "next build",
+    "build:css": "tailwindcss -m -i ./styles/tailwind.css -o styles/app.css",
     "start": "next start",
     "lint": "next lint"
   },
@@ -25,7 +27,6 @@
     "@supabase/auth-ui-react": "^0.2.8",
     "@supabase/supabase-js": "^2.8.0",
     "@tabler/icons-react": "^2.17.0",
-    "@types/node": "18.14.0",
     "@types/react": "18.0.28",
     "@types/react-dom": "18.0.11",
     "cors": "^2.8.5",
@@ -42,8 +43,13 @@
   },
   "devDependencies": {
     "@types/cors": "^2.8.12",
+    "@types/node": "^18.16.3",
+    "@types/node-fetch": "^2.6.3",
     "@types/uuid": "^9.0.1",
+    "autoprefixer": "^10.4.14",
     "concurrently": "^7.6.0",
-    "prettier": "^2.8.7"
+    "postcss": "^8.4.23",
+    "prettier": "^2.8.7",
+    "tailwindcss": "^3.3.2"
   }
 }

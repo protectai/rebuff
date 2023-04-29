@@ -1,11 +1,18 @@
 import { FC } from "react";
-import { Space, Tabs, Title, Box } from "@mantine/core";
+import { Space, Tabs, Title, Text } from "@mantine/core";
 import { Prism } from "@mantine/prism";
 
 const CodeSamples: FC = () => {
   return (
-    <div className="max-w-sm">
-      <Title order={4}>Code</Title>
+    <div>
+      <Title order={3}>Use Rebuff in your own apps</Title>
+      <Space h="xs" />
+      <Text>
+        Rebuff helps you validate your LLM input (prompt) and outputs to reduce
+        risks of leaks. Check out the code samples below to see how to integrate
+        it to your applications.
+      </Text>
+      <Space h="md" />
       <Tabs color="dark" defaultValue="py">
         <Tabs.List>
           <Tabs.Tab value="py">Python</Tabs.Tab>
