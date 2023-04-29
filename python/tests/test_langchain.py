@@ -1,3 +1,6 @@
+import os
+from typing import Generator
+
 import pytest
 from langchain.chains import LLMChain
 from langchain.llms import OpenAI
@@ -8,14 +11,12 @@ from rebuff import Rebuff
 
 @pytest.mark.usefixtures("server")
 # Define the integration test for detecting prompt injection
-def test_detect_prompt_injection(server) -> None:
+def test_detect_prompt_injection(server: Generator[None, None, None]) -> None:
     # Initialize the Rebuff SDK with the actual API token and URL
-    rb = Rebuff(
-        api_token="actual_token", api_url="https://actual-api.rebuff.ai/detect"
-    )
+    rb = Rebuff(api_token="fake_token", api_url="http://localhost:3000")
 
-    # Set up the LangChain SDK with the actual API key
-    llm = OpenAI(api_key="actual_api_key", temperature=0.9)
+    # Set up the LangChain SDK with the environment variable
+    llm = OpenAI(api_key=os.environ["OPENAI_API_KEY"], temperature=0.9)
 
     # Define the prompt template for text-to-SQL conversion
     prompt_template = PromptTemplate(
@@ -41,8 +42,8 @@ def test_detect_prompt_injection(server) -> None:
     completion = chain.run(user_input)
 
     # Check for canary word leakage using Rebuff
-    if rb.is_canaryword_leaked(completion, canary_word):
-        print("Canaryword detected in the response. A leak has occurred!")
+    if rb.is_canaryword_leaked(user_input, completion, canary_word):
+        print("Canary word detected in the response. A leak has occurred!")
         return
 
     # If no prompt injection or leakage is detected, the test passes

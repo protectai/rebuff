@@ -1,6 +1,7 @@
 import os
 import sys
-from typing import Generator
+from typing import Any, Callable, Generator
+from unittest.mock import Mock
 
 import requests
 
@@ -54,3 +55,15 @@ def server() -> Generator[None, None, None]:
     else:
         # Yield control to the test function without starting the server
         yield
+
+
+# Define a fixture for the fake API backend
+@pytest.fixture
+def fake_api_backend() -> Callable[[Any], Any]:
+    def _fake_api_backend(response_data: str) -> Mock:
+        mock_response = Mock()
+        mock_response.json.return_value = response_data
+        mock_response.raise_for_status.return_value = None
+        return mock_response
+
+    return _fake_api_backend

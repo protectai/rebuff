@@ -8,7 +8,7 @@ from pydantic import BaseModel
 
 class DetectApiRequest(BaseModel):
     input_base64: str
-    similarityThreshold: Optional[float]
+    vectorSimilarity: Optional[float]
     runHeuristicCheck: bool
     runVectorCheck: bool
     runLanguageModelCheck: bool
@@ -71,7 +71,7 @@ class Rebuff:
 
     def add_canaryword(
         self,
-        prompt_template: Union[str, PromptTemplate],
+        prompt: Union[str, PromptTemplate],
         canary_word: Optional[str] = None,
         canary_format: str = "<!-- {canary_word} -->",
     ) -> tuple[Union[PromptTemplate, str], str]:
@@ -82,22 +82,21 @@ class Rebuff:
         # Embed the canary word in the specified format
         canary_comment = canary_format.format(canary_word=canary_word)
 
-        if isinstance(prompt_template, PromptTemplate):
-            prompt_template.template = (
-                canary_comment + "\n" + prompt_template.template
-            )
-            return prompt_template, canary_word
-        if isinstance(prompt_template, str):
-            prompt: str = canary_comment + "\n" + prompt_template
+        if isinstance(prompt, PromptTemplate):
+            prompt.template = canary_comment + "\n" + prompt.template
             return prompt, canary_word
+        if isinstance(prompt, str):
+            prompt_with_canary: str = canary_comment + "\n" + prompt
+            return prompt_with_canary, canary_word
         else:
             raise TypeError(
-                f"prompt_template must be a PromptTemplate or a str, but was {type(prompt_template)}"
+                f"prompt_template must be a PromptTemplate or a str, "
+                f"but was {type(prompt)}"
             )
 
     def is_canaryword_leaked(
         self,
-        prompt: str,
+        user_input: str,
         completion: str,
         canary_word: str,
         log_outcome: bool = True,
@@ -105,15 +104,15 @@ class Rebuff:
         # Check if the canary word appears in the completion
         if canary_word in completion:
             if log_outcome:
-                self.log_leakage(prompt, completion, canary_word)
+                self.log_leakage(user_input, completion, canary_word)
             return True
         return False
 
     def log_leakage(
-        self, prompt: str, completion: str, canary_word: str
+        self, user_input: str, completion: str, canary_word: str
     ) -> None:
         data = {
-            "prompt": prompt,
+            "user_input": user_input,
             "completion": completion,
             "canaryWord": canary_word,
         }
@@ -124,5 +123,5 @@ class Rebuff:
         return
 
 
-def encode_string(input: str) -> str:
-    return input.encode("utf-8").hex()
+def encode_string(message: str) -> str:
+    return message.encode("utf-8").hex()
