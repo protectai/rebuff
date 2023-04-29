@@ -1,6 +1,8 @@
 import os
 import sys
 
+import pytest
+
 try:
     sys.path.insert(
         0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../rebuff"))
@@ -8,13 +10,13 @@ try:
 except NameError:
     pass
 
-from fixtures import server
 from rebuff import Rebuff
 
 
+@pytest.mark.usefixtures("server")
 def test_integration(server):
     # Initialize the Rebuff SDK with a real API token and URL
-    rb = Rebuff(api_token="real_token", api_url="http://localhost:3000/api/detect")
+    rb = Rebuff(api_token="real_token", api_url="http://localhost:3000")
 
     # Test the is_injection_detected method
     user_input = "Find all users; DROP TABLE users;"

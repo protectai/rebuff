@@ -3,10 +3,10 @@ from langchain.chains import LLMChain
 from langchain.llms import OpenAI
 from langchain.prompts import PromptTemplate
 
-from fixtures import server
 from rebuff import Rebuff
 
 
+@pytest.mark.usefixtures("server")
 # Define the integration test for detecting prompt injection
 def test_detect_prompt_injection(server):
     # Initialize the Rebuff SDK with the actual API token and URL

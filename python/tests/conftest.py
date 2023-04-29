@@ -18,7 +18,6 @@ import pytest
 # Define a fixture to manage the Next.js server's lifecycle
 @pytest.fixture(scope="session")
 def server():
-    print("hello!")
     # Check if the server is already running
     server_already_running = False
     try:
@@ -41,7 +40,7 @@ def server():
         server = subprocess.Popen(["npm", "run", "dev"], cwd=f"{git_root}/server")
 
         # Wait for the server to start (adjust the sleep time as needed)
-        time.sleep(5)
+        time.sleep(3)
 
         # Yield control to the test function
         yield
