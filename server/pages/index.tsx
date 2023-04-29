@@ -41,6 +41,7 @@ const Playground: FC = () => {
     let username = "";
     if (data.length == 0) {
       username = dockerNames.getRandomName();
+      // TODO: Do we still need docker names? We don't have to show a username if they don't set it.
       const { error } = await supabase
         .from("profiles")
         .insert({ id: session.user.id, username: username })
