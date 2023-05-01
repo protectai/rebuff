@@ -1,4 +1,4 @@
-type DetectApiRequest = {
+export type DetectApiRequest = {
   input_base64: string;
   similarityThreshold?: number;
   runHeuristicCheck?: boolean;
@@ -6,7 +6,7 @@ type DetectApiRequest = {
   runLanguageModelCheck?: boolean;
 };
 
-type DetectApiSuccessResponse = {
+export type DetectApiSuccessResponse = {
   heuristicScore: number;
   modelScore: number;
   vectorScore: Record<string, number>;
@@ -15,7 +15,7 @@ type DetectApiSuccessResponse = {
   runLanguageModelCheck: boolean;
 };
 
-type DetectApiFailureResponse = {
+export type DetectApiFailureResponse = {
   error: string;
   message: string;
 };

@@ -6,6 +6,8 @@ import "@/styles/app.css";
 import { createBrowserSupabaseClient } from "@supabase/auth-helpers-nextjs";
 import { SessionContextProvider, Session } from "@supabase/auth-helpers-react";
 import { useState } from "react";
+import Layout from "@/components/Layout";
+import { AppProvider } from "@/components/AppContext";
 
 export default function App(props: AppProps<{ initialSession: Session }>) {
   const { Component, pageProps } = props;
@@ -33,7 +35,11 @@ export default function App(props: AppProps<{ initialSession: Session }>) {
           supabaseClient={supabaseClient}
           initialSession={pageProps.initialSession}
         >
-          <Component {...pageProps} />
+          <AppProvider>
+            <Layout>
+              <Component {...pageProps} />
+            </Layout>
+          </AppProvider>
         </SessionContextProvider>
       </MantineProvider>
     </>
