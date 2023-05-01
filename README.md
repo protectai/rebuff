@@ -6,9 +6,9 @@
 
 Rebuff is a **self-hardening prompt injection detector**. It is designed to protect applications built on Language Models (LLMs) from prompt injection (PI) attacks through a multi-layered defense.
 
-
 #### Disclaimer
-Rebuff is still a prototype and should not be relied on for full protection in production against prompt injection attacks.
+
+Rebuff is still a prototype. It should be considered a first line of defense, but it cannot provide 100% protection against prompt injection attacks.
 
 ## Features
 
