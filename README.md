@@ -4,7 +4,7 @@
   <img width="250" src="https://i.imgur.com/b6gpWOB.png" alt="Rebuff Logo">
 </p>
 
-Rebuff is a self-hardening prompt injection detector. It is designed to protect applications built on Language Models (LLMs) from prompt injection (PI) attacks through a multi-layered defense.
+Rebuff is a **self-hardening prompt injection detector**. It is designed to protect applications built on Language Models (LLMs) from prompt injection (PI) attacks through a multi-layered defense.
 
 
 #### Disclaimer
