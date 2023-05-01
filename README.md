@@ -1,14 +1,28 @@
-# Rebuff - Prompt Injection Detector
+<!-- markdownlint-configure-file {
+  "MD013": {
+    "code_blocks": false,
+    "tables": false
+  },
+  "MD033": false,
+  "MD041": false
+} -->
 
-<p align="center">
+<div align="center">
+
+  ## Rebuff
+
   <img width="250" src="https://i.imgur.com/b6gpWOB.png" alt="Rebuff Logo">
-</p>
 
-Rebuff is a **self-hardening prompt injection detector**. It is designed to protect applications built on Large Language Models (LLMs) from prompt injection (PI) attacks through a multi-layered defense.
+  Rebuff is a **self-hardening prompt injection detector**.
 
-#### Disclaimer
+  It is designed to protect AI applications from prompt injection (PI) attacks through a [multi-layered defense](#features).
 
-Rebuff is still a prototype. It should be considered a first line of defense, but it cannot provide 100% protection against prompt injection attacks.
+  [Features](#features) •
+  [Installation](#installation) •
+  [Getting started](#getting-started) •
+  [Contributing](#contributing)
+
+</div>
 
 ## Features
 
@@ -18,13 +32,15 @@ Rebuff offers 4 layers of defense:
 - VectorDB: Store embeddings of previous attacks in a vector database to recognize and prevent similar attacks in the future.
 - Canary tokens: Add canary tokens to prompts to detect leakages, allowing the framework to store embeddings about the incoming prompt in the vector database and prevent future attacks.
 
+NOTE: Rebuff is still a prototype and **cannot provide 100% protection** against prompt injection attacks.
+
 ## Installation
 
 ```bash
 pip install rebuff
 ```
 
-## Usage
+## Getting started
 
 ```python
 from rebuff import Rebuff
