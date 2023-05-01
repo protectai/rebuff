@@ -4,7 +4,7 @@
   <img width="250" src="https://i.imgur.com/b6gpWOB.png" alt="Rebuff Logo">
 </p>
 
-Rebuff is an open source framework designed to protect applications built on Language Models (LLMs) from prompt injection (PI) attacks. It provides a multi-layered defense mechanism to detect and prevent malicious inputs that can manipulate model outputs, exfiltrate sensitive data, or perform unauthorized actions.
+Rebuff is a self-hardening prompt injection detector. It is designed to protect applications built on Language Models (LLMs) from prompt injection (PI) attacks through a multi-layered defense.
 
 
 #### Disclaimer
