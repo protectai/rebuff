@@ -32,7 +32,9 @@ Rebuff offers 4 layers of defense:
 - VectorDB: Store embeddings of previous attacks in a vector database to recognize and prevent similar attacks in the future.
 - Canary tokens: Add canary tokens to prompts to detect leakages, allowing the framework to store embeddings about the incoming prompt in the vector database and prevent future attacks.
 
-NOTE: Rebuff is still a prototype and **cannot provide 100% protection** against prompt injection attacks.
+## Disclaimer
+
+Rebuff is still a prototype and **cannot provide 100% protection** against prompt injection attacks.
 
 ## Installation
 
