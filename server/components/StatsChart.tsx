@@ -1,10 +1,14 @@
-import { FC } from "react";
+import { FC, useContext } from "react";
 import { Progress, Space, Text, Title, Loader } from "@mantine/core";
-import { Stats, stat } from "@/interfaces/ui";
+import { GlobalStats } from "@/interfaces/ui";
+import { AppContext } from "./AppContext";
 
-const StatsCharts: FC<Stats> = ({ last24h, last7d, alltime, loading }) => {
-  const value = (s: stat) =>
+const StatsCharts: FC = () => {
+  const { appState, loading } = useContext(AppContext);
+  const { stats } = appState;
+  const value = (s: GlobalStats["alltime"]) =>
     s.attempts === 0 ? 0 : (s.breaches * 100) / s.attempts;
+  const { last24h, last7d, alltime } = stats;
   return (
     <div>
       {loading ? (
@@ -14,7 +18,7 @@ const StatsCharts: FC<Stats> = ({ last24h, last7d, alltime, loading }) => {
         last7d &&
         alltime && (
           <div>
-            <Title order={4}>Stats</Title>
+            <Title order={4}>Global Stats</Title>
             <Space h="sm" />
             <Text fz="sm" fw={500}>
               Last 24 hours ({`${last24h.breaches} out of ${last24h.attempts}`})

@@ -1,6 +1,6 @@
 {
-  "name": "nextjs-todo-list",
-  "version": "2.0.0",
+  "name": "rebuff",
+  "version": "0.0.1",
   "private": true,
   "scripts": {
     "dev": "concurrently \"npm run dev:css\" \"next dev\"",

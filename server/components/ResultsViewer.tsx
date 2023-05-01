@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useContext } from "react";
 import {
   Space,
   Table,
@@ -8,17 +8,15 @@ import {
   Box,
   Text,
 } from "@mantine/core";
-import { ApiResponse } from "@/interfaces/api";
 import { IconPrompt } from "@tabler/icons-react";
-interface ResultsViewerProps {
-  results: ApiResponse[];
-  loading: boolean;
-}
-const abbreviatePrompt = (prompt: string) => `${prompt.slice(0, 8)}...`;
-const ResultsViewer: FC<ResultsViewerProps> = ({ results, loading }) => {
+import { AppContext } from "./AppContext";
+
+const ResultsViewer: FC = () => {
+  const { appState, loading } = useContext(AppContext);
+  const results = appState.attempts;
   return (
     <Box>
-      <Title order={4}>Results</Title>
+      <Title order={2}>Results</Title>
       <Space h="md" />
       <LoadingOverlay visible={loading} />
       {results.length === 0 && (
@@ -35,7 +33,7 @@ const ResultsViewer: FC<ResultsViewerProps> = ({ results, loading }) => {
         <Tabs.List>
           {results.map((result, index) => (
             <Tabs.Tab value={`${index}`} icon={<IconPrompt size="0.8rem" />}>
-              {abbreviatePrompt(result.prompt)}
+              {`${result.vectorScore}`}
             </Tabs.Tab>
           ))}
         </Tabs.List>
