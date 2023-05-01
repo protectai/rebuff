@@ -17,8 +17,8 @@ import { DetectApiRequest } from "@/interfaces/api";
 interface AppStateCtx {
   appState: AppState;
   loading: boolean;
-  refreshAppState: () => Promise<AppState>;
-  refreshApikey: () => Promise<string>;
+  refreshAppState: () => Promise<void>;
+  refreshApikey: () => Promise<void>;
   submitPrompt: (prompt: DetectApiRequest) => Promise<void>;
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }
@@ -50,8 +50,8 @@ const initState = {
 export const AppContext = createContext<AppStateCtx>({
   appState: initState,
   loading: false,
-  refreshAppState: async () => ({} as AppState),
-  refreshApikey: async () => "",
+  refreshAppState: async () => undefined,
+  refreshApikey: async () => undefined,
   submitPrompt: async (req: DetectApiRequest) => undefined,
   setLoading: () => null,
 });
@@ -71,9 +71,31 @@ export const AppProvider: FC<{ children: ReactNode }> = ({ children }) => {
     [session]
   );
   const refreshAppState = async () => {
-    return initState;
+    setLoading(true);
+    try {
+      const response = await fetch("/api/account");
+      const data = await response.json();
+      setAppState(data);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
   };
-  const refreshApikey = async () => "";
+  const refreshApikey = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch("/api/account/apikey", {
+        method: "POST",
+      });
+      const data = await response.json();
+      setApikey(data.apikey);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
   const submitPrompt = async (req: DetectApiRequest) => {
     return;
   };
