@@ -1,16 +1,18 @@
-# Rebuff
+# Rebuff - Prompt Injection Detector
 
 <p align="center">
   <img width="250" src="https://i.imgur.com/b6gpWOB.png" alt="Rebuff Logo">
 </p>
 
-Rebuff is an open source framework designed to protect AI applications built on Language Models (LLMs) from prompt injection (PI) attacks. It provides a multi-layered defense mechanism to detect and prevent malicious inputs that can manipulate model outputs, exfiltrate sensitive data, or perform unauthorized actions.
+Rebuff is an open source framework designed to protect applications built on Language Models (LLMs) from prompt injection (PI) attacks. It provides a multi-layered defense mechanism to detect and prevent malicious inputs that can manipulate model outputs, exfiltrate sensitive data, or perform unauthorized actions.
 
 
-Warning: Rebuff is still a prototype and should not be relied on for full protection in production against prompt injection attacks.
+#### Disclaimer
+Rebuff is still a prototype and should not be relied on for full protection in production against prompt injection attacks.
 
 ## Features
 
+Rebuff offers 4 layers of defense:
 - Heuristics: Filter out potentially malicious input before it reaches the LLM.
 - LLM-based detection: Use a dedicated LLM to analyze incoming prompts and identify potential attacks.
 - VectorDB: Store embeddings of previous attacks in a vector database to recognize and prevent similar attacks in the future.
