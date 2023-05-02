@@ -14,7 +14,7 @@ const cors = Cors({
   methods: ["POST", "GET", "HEAD"],
 });
 
-function generateApiKey(length: number = 64): string {
+function generateApiKey(length: number = 16): string {
   const apiKey = randomBytes(length).toString("hex");
   return apiKey;
 }
@@ -70,7 +70,7 @@ export default async function handler(
       .status(401)
       .json({ error: "not_authenticated", message: "not authenticated" });
   }
-
+  console.log(req.query.slug);
   if (req.method === "GET" && !req.query.slug) {
     // check if a valid row exists in the accounts table and credits table
     try {
@@ -90,29 +90,47 @@ export default async function handler(
     req.query.slug[0] === "apikey"
   ) {
     const apikey = generateApiKey();
+    await refreshApikeyForUser(user, apikey);
     return res.status(200).json({ apikey });
   }
   return res.status(404);
 }
+
+const refreshApikeyForUser = async (
+  user: any,
+  apikey: string
+): Promise<void> => {
+  const appState = {} as AppState;
+  const { data, error } = await supabaseAdminClient
+    .from("accounts")
+    .update({ apikey })
+    .eq("id", user.id);
+  if (error) {
+    console.error(`Error updating apikey for user ${user.id}`);
+    console.error(error);
+    throw new Error("Error updating apikey");
+  }
+};
+
 const getAppStateForUser = async (user: any): Promise<AppState> => {
   const appState = {} as AppState;
   const { data, error } = await supabaseAdminClient
     .from("accounts")
-    .select("apikey")
+    .select("apikey, credits_total_cents")
     .eq("id", user.id)
     .single();
   if (error) {
     console.error(`Error getting account for user ${user.id}`);
     console.error(error);
   }
-  if (!Array.isArray(data) || !data[0].apikey) {
+  if (!data || !data.apikey) {
     throw new Error("No account found");
   }
-  if (Array.isArray(data[0].credits) || !data[0].credits) {
+  if (!data.credits_total_cents) {
     throw new Error("No credits found");
   }
-  appState.apikey = data[0].apikey;
-  appState.credits = data[0].credits.total_credits_cents;
+  appState.apikey = data.apikey;
+  appState.credits = data.credits_total_cents;
   return appState;
 };
 const getAppStateFromDb = async (user: any): Promise<AppState> => {
@@ -126,21 +144,18 @@ const getAppStateFromDb = async (user: any): Promise<AppState> => {
   // if not found, create a new row in the accounts table and credits table
   const { error: accountsErr } = await supabaseAdminClient
     .from("accounts")
-    .insert([{ id: user.id, apikey: generateApiKey(), name: user.email }])
+    .insert([
+      {
+        id: user.id,
+        apikey: generateApiKey(),
+        name: user.email,
+        credits_total_cents: 1000,
+      },
+    ])
     .select();
   if (accountsErr) {
     console.error(accountsErr);
     throw new Error("Error creating account");
-  }
-  const { error: creditsErr } = await supabaseAdminClient
-    .from("credits")
-    .upsert(
-      { id: user.id, total_credits_cents: 1000 },
-      { onConflict: "id", ignoreDuplicates: true }
-    );
-  if (creditsErr) {
-    console.error(creditsErr);
-    throw new Error("Error creating credits");
   }
   return await getAppStateForUser(user);
 };

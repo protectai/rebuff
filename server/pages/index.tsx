@@ -13,13 +13,24 @@ import {
 } from "@mantine/core";
 import ResultsViewer from "@/components/ResultsViewer";
 import { Auth, ThemeSupa } from "@supabase/auth-ui-react";
-import { IconAlertCircle, IconInfoCircle } from "@tabler/icons-react";
+import {
+  IconAlertCircle,
+  IconEye,
+  IconEyeClosed,
+  IconInfoCircle,
+  IconRefresh,
+} from "@tabler/icons-react";
 import { AppContext } from "@/components/AppContext";
 
 const Playground: FC = () => {
   const session = useSession();
   const supabase = useSupabaseClient();
-  const { submitPrompt } = useContext(AppContext);
+  const { appState, submitPrompt, refreshApikey } = useContext(AppContext);
+  const [showKey, setShowKey] = useState(false);
+
+  const toggleShowKey = () => {
+    setShowKey(!showKey);
+  };
 
   const form = useForm({
     initialValues: {
@@ -128,6 +139,7 @@ const Playground: FC = () => {
             <>
               <Checkbox
                 size="xs"
+                color="dark"
                 label="Heuristic Detection"
                 disabled={disabled()}
                 {...form.getInputProps("heuristic", { type: "checkbox" })}
@@ -135,6 +147,7 @@ const Playground: FC = () => {
               <Space h="sm" />
               <Checkbox
                 size="xs"
+                color="dark"
                 label="LLM Detection"
                 disabled={disabled()}
                 {...form.getInputProps("llm", { type: "checkbox" })}
@@ -142,12 +155,28 @@ const Playground: FC = () => {
               <Space h="sm" />
               <Checkbox
                 size="xs"
+                color="dark"
                 label="VectorDB Detection"
                 disabled={disabled()}
                 {...form.getInputProps("vectordb", { type: "checkbox" })}
               />
             </>
             <Space h="lg" />
+            <Title order={4}>Use Rebuff in your app</Title>
+            <Space h="sm" />
+            <div className="flex flex-row items-center gap-2">
+              <Button variant="outline" color="dark" onClick={toggleShowKey}>
+                {showKey ? <IconEyeClosed /> : <IconEye />}
+              </Button>
+              <Button variant="outline" color="dark" onClick={refreshApikey}>
+                <IconRefresh />
+              </Button>
+            </div>
+            <Space h="sm" />
+            <Title order={6}>Apikey:</Title>
+            <span className="max-w-20 break-all py-2 pr-10 text-gray-900 border rounded border-gray-300">
+              {showKey ? appState.apikey : "<hidden>"}
+            </span>
           </Grid.Col>
         </Grid>
       </form>
