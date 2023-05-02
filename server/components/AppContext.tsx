@@ -1,4 +1,4 @@
-import { AppState } from "@/interfaces/ui";
+import { AppState, AppStateCtx, Attempt } from "@/interfaces/ui";
 import React, {
   createContext,
   useState,
@@ -6,25 +6,27 @@ import React, {
   ReactNode,
   useEffect,
 } from "react";
-import {
-  Session,
-  useSession,
-  useSupabaseClient,
-} from "@supabase/auth-helpers-react";
+import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
 import fetch from "node-fetch";
-import { DetectApiRequest } from "@/interfaces/api";
 
-interface AppStateCtx {
-  appState: AppState;
-  loading: boolean;
-  refreshAppState: () => Promise<void>;
-  refreshApikey: () => Promise<void>;
-  submitPrompt: (prompt: DetectApiRequest) => Promise<void>;
-  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+import { Rebuff } from "@/lib/rebuff";
+
+function getHumanFriendlyTimestamp() {
+  const date = new Date();
+
+  // Get the date and time components from the date object
+  const year = date.getFullYear();
+  const month = date.toLocaleString("default", { month: "long" });
+  const day = date.getDate();
+  const hours = date.getHours();
+  const minutes = date.getMinutes();
+
+  // Build the timestamp string using the date and time components
+  const timestamp = `${month} ${day}, ${year} at ${hours}:${minutes}`;
+
+  return timestamp;
 }
-
 const initState = {
-  attempts: [],
   apikey: "",
   credits: {
     used: 0,
@@ -50,9 +52,15 @@ const initState = {
 export const AppContext = createContext<AppStateCtx>({
   appState: initState,
   loading: false,
+  attempts: [] as Attempt[],
   refreshAppState: async () => undefined,
   refreshApikey: async () => undefined,
-  submitPrompt: async (req: DetectApiRequest) => undefined,
+  submitPrompt: async (
+    user_input: string,
+    check_heuristic: boolean,
+    check_vector: boolean,
+    check_llm: boolean
+  ) => undefined,
   setLoading: () => null,
 });
 
@@ -60,6 +68,8 @@ export const AppContext = createContext<AppStateCtx>({
 export const AppProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [appState, setAppState] = useState<AppState>(initState);
   const [loading, setLoading] = useState<boolean>(false);
+  const [rebuff, setRebuff] = useState<Rebuff | null>(null);
+  const [attempts, setAttempts] = useState<Attempt[]>([] as Attempt[]);
   const session = useSession();
   const supabase = useSupabaseClient();
   useEffect(
@@ -76,10 +86,17 @@ export const AppProvider: FC<{ children: ReactNode }> = ({ children }) => {
       const response = await fetch("/api/account");
       const data = await response.json();
       setAppState(data);
+      refreshRebuff();
     } catch (error) {
       console.error(error);
     } finally {
       setLoading(false);
+    }
+  };
+  const refreshRebuff = () => {
+    if (appState.apikey) {
+      const rebuff = new Rebuff(appState.apikey, "");
+      setRebuff(rebuff);
     }
   };
   const refreshApikey = async () => {
@@ -90,24 +107,55 @@ export const AppProvider: FC<{ children: ReactNode }> = ({ children }) => {
       });
       const data = await response.json();
       setApikey(data.apikey);
+      refreshRebuff();
     } catch (error) {
       console.error(error);
     } finally {
       setLoading(false);
     }
   };
-  const submitPrompt = async (req: DetectApiRequest) => {
-    return;
+  const submitPrompt = async (
+    user_input: string,
+    check_heuristic: boolean = true,
+    check_vector: boolean = true,
+    check_llm: boolean = true
+  ) => {
+    if (!rebuff) {
+      throw new Error("Rebuff not initialized"); //should not happen
+    }
+    setLoading(true);
+    try {
+      const [metrics, is_injection] = await rebuff.is_injection_detected(
+        user_input,
+        0.75,
+        0.9,
+        0.9,
+        check_heuristic,
+        check_vector,
+        check_llm
+      );
+      setAttempts((prev) => [
+        ...prev,
+        {
+          timestamp: getHumanFriendlyTimestamp(),
+          input: user_input,
+          metrics,
+          is_injection,
+        },
+      ]);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const setApikey = (apikey: string) => {
     setAppState((prev) => ({ ...prev, apikey: apikey }));
   };
+  //TODO: To be implemented
   const setCredits = (credits: { used: number; total: number }) => {
     setAppState((prev) => ({ ...prev, credits: credits }));
-  };
-  const setAttempts = (attempts: any[]) => {
-    setAppState((prev) => ({ ...prev, attempts: attempts }));
   };
   const setStats = (stats: any) => {
     setAppState((prev) => ({ ...prev, stats: stats }));
@@ -118,6 +166,7 @@ export const AppProvider: FC<{ children: ReactNode }> = ({ children }) => {
       value={{
         appState,
         loading,
+        attempts,
         refreshAppState,
         refreshApikey,
         submitPrompt,

@@ -8,52 +8,88 @@ import {
   Box,
   Text,
 } from "@mantine/core";
-import { IconPrompt } from "@tabler/icons-react";
+import {
+  IconAlertCircle,
+  IconCircleCheck,
+  IconClock,
+  IconPrompt,
+} from "@tabler/icons-react";
 import { AppContext } from "./AppContext";
-
+function trimString(str: string, length: number = 15) {
+  if (str.length > length) {
+    str = str.slice(0, 15) + "...";
+  }
+  return str;
+}
+function formatDictionary(dictionary: Record<string, any>) {
+  let result = "";
+  for (const key in dictionary) {
+    if (dictionary.hasOwnProperty(key)) {
+      result += `${key}: ${dictionary[key]}\n`;
+    }
+  }
+  return result;
+}
 const ResultsViewer: FC = () => {
-  const { appState, loading } = useContext(AppContext);
-  const results = appState.attempts;
+  const { attempts, loading } = useContext(AppContext);
+  const rows = attempts.map((element, idx) => (
+    <tr key={idx}>
+      <td>
+        <IconPrompt className="pr-1" />
+        {element.timestamp}
+      </td>
+      <td alt-text={element.input}>{trimString(element.input)}</td>
+      <td>
+        {element.is_injection ? (
+          <IconAlertCircle size={48} strokeWidth={2} color={"#bf4040"} />
+        ) : (
+          <IconCircleCheck size={48} strokeWidth={2} color={"#2d863e"} />
+        )}
+      </td>
+      <td>
+        {element.metrics.runHeuristicCheck
+          ? element.metrics.heuristicScore
+          : "Not enabled"}
+      </td>
+      <td>
+        {element.metrics.runVectorCheck
+          ? formatDictionary(element.metrics.vectorScore)
+          : "Not enabled"}
+      </td>
+      <td>
+        {element.metrics.runLanguageModelCheck
+          ? element.metrics.modelScore
+          : "Not enabled"}
+      </td>
+    </tr>
+  ));
   return (
-    <Box>
+    <div>
       <Title order={2}>Results</Title>
       <Space h="md" />
       <LoadingOverlay visible={loading} />
-      {results.length === 0 && (
+      {attempts.length != 0 ? (
         <Text size="sm" color="gray">
           Submit a prompt to see results.
         </Text>
+      ) : (
+        <Table striped highlightOnHover>
+          <thead>
+            <tr>
+              <th>
+                <IconClock />
+              </th>
+              <th>Input</th>
+              <th>Injection Detected?</th>
+              <th>Heuristic Check</th>
+              <th>VectorDB Check</th>
+              <th>LLM Check</th>
+            </tr>
+          </thead>
+          <tbody>{rows}</tbody>
+        </Table>
       )}
-      <Tabs
-        color="dark"
-        variant="pills"
-        orientation="vertical"
-        defaultValue="0"
-      >
-        <Tabs.List>
-          {results.map((result, index) => (
-            <Tabs.Tab value={`${index}`} icon={<IconPrompt size="0.8rem" />}>
-              {`${result.vectorScore}`}
-            </Tabs.Tab>
-          ))}
-        </Tabs.List>
-        {results.map((result, index) => (
-          <Tabs.Panel value={`${index}`} pl="xs">
-            <Table withBorder>
-              <tbody>
-                {result &&
-                  Object.entries(result).map(([key, value]) => (
-                    <tr key={key}>
-                      <td>{key}</td>
-                      <td>{value.toString()}</td>
-                    </tr>
-                  ))}
-              </tbody>
-            </Table>
-          </Tabs.Panel>
-        ))}
-      </Tabs>
-    </Box>
+    </div>
   );
 };
 

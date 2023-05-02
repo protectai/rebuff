@@ -34,14 +34,12 @@ const Playground: FC = () => {
     e.preventDefault();
     setLoading(true);
     // Replace with the API endpoint URL
-    const apiUrl = "/api/detect";
-    await submitPrompt({
-      input_base64: btoa(form.values.prompt),
-      similarityThreshold: 0.7, //TODO: should we let users modify this?
-      runHeuristicCheck: form.values.heuristic,
-      runVectorCheck: form.values.vectordb,
-      runLanguageModelCheck: form.values.llm,
-    });
+    await submitPrompt(
+      form.values.prompt,
+      form.values.heuristic,
+      form.values.vectordb,
+      form.values.llm
+    );
   };
   const disabled = () => !session || loading;
 
@@ -114,7 +112,11 @@ const Playground: FC = () => {
               {...form.getInputProps("prompt")}
             ></Textarea>
             <Space h="md" />
-            <Button type="submit" color="dark" disabled={disabled()}>
+            <Button
+              type="submit"
+              color="dark"
+              disabled={disabled() || !form.values.prompt.length}
+            >
               Submit
             </Button>
             <Space h="sm" />

@@ -1,3 +1,4 @@
+const { describe, before, after, it } = require("mocha");
 const { use, Assertion, expect } = require("chai");
 const { Rebuff } = require("../lib/rebuff");
 const { DetectApiSuccessResponse } = require("../interfaces/api");
