@@ -14,10 +14,12 @@ const Navbar: FC = () => {
   const { appState, refreshApikey, setLoading } = useContext(AppContext);
   const [mobileMenuOpened, setMobileMenuOpened] = useState(false);
   const creditsAvailable = () => {
-    if (appState?.credits?.total ?? 0 <= 0) {
+    const totalCredits = appState?.credits?.total ?? 0;
+    const usedCredits = appState?.credits?.used ?? 0;
+    if (totalCredits <= 0) {
       return 0;
     }
-    return appState.credits.total - appState.credits.used;
+    return totalCredits - usedCredits;
   };
   return (
     <nav className="flex w-full flex-col md:flex-row">

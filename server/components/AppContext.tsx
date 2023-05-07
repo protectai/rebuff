@@ -83,7 +83,7 @@ export const AppProvider: FC<{ children: ReactNode }> = ({ children }) => {
     setLoading(true);
     try {
       const response = await fetch("/api/account");
-      const data = await response.json();
+      const data = (await response.json()) as AppState;
       setAppState(data);
     } catch (error) {
       console.error(error);

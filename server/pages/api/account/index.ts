@@ -1,15 +1,11 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import Cors from "cors";
-import { createClient } from "@supabase/supabase-js";
 import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
-import { AppState } from "@/interfaces/ui";
 import { generateApiKey } from "@/utils/apikeys";
 import {
   getUserAccountFromDb,
   refreshUserApikeyInDb,
-  createNewAccountInDb,
 } from "@/lib/account-helpers";
-import { supabaseAdminClient, supabaseAnonClient } from "@/lib/supabase";
 
 const cors = Cors({
   methods: ["POST", "GET", "HEAD"],
@@ -59,7 +55,7 @@ export default async function handler(
   // Get user
   const {
     data: { user },
-  } = await supabaseAnonClient.auth.getUser();
+  } = await supabase.auth.getUser();
 
   // If user is null, return not authenticated
   if (!user) {
