@@ -59,7 +59,7 @@ async function validateApiKey(apiKey: string): Promise<boolean> {
     const { data, error } = await supabaseAdminClient
       .from("accounts")
       .select()
-      .filter("apikey", "eq", apiKey);
+      .filter("user_apikey", "eq", apiKey);
 
     // If there is an error or the API key is not found, return false
     if (error || !data) {
