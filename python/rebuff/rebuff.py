@@ -58,10 +58,10 @@ class Rebuff:
             maxModelScore=max_model_score,
             maxHeuristicScore=max_heuristic_score
         )
-        request_json = request_data.json()
+
         response = requests.post(
             f"{self.api_url}/api/detect",
-            json=request_json,
+            json=request_data.dict(),
             headers=self._headers,
         )
 

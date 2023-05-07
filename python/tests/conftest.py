@@ -21,12 +21,11 @@ import pytest
 # Define a fixture to manage the Next.js server's lifecycle
 @pytest.fixture(scope="session")
 def server() -> Generator[None, None, None]:
-    # Check if the server is already running
+    # See if port 3000 is in use
     server_already_running = False
     try:
-        response = requests.get("http://localhost:3000")
-        if response.status_code == 200:
-            server_already_running = True
+        requests.get("http://localhost:3000")
+        server_already_running = True
     except requests.exceptions.ConnectionError:
         pass
 
