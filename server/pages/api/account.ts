@@ -14,9 +14,18 @@ const cors = Cors({
   methods: ["POST", "GET", "HEAD"],
 });
 
+<<<<<<< Updated upstream
 function generateApiKey(length: number = 16): string {
   const apiKey = randomBytes(length).toString("hex");
   return apiKey;
+=======
+function generateApiKey(length: number = 64): string {
+  // Generate half the number of bytes, since each byte is represented by two hexadecimal characters
+  const numBytes = Math.ceil(length / 2);
+  const apiKey = randomBytes(numBytes).toString("hex");
+  // Truncate the result to the desired length in case of odd length values
+  return apiKey.substring(0, length);
+>>>>>>> Stashed changes
 }
 
 function runMiddleware(
@@ -114,15 +123,16 @@ const refreshApikeyForUser = async (
 
 const getAppStateForUser = async (user: any): Promise<AppState> => {
   const appState = {} as AppState;
-  const { data, error } = await supabaseAdminClient
+  const { data: accountData, error: accountError } = await supabaseAdminClient
     .from("accounts")
     .select("apikey, credits_total_cents")
     .eq("id", user.id)
     .single();
-  if (error) {
-    console.error(`Error getting account for user ${user.id}`);
-    console.error(error);
+
+  if (accountError) {
+    console.error(accountError);
   }
+<<<<<<< Updated upstream
   if (!data || !data.apikey) {
     throw new Error("No account found");
   }
@@ -131,8 +141,35 @@ const getAppStateForUser = async (user: any): Promise<AppState> => {
   }
   appState.apikey = data.apikey;
   appState.credits = data.credits_total_cents;
+=======
+  if (!accountData) {
+    console.error(`Error getting account for user ${user.id}`);
+    throw new Error("No account found");
+  }
+
+  const apikey = accountData.apikey;
+
+  const { data: creditData, error: creditError } = await supabaseAdminClient
+    .from("credits")
+    .select("total_credits_cents")
+    .eq("id", user.id)
+    .single();
+
+  if (creditError) {
+    console.error(`Error getting account for user ${user.id}`);
+    console.error(creditError);
+  }
+
+  // Update the conditional check here
+  if (!creditData || typeof creditData.total_credits_cents === "undefined") {
+    throw new Error("No credits found");
+  }
+  appState.apikey = apikey;
+  appState.credits = creditData.total_credits_cents;
+>>>>>>> Stashed changes
   return appState;
 };
+
 const getAppStateFromDb = async (user: any): Promise<AppState> => {
   let appState = {} as AppState;
   try {

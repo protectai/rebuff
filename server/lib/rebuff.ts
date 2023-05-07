@@ -18,6 +18,9 @@ export interface DetectApiSuccessResponse {
   runHeuristicCheck: boolean;
   runVectorCheck: boolean;
   runLanguageModelCheck: boolean;
+  maxHeuristicScore: number;
+  maxVectorScore: number;
+  maxModelScore: number;
 }
 
 export interface DetectApiFailureResponse {

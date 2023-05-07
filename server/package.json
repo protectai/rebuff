@@ -30,6 +30,7 @@
     "@types/react": "18.0.28",
     "@types/react-dom": "18.0.11",
     "cors": "^2.8.5",
+    "crypto": "^1.0.1",
     "dayjs": "^1.11.7",
     "docker-names": "^1.2.1",
     "eslint": "8.34.0",
@@ -44,9 +45,9 @@
   },
   "devDependencies": {
     "@types/cors": "^2.8.12",
-    "@types/string-similarity": "^4.0.0",
     "@types/node": "^18.16.3",
     "@types/node-fetch": "^2.6.3",
+    "@types/string-similarity": "^4.0.0",
     "@types/uuid": "^9.0.1",
     "autoprefixer": "^10.4.14",
     "concurrently": "^7.6.0",

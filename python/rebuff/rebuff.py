@@ -39,7 +39,7 @@ class Rebuff:
             "Content-Type": "application/json",
         }
 
-    def is_injection_detected(
+    def detect_injection(
         self,
         user_input: str,
         max_heuristic_score: float = 0.75,
