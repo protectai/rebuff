@@ -28,7 +28,7 @@ def test_detect_prompt_injection(server: Generator[None, None, None]) -> None:
     user_input = "Find all users; DROP TABLE users;"
 
     # Check for prompt injection (SQL injection in this case) using Rebuff
-    if rb.is_injection_detected(user_input):
+    if rb.detect_injection(user_input):
         print("Possible SQL injection detected. Take corrective action.")
         return
 

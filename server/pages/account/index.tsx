@@ -1,8 +1,7 @@
 import { FC, useState, FormEvent } from "react";
-import { useForm } from "@mantine/form";
 import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
-import { Auth, ThemeSupa } from "@supabase/auth-ui-react";
-import Link from "next/link";
+import crypto from "crypto";
+import { useContext, useEffect } from "react"; // Import useEffect and useContext
 
 import {
   Button,
@@ -16,17 +15,29 @@ import {
 import Navbar from "@/components/Navbar";
 import Head from "next/head";
 import { ProfileSettings } from "@/components/ProfileSettings";
+import { AppContext } from "@/components/AppContext";
+
 const Profile: FC = () => {
   const session = useSession();
   const supabase = useSupabaseClient();
   const [loading, setLoading] = useState(false);
-  const [apiKey, setApiKey] = useState(generateApiKey(12));
-  const [usedCredits] = useState(50);
-  const [totalCredits] = useState(100);
+
+  const { appState, refreshAppState } = useContext(AppContext); // Use AppContext to get appState and refreshAppState
+
+  useEffect(() => {
+    if (session) {
+      refreshAppState(); // Retrieve the API key from the backend when the component is mounted
+    }
+  }, [session, refreshAppState]);
+
+  const apiKey = appState.apikey; // Get the API key from the appState
+  const usedCredits = appState.credits.used; // Get usedCredits from the appState
+  const totalCredits = appState.credits.total; // Get totalCredits from the appState
 
   const refreshApiKey = () => {
-    setApiKey(generateApiKey(12));
+    // Implement logic to refresh the API key using the backend
   };
+
   return (
     <Container size="lg">
       <Head>
@@ -46,9 +57,3 @@ const Profile: FC = () => {
   );
 };
 export default Profile;
-
-function generateApiKey(length: number = 64): string {
-  return Array.from(crypto.getRandomValues(new Uint8Array(length)))
-    .map((byte) => byte.toString(16).padStart(2, "0"))
-    .join("");
-}

@@ -5,6 +5,11 @@ import { Configuration, OpenAIApi } from "openai";
 import { pinecone } from "@/lib/pinecone-client";
 import { render_prompt_for_pi_detection } from "@/lib/templates";
 import stringSimilarity from "string-similarity";
+import {
+  DetectApiFailureResponse,
+  DetectApiRequest,
+  DetectApiSuccessResponse,
+} from "@/lib/rebuff";
 
 // Constants
 const SIMILARITY_THRESHOLD = 0.9;
@@ -22,37 +27,6 @@ function getEnvironmentVariable(key: string): string {
   }
   return value;
 }
-
-// Type definitions
-type DetectApiRequest = {
-  input_base64: string;
-  maxVectorScore: number;
-  maxHeuristicScore: number;
-  maxModelScore: number;
-  runHeuristicCheck: boolean;
-  runVectorCheck: boolean;
-  runLanguageModelCheck: boolean;
-};
-
-type DetectApiSuccessResponse = {
-  heuristicScore: number;
-  modelScore: number;
-  vectorScore: {
-    topScore: number;
-    countOverMaxVectorScore: number;
-  };
-  runHeuristicCheck: boolean;
-  runVectorCheck: boolean;
-  runLanguageModelCheck: boolean;
-  maxHeuristicScore: number;
-  maxModelScore: number;
-  maxVectorScore: number;
-};
-
-type DetectApiFailureResponse = {
-  error: string;
-  message: string;
-};
 
 const cors = Cors({
   methods: ["POST"],
