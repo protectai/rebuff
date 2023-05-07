@@ -319,18 +319,6 @@ export default async function handler(
         message: "Invalid API key",
       } as DetectApiFailureResponse);
     }
-
-    // ... (rest of the existing code)
-  } catch (error) {
-    console.error("Error in detect API:");
-    console.error(error);
-    console.trace();
-    return res.status(500).json({
-      error: "server_error",
-      message: "Internal server error",
-    } as DetectApiFailureResponse);
-  }
-  try {
     let {
       input_base64,
       runHeuristicCheck = true,
