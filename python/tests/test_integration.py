@@ -18,7 +18,7 @@ from rebuff import DetectApiSuccessResponse, Rebuff
 @pytest.mark.usefixtures("server")
 def test_integration(server: Generator[None, None, None]) -> None:
     # Initialize the Rebuff SDK with a real API token and URL
-    rb = Rebuff(api_token="fake_token", api_url="http://localhost:3000")
+    rb = Rebuff(api_token="12345", api_url="http://localhost:3000")
 
     # Test the is_injection_detected method
     user_input = (

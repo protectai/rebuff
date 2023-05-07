@@ -38,9 +38,9 @@ def server() -> Generator[None, None, None]:
             check=True,
         ).stdout.strip()
 
-        # Start the Next.js server as a subprocess
+        # Start the Next.js server as a subprocess (set MASTER_API_KEY env var to 12345)
         server = subprocess.Popen(
-            ["npm", "run", "dev"], cwd=f"{git_root}/server"
+            ["npm", "run", "dev"], cwd=f"{git_root}/server", env=dict(os.environ, MASTER_API_KEY="12345")
         )
 
         # Wait for the server to start (adjust the sleep time as needed)

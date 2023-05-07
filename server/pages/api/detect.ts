@@ -52,22 +52,27 @@ const openai = new OpenAIApi(
   new Configuration({ apiKey: getEnvironmentVariable("OPENAI_API_KEY") })
 );
 
-async function validateApiKey(apiKey: string): Promise<boolean> {
+async function isApiKeyValidAndHasCredits(apiKey: string): Promise<boolean> {
+  // Check if the provided API key is the master key (used during testing)
+  if (process.env.MASTER_API_KEY && apiKey === process.env.MASTER_API_KEY) {
+    // Always allow this user to proceed
+    return true;
+  }
+
   try {
-    // Query the database to check if the API key exists and is valid
-    // Replace 'api_keys' with the name of the table that stores API keys
     const { data, error } = await supabaseAdminClient
       .from("accounts")
-      .select()
-      .filter("user_apikey", "eq", apiKey);
+      .select("credits_total_cents")
+      .filter("user_apikey", "eq", apiKey)
+      .single();
 
-    // If there is an error or the API key is not found, return false
     if (error || !data) {
+      // API key not found
       return false;
     }
 
-    // If the API key is found, return true
-    return true;
+    // Check if the user has enough credits
+    return data.credits_total_cents > 0;
   } catch (error) {
     console.error("Error in validateApiKey:", error);
     return false;
@@ -312,13 +317,15 @@ export default async function handler(
     }
 
     // Validate the API key
-    const isValidApiKey = await validateApiKey(apiKey);
+    const isValidApiKey = await isApiKeyValidAndHasCredits(apiKey);
+
     if (!isValidApiKey) {
       return res.status(401).json({
         error: "unauthorized",
         message: "Invalid API key",
       } as DetectApiFailureResponse);
     }
+
     let {
       input_base64,
       runHeuristicCheck = true,
