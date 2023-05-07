@@ -59,7 +59,7 @@ const Playground: FC = () => {
     <div>
       <div className="w-full">
         <Space h="lg" />
-        <Title order={2}>Playground</Title>
+        {/*<Title order={2}>Playground</Title>*/}
         <Space h="md" />
         {session ? (
           <Alert

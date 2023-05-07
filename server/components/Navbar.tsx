@@ -5,6 +5,8 @@ import Link from "next/link";
 import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
 import { AppContext } from "./AppContext";
 import ApikeyDisplay from "./ApikeyDisplay";
+import { Image } from "@mantine/core";
+import { Group, Button } from "@mantine/core";
 
 const Navbar: FC = () => {
   const supabase = useSupabaseClient();
@@ -21,10 +23,24 @@ const Navbar: FC = () => {
     <nav className="flex w-full flex-col md:flex-row">
       <div className="flex w-full justify-between md:justify-center md:w-fit">
         <Link className="no-underline text-black" href="/">
-          <Title order={4}>Rebuff</Title>
-          <Text fz="sm" c="dimmed">
-            Prompt injection detection API for LLM apps
-          </Text>
+          <Group spacing="lg">
+            <Text fz="lg">
+              {" "}
+              <Image
+                maw={100}
+                mx="auto"
+                radius="md"
+                src="https://camo.githubusercontent.com/9ff0256fdbfa8dbbc8e61201bf9ccc34f985c77e690967052d14b61eae6fee24/68747470733a2f2f692e696d6775722e636f6d2f62366770574f422e706e67"
+                style={{ clipPath: "inset(5% 15% 5% 15%)" }} // Apply cropping here
+              />
+            </Text>
+            <Text>
+              <Title order={2} size={"xx-large"}>
+                Rebuff Playground
+              </Title>
+              <Text fz="md">Prompt Injection Detector</Text>
+            </Text>
+          </Group>
         </Link>
         <button
           onClick={() => setMobileMenuOpened(!mobileMenuOpened)}
@@ -41,23 +57,13 @@ const Navbar: FC = () => {
         <div className="flex items-center justify-start md:justify-center gap-2 flex-grow">
           {session && (
             <>
-              <ApikeyDisplay
-                apiKey={appState?.apikey ?? ""}
-                onRefresh={refreshApikey}
-              />
-              <Text className="font-semibold text-sm">
+              <Text className="font-semibold text-sm  ml-auto mr-4">
                 Credits: ${`${creditsAvailable()}`}
               </Text>
             </>
           )}
         </div>
-        <div className="flex gap-2">
-          <Link className="text-black no-underline" href="/account">
-            <div className="flex flex-row items-center">
-              <IconHelp />
-              <Text className="font-semibold text-sm">Docs</Text>
-            </div>
-          </Link>
+        <div className="flex gap-2 items-end  md:justify-end ">
           {session && (
             <Text
               className="text-black no-underline"
