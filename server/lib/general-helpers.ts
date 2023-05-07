@@ -5,3 +5,12 @@ export function getEnvironmentVariable(key: string): string {
   }
   return value;
 }
+
+// Normalize a string by converting to lowercase and removing extra spaces and punctuation
+export function normalizeString(str: string): string {
+  return str
+    .toLowerCase()
+    .replace(/[^\w\s]|_/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}

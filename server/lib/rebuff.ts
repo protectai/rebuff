@@ -29,9 +29,9 @@ export interface DetectApiFailureResponse {
 }
 
 export class Rebuff {
-  private api_token: string;
-  private api_url: string;
-  private headers: Record<string, string>;
+  private readonly api_token: string;
+  private readonly api_url: string;
+  private readonly headers: Record<string, string>;
 
   constructor(api_token: string, api_url: string = "https://rebuff.ai") {
     this.api_token = api_token;

@@ -57,7 +57,7 @@ const Playground: FC = () => {
   ];
   return (
     <div>
-      <div className="w-full">
+      <div className="w-full" key={"what"}>
         <Space h="lg" />
         {/*<Title order={2}>Playground</Title>*/}
         <Space h="md" />
@@ -162,7 +162,7 @@ const Playground: FC = () => {
             <Space h="sm" />
             <div className="flex flex-row flex-wrap gap-2">
               {cannedPrompts.map((prompt) => (
-                <div>
+                <div key={prompt}>
                   <button
                     className="border-none px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 text-sm font-medium rounded-full cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                     title={prompt}

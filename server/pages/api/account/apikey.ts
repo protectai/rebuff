@@ -3,11 +3,7 @@ import Cors from "cors";
 import { createClient } from "@supabase/supabase-js";
 import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
 import { generateApiKey } from "@/utils/apikeys";
-
-const supabaseAdminClient = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL || "",
-  process.env.SUPABASE_SERVICE_KEY || ""
-);
+import { supabaseAdminClient, supabaseAnonClient } from "@/lib/supabase";
 
 const cors = Cors({
   methods: ["POST", "GET", "HEAD"],
@@ -39,6 +35,7 @@ export default async function handler(
       .status(405)
       .json({ error: "not_allowed", message: "Method not allowed" });
   }
+
   // Create authenticated Supabase Client
   const supabase = createServerSupabaseClient({ req, res });
 

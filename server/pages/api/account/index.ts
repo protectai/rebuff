@@ -4,11 +4,12 @@ import { createClient } from "@supabase/supabase-js";
 import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
 import { AppState } from "@/interfaces/ui";
 import { generateApiKey } from "@/utils/apikeys";
-
-const supabaseAdminClient = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL || "",
-  process.env.SUPABASE_SERVICE_KEY || ""
-);
+import {
+  getUserAccountFromDb,
+  refreshUserApikeyInDb,
+  createNewAccountInDb,
+} from "@/lib/account-helpers";
+import { supabaseAdminClient, supabaseAnonClient } from "@/lib/supabase";
 
 const cors = Cors({
   methods: ["POST", "GET", "HEAD"],
@@ -40,6 +41,7 @@ export default async function handler(
       .status(405)
       .json({ error: "not_allowed", message: "Method not allowed" });
   }
+
   // Create authenticated Supabase Client
   const supabase = createServerSupabaseClient({ req, res });
 
@@ -57,7 +59,7 @@ export default async function handler(
   // Get user
   const {
     data: { user },
-  } = await supabase.auth.getUser();
+  } = await supabaseAnonClient.auth.getUser();
 
   // If user is null, return not authenticated
   if (!user) {
@@ -95,61 +97,3 @@ export default async function handler(
   console.log(req.method, req.query.slug);
   return res.status(404);
 }
-
-const refreshUserApikeyInDb = async (
-  user: any,
-  apikey: string
-): Promise<void> => {
-  const { data, error } = await supabaseAdminClient
-    .from("accounts")
-    .update({ user_apikey: apikey })
-    .eq("id", user.id);
-  if (error) {
-    console.error(`Error updating apikey for user ${user.id}`);
-    console.error(error);
-    throw new Error("Error updating apikey");
-  }
-};
-
-const getUserAccountFromDb = async (user: any): Promise<AppState> => {
-  const { data, error } = await supabaseAdminClient
-    .from("accounts")
-    .select("user_apikey, credits_total_cents")
-    .eq("id", user.id)
-    .single();
-
-  if (error && error?.code === "PGRST116") {
-    console.log("No account found for user, creating new account");
-    return await createNewAccountInDb(user);
-  }
-  if (error) {
-    console.error("Error getting account for user");
-    console.error(error);
-    throw error;
-  }
-  return {
-    apikey: data.user_apikey,
-    credits: data.credits_total_cents,
-  } as AppState;
-};
-
-const createNewAccountInDb = async (user: any): Promise<AppState> => {
-  const { data, error } = await supabaseAdminClient
-    .from("accounts")
-    .insert({
-      id: user.id,
-      user_apikey: generateApiKey(),
-      name: user.email,
-      credits_total_cents: 1000,
-    })
-    .select("*");
-  if (error) {
-    console.error(`Error creating account for user ${user.id}`);
-    console.error(error);
-    throw error;
-  }
-  return {
-    apikey: data[0].user_apikey,
-    credits: data[0].credits_total_cents,
-  } as AppState;
-};
