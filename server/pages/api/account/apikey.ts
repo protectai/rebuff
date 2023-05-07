@@ -82,7 +82,7 @@ const refreshUserApikeyInDb = async (
 ): Promise<void> => {
   const { data, error } = await supabaseAdminClient
     .from("accounts")
-    .update({ apikey })
+    .update({ user_apikey: apikey })
     .eq("id", user.id);
   if (error) {
     console.error(`Error updating apikey for user ${user.id}`);

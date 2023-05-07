@@ -52,6 +52,28 @@ const openai = new OpenAIApi(
   new Configuration({ apiKey: getEnvironmentVariable("OPENAI_API_KEY") })
 );
 
+async function validateApiKey(apiKey: string): Promise<boolean> {
+  try {
+    // Query the database to check if the API key exists and is valid
+    // Replace 'api_keys' with the name of the table that stores API keys
+    const { data, error } = await supabaseAdminClient
+      .from("accounts")
+      .select()
+      .filter("apikey", "eq", apiKey);
+
+    // If there is an error or the API key is not found, return false
+    if (error || !data) {
+      return false;
+    }
+
+    // If the API key is found, return true
+    return true;
+  } catch (error) {
+    console.error("Error in validateApiKey:", error);
+    return false;
+  }
+}
+
 async function detectPiUsingVectorDatabase(
   input: string,
   similarityThreshold: number
@@ -275,6 +297,37 @@ export default async function handler(
     return res.status(405).json({
       error: "not_allowed",
       message: "Method not allowed",
+    } as DetectApiFailureResponse);
+  }
+  try {
+    // Extract the API key from the Authorization header
+    const apiKey = req.headers.authorization?.split(" ")[1];
+
+    // Assert that the API key is present
+    if (!apiKey) {
+      return res.status(401).json({
+        error: "unauthorized",
+        message: "Missing API key",
+      } as DetectApiFailureResponse);
+    }
+
+    // Validate the API key
+    const isValidApiKey = await validateApiKey(apiKey);
+    if (!isValidApiKey) {
+      return res.status(401).json({
+        error: "unauthorized",
+        message: "Invalid API key",
+      } as DetectApiFailureResponse);
+    }
+
+    // ... (rest of the existing code)
+  } catch (error) {
+    console.error("Error in detect API:");
+    console.error(error);
+    console.trace();
+    return res.status(500).json({
+      error: "server_error",
+      message: "Internal server error",
     } as DetectApiFailureResponse);
   }
   try {

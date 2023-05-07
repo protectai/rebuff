@@ -102,7 +102,7 @@ const refreshUserApikeyInDb = async (
 ): Promise<void> => {
   const { data, error } = await supabaseAdminClient
     .from("accounts")
-    .update({ apikey })
+    .update({ user_apikey: apikey })
     .eq("id", user.id);
   if (error) {
     console.error(`Error updating apikey for user ${user.id}`);
@@ -114,7 +114,7 @@ const refreshUserApikeyInDb = async (
 const getUserAccountFromDb = async (user: any): Promise<AppState> => {
   const { data, error } = await supabaseAdminClient
     .from("accounts")
-    .select("apikey, credits_total_cents")
+    .select("user_apikey, credits_total_cents")
     .eq("id", user.id)
     .single();
 
@@ -128,7 +128,7 @@ const getUserAccountFromDb = async (user: any): Promise<AppState> => {
     throw error;
   }
   return {
-    apikey: data.apikey,
+    apikey: data.user_apikey,
     credits: data.credits_total_cents,
   } as AppState;
 };
@@ -138,7 +138,7 @@ const createNewAccountInDb = async (user: any): Promise<AppState> => {
     .from("accounts")
     .insert({
       id: user.id,
-      apikey: generateApiKey(),
+      user_apikey: generateApiKey(),
       name: user.email,
       credits_total_cents: 1000,
     })
@@ -149,7 +149,7 @@ const createNewAccountInDb = async (user: any): Promise<AppState> => {
     throw error;
   }
   return {
-    apikey: data[0].apikey,
+    apikey: data[0].user_apikey,
     credits: data[0].credits_total_cents,
   } as AppState;
 };
