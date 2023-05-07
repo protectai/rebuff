@@ -9,23 +9,25 @@ interface Props {
 
 const Layout = ({ children }: Props) => {
   return (
-    <div className="min-h-screen p-4 flex flex-col justify-center items-center max-w-screen-lg mx-auto">
+    <>
       <Head>
         <title>Rebuff Playground</title>
         <meta property="og:title" content="Rebuff Playground" key="title" />
       </Head>
-      <Navbar />
-      <main className="flex-grow w-full">{children}</main>
-      <footer className="w-full  text-gray-500">
-        <div className="flex justify-between items-center">
-          <div className="text-left">© {new Date().getFullYear()}</div>
-          <div className="flex flex-row justify-right items-center">
-            <div className="text-sm">Questions? Get in touch.</div>
-            <SocialIcons />
+      <div className="min-h-screen p-4 flex flex-col justify-center items-center max-w-screen-xl mx-auto">
+        <Navbar />
+        <main className="flex-grow w-full">{children}</main>
+        <footer className="w-full text-gray-500">
+          <div className="flex justify-between items-center">
+            <div className="text-left">© {new Date().getFullYear()}</div>
+            <div className="flex flex-row justify-right items-center">
+              <div className="text-sm">Questions? Get in touch.</div>
+              <SocialIcons />
+            </div>
           </div>
-        </div>
-      </footer>
-    </div>
+        </footer>
+      </div>
+    </>
   );
 };
 export default Layout;

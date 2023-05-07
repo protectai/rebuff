@@ -68,7 +68,6 @@ export const AppContext = createContext<AppStateCtx>({
 export const AppProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [appState, setAppState] = useState<AppState>(initState);
   const [loading, setLoading] = useState<boolean>(false);
-  const [rebuff, setRebuff] = useState<Rebuff | null>(null);
   const [attempts, setAttempts] = useState<Attempt[]>([] as Attempt[]);
   const session = useSession();
   const supabase = useSupabaseClient();
@@ -93,12 +92,6 @@ export const AppProvider: FC<{ children: ReactNode }> = ({ children }) => {
       setLoading(false);
     }
   };
-  const refreshRebuff = () => {
-    if (appState.apikey) {
-      const rebuff = new Rebuff(appState.apikey, "");
-      setRebuff(rebuff);
-    }
-  };
   const refreshApikey = async () => {
     setLoading(true);
     try {
@@ -107,7 +100,6 @@ export const AppProvider: FC<{ children: ReactNode }> = ({ children }) => {
       });
       const data = await response.json();
       setApikey(data.apikey);
-      refreshRebuff();
     } catch (error) {
       console.error(error);
     } finally {
@@ -120,11 +112,10 @@ export const AppProvider: FC<{ children: ReactNode }> = ({ children }) => {
     check_vector: boolean = true,
     check_llm: boolean = true
   ) => {
-    if (!rebuff) {
-      throw new Error("Rebuff not initialized"); //should not happen
-    }
     setLoading(true);
     try {
+      if (!appState.apikey) throw new Error("No API key"); //should not happen
+      const rebuff = new Rebuff(appState.apikey, "");
       const [metrics, is_injection] = await rebuff.is_injection_detected(
         user_input,
         0.75,

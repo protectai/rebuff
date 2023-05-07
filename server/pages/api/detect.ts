@@ -277,73 +277,83 @@ export default async function handler(
       message: "Method not allowed",
     } as DetectApiFailureResponse);
   }
+  try {
+    let {
+      input_base64,
+      runHeuristicCheck = true,
+      runVectorCheck = true,
+      runLanguageModelCheck = true,
+      maxHeuristicScore = null,
+      maxModelScore = null,
+      maxVectorScore = null,
+    } = JSON.parse(req.body) as DetectApiRequest;
 
-  let {
-    input_base64,
-    runHeuristicCheck = true,
-    runVectorCheck = true,
-    runLanguageModelCheck = true,
-    maxHeuristicScore = null,
-    maxModelScore = null,
-    maxVectorScore = null,
-  } = JSON.parse(req.body) as DetectApiRequest;
+    if (
+      maxHeuristicScore === null ||
+      maxModelScore === null ||
+      maxVectorScore === null
+    ) {
+      return res.status(400).json({
+        error: "bad_request",
+        message:
+          "maxHeuristicScore, maxModelScore, and maxVectorScore are required",
+      } as DetectApiFailureResponse);
+    }
 
-  if (
-    maxHeuristicScore === null ||
-    maxModelScore === null ||
-    maxVectorScore === null
-  ) {
-    return res.status(400).json({
-      error: "bad_request",
-      message:
-        "maxHeuristicScore, maxModelScore, and maxVectorScore are required",
+    runHeuristicCheck = runHeuristicCheck === null ? true : runHeuristicCheck;
+    runVectorCheck = runVectorCheck === null ? true : runVectorCheck;
+    runLanguageModelCheck =
+      runLanguageModelCheck === null ? true : runLanguageModelCheck;
+
+    if (!input_base64) {
+      return res.status(400).json({
+        error: "bad_request",
+        message: "input_base64 is required",
+      } as DetectApiFailureResponse);
+    }
+
+    // Create a buffer from the hexadecimal string
+    const userInputBuffer = Buffer.from(input_base64, "hex");
+
+    // Decode the buffer to a UTF-8 string
+    const inputText = userInputBuffer.toString("utf-8");
+
+    const heuristicScore = runHeuristicCheck
+      ? detectPromptInjectionUsingHeuristicOnInput(inputText)
+      : 0;
+
+    const modelScore = runLanguageModelCheck
+      ? parseFloat(
+          (
+            await callOpenAiToDetectPI(
+              render_prompt_for_pi_detection(inputText)
+            )
+          ).completion
+        )
+      : 0;
+
+    const vectorScore = runVectorCheck
+      ? await detectPiUsingVectorDatabase(inputText, maxVectorScore)
+      : { topScore: 0, countOverMaxVectorScore: 0 };
+
+    const response: DetectApiSuccessResponse = {
+      heuristicScore,
+      modelScore,
+      vectorScore,
+      runHeuristicCheck,
+      runVectorCheck,
+      runLanguageModelCheck,
+      maxHeuristicScore,
+      maxVectorScore,
+      maxModelScore,
+    };
+
+    res.status(200).json(response);
+  } catch (error) {
+    console.error("Error in detect:", error);
+    return res.status(500).json({
+      error: "server_error",
+      message: "Internal server error",
     } as DetectApiFailureResponse);
   }
-
-  runHeuristicCheck = runHeuristicCheck === null ? true : runHeuristicCheck;
-  runVectorCheck = runVectorCheck === null ? true : runVectorCheck;
-  runLanguageModelCheck =
-    runLanguageModelCheck === null ? true : runLanguageModelCheck;
-
-  if (!input_base64) {
-    return res.status(400).json({
-      error: "bad_request",
-      message: "input_base64 is required",
-    } as DetectApiFailureResponse);
-  }
-
-  // Create a buffer from the hexadecimal string
-  const userInputBuffer = Buffer.from(input_base64, "hex");
-
-  // Decode the buffer to a UTF-8 string
-  const inputText = userInputBuffer.toString("utf-8");
-
-  const heuristicScore = runHeuristicCheck
-    ? detectPromptInjectionUsingHeuristicOnInput(inputText)
-    : 0;
-
-  const modelScore = runLanguageModelCheck
-    ? parseFloat(
-        (await callOpenAiToDetectPI(render_prompt_for_pi_detection(inputText)))
-          .completion
-      )
-    : 0;
-
-  const vectorScore = runVectorCheck
-    ? await detectPiUsingVectorDatabase(inputText, maxVectorScore)
-    : { topScore: 0, countOverMaxVectorScore: 0 };
-
-  const response: DetectApiSuccessResponse = {
-    heuristicScore,
-    modelScore,
-    vectorScore,
-    runHeuristicCheck,
-    runVectorCheck,
-    runLanguageModelCheck,
-    maxHeuristicScore,
-    maxVectorScore,
-    maxModelScore,
-  };
-
-  res.status(200).json(response);
 }
