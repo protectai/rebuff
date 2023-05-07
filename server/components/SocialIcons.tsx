@@ -10,7 +10,7 @@ const SocialIcons: FC = () => {
     <div className="px-2 flex gap-2 justify-center">
       <style>{hoverStyle}</style>
       <a
-        href="https://twitter.com/woop"
+        href="https://twitter.com/rebuff_ai"
         alt-text="Twitter"
         target="_blank"
         className="text-black inline-block hover:text-blue-500"
@@ -26,7 +26,7 @@ const SocialIcons: FC = () => {
         </svg>
       </a>
       <a
-        href="https://github.com/rebuff"
+        href="https://github.com/woop/rebuff"
         alt-text="Github"
         target="_blank"
         className="text-black inline-block hover:text-blue-500"
@@ -42,7 +42,7 @@ const SocialIcons: FC = () => {
         </svg>
       </a>
       <a
-        href="https://discord.com"
+        href="https://discord.gg/yRxggrrx"
         alt-text="Discord"
         target="_blank"
         className="text-black inline-block hover:text-blue-500"

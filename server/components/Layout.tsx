@@ -3,7 +3,6 @@ import Navbar from "./Navbar";
 import React, { ReactNode, useContext } from "react";
 import SocialIcons from "./SocialIcons";
 import ApikeyDisplay from "@/components/ApikeyDisplay";
-import { Text } from "@mantine/core";
 import { useSession } from "@supabase/auth-helpers-react";
 import { AppContext } from "@/components/AppContext";
 
