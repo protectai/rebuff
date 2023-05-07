@@ -1,0 +1,5 @@
+[[redirects]]
+from = "https://rebuff.ai/*"
+to = "https://playground.rebuff.ai/:splat"
+status = 301
+force = true

@@ -23,6 +23,11 @@
   [Contributing](#contributing)
 
 </div>
+<div align="center">
+
+[![playground](https://api.netlify.com/api/v1/badges/3ed260cd-09cd-467f-9771-c4e99290bd1c/deploy-status)](https://playground.rebuff.ai)
+
+</div>
 
 ## Features
 
