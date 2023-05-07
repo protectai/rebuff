@@ -85,7 +85,6 @@ export const AppProvider: FC<{ children: ReactNode }> = ({ children }) => {
       const response = await fetch("/api/account");
       const data = await response.json();
       setAppState(data);
-      refreshRebuff();
     } catch (error) {
       console.error(error);
     } finally {

@@ -286,7 +286,7 @@ export default async function handler(
       maxHeuristicScore = null,
       maxModelScore = null,
       maxVectorScore = null,
-    } = JSON.parse(req.body) as DetectApiRequest;
+    } = req.body;
 
     if (
       maxHeuristicScore === null ||
@@ -350,7 +350,9 @@ export default async function handler(
 
     res.status(200).json(response);
   } catch (error) {
-    console.error("Error in detect:", error);
+    console.error("Error in detect API:");
+    console.error(error);
+    console.trace();
     return res.status(500).json({
       error: "server_error",
       message: "Internal server error",

@@ -33,13 +33,21 @@ const Playground: FC = () => {
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
-    // Replace with the API endpoint URL
-    await submitPrompt(
-      form.values.prompt,
-      form.values.heuristic,
-      form.values.vectordb,
-      form.values.llm
-    );
+    try {
+      await submitPrompt(
+        form.values.prompt,
+        form.values.heuristic,
+        form.values.vectordb,
+        form.values.llm
+      );
+    } catch (error) {
+      console.error(error);
+      window.alert(
+        "We're sorry, an error occurred submitting your prompt. Please try again later."
+      );
+    } finally {
+      setLoading(false);
+    }
   };
   const disabled = () => !session || loading;
   const cannedPrompts = [

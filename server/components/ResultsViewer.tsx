@@ -47,16 +47,15 @@ const ResultsViewer: FC = () => {
         )}
       </td>
       <td>
+        <Text>Heuristics</Text>
         {element.metrics.runHeuristicCheck
           ? element.metrics.heuristicScore
           : "Not enabled"}
-      </td>
-      <td>
+        <Text>VectorDB</Text>
         {element.metrics.runVectorCheck
           ? formatDictionary(element.metrics.vectorScore)
           : "Not enabled"}
-      </td>
-      <td>
+        <Text>LLM</Text>
         {element.metrics.runLanguageModelCheck
           ? element.metrics.modelScore
           : "Not enabled"}
@@ -68,7 +67,7 @@ const ResultsViewer: FC = () => {
       <Title order={2}>Results</Title>
       <Space h="md" />
       <LoadingOverlay visible={loading} />
-      {attempts.length != 0 ? (
+      {attempts.length == 0 ? (
         <Text size="sm" color="gray">
           Submit a prompt to see results.
         </Text>
@@ -79,11 +78,9 @@ const ResultsViewer: FC = () => {
               <th>
                 <IconClock />
               </th>
-              <th>Input</th>
+              <th>Prompt</th>
               <th>Injection Detected?</th>
-              <th>Heuristic Check</th>
-              <th>VectorDB Check</th>
-              <th>LLM Check</th>
+              <th>Checks</th>
             </tr>
           </thead>
           <tbody>{rows}</tbody>
