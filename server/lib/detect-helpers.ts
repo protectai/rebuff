@@ -95,7 +95,9 @@ export async function detectPiUsingVectorDatabase(
     });
 
     // Get Pinecone Index
-    const index = (await pinecone).Index("pig-index");
+    const index = (await pinecone).Index(
+      getEnvironmentVariable("PINECONE_INDEX_NAME")
+    );
 
     // Query similar embeddings
     const queryResponse = await index.query({
