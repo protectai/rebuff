@@ -5,7 +5,7 @@ import { supabaseAdminClient } from "@/lib/supabase";
 export const getUserAccountFromDb = async (user: any): Promise<AppState> => {
   const { data, error } = await supabaseAdminClient
     .from("accounts")
-    .select("user_apikey, credits_total_cents")
+    .select("user_apikey, credits_total_cents_10k")
     .eq("id", user.id)
     .single();
 
@@ -20,7 +20,7 @@ export const getUserAccountFromDb = async (user: any): Promise<AppState> => {
   }
   return {
     apikey: data.user_apikey,
-    credits: data.credits_total_cents,
+    credits: data.credits_total_cents_10k,
   } as AppState;
 };
 
@@ -31,7 +31,7 @@ export const createNewAccountInDb = async (user: any): Promise<AppState> => {
       id: user.id,
       user_apikey: generateApiKey(),
       name: user.email,
-      credits_total_cents: 1000,
+      credits_total_cents_10k: 1000,
     })
     .select("*");
   if (error) {
@@ -41,7 +41,7 @@ export const createNewAccountInDb = async (user: any): Promise<AppState> => {
   }
   return {
     apikey: data[0].user_apikey,
-    credits: data[0].credits_total_cents,
+    credits: data[0].credits_total_cents_10k,
   } as AppState;
 };
 

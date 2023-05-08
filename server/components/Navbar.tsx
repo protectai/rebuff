@@ -1,12 +1,9 @@
 import { FC, useContext, useState } from "react";
-import { Title, Text } from "@mantine/core";
-import { IconHelp, IconLogout, IconMenu2, IconX } from "@tabler/icons-react";
+import { Group, Image, Text, Title } from "@mantine/core";
+import { IconLogout, IconMenu2, IconX } from "@tabler/icons-react";
 import Link from "next/link";
 import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
 import { AppContext } from "./AppContext";
-import ApikeyDisplay from "./ApikeyDisplay";
-import { Image } from "@mantine/core";
-import { Group, Button } from "@mantine/core";
 
 const Navbar: FC = () => {
   const supabase = useSupabaseClient();
@@ -14,13 +11,12 @@ const Navbar: FC = () => {
   const { appState, refreshApikey, setLoading } = useContext(AppContext);
   const [mobileMenuOpened, setMobileMenuOpened] = useState(false);
   const creditsAvailable = () => {
-    const totalCredits = appState?.credits?.total ?? 0;
-    const usedCredits = appState?.credits?.used ?? 0;
-    if (totalCredits <= 0) {
-      return 0;
-    }
-    return totalCredits - usedCredits;
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+    }).format(appState.credits / 1000.0);
   };
+
   return (
     <nav className="flex w-full flex-col md:flex-row">
       <div className="flex w-full justify-between md:justify-center md:w-fit">
@@ -60,7 +56,7 @@ const Navbar: FC = () => {
           {session && (
             <>
               <Text className="font-semibold text-sm  ml-auto mr-4">
-                Credits: ${`${creditsAvailable()}`}
+                Credits: {`${creditsAvailable()}`}
               </Text>
             </>
           )}

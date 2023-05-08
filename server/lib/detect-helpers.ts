@@ -3,7 +3,7 @@ import { pinecone } from "@/lib/pinecone-client";
 import stringSimilarity from "string-similarity";
 import { supabaseAdminClient } from "@/lib/supabase";
 import { openai } from "@/lib/openai";
-import { normalizeString } from "@/lib/general-helpers";
+import { getEnvironmentVariable, normalizeString } from "@/lib/general-helpers";
 
 export function runMiddleware(
   req: NextApiRequest,
@@ -20,34 +20,67 @@ export function runMiddleware(
     });
   });
 }
+async function deductCredits(
+  apiKey: string,
+  billingRate: number
+): Promise<{ success: boolean; message: string }> {
+  let { data, error } = await supabaseAdminClient.rpc("deduct_rate", {
+    input_api_key: apiKey,
+    rate: billingRate,
+  });
 
-export async function isApiKeyValidAndHasCredits(
-  apiKey: string
-): Promise<boolean> {
-  // Check if the provided API key is the master key (used during testing)
-  if (process.env.MASTER_API_KEY && apiKey === process.env.MASTER_API_KEY) {
-    // Always allow this user to proceed
-    return true;
+  if (error) {
+    console.log("Error in deduct_rate:", error);
+    return {
+      success: false,
+      message: "Invalid API key or insufficient credits",
+    };
   }
 
-  try {
-    const { data, error } = await supabaseAdminClient
-      .from("accounts")
-      .select("credits_total_cents")
-      .filter("user_apikey", "eq", apiKey)
-      .single();
+  if (!data) {
+    console.log("Error in deduct_rate: no data returned");
+    return { success: false, message: "Error processing request" };
+  }
 
-    if (error || !data) {
-      // API key not found
-      return false;
+  if (data <= 0) {
+    console.log("Error in deduct_rate: no credits left");
+    return { success: false, message: "Insufficient credits" };
+  }
+
+  return { success: true, message: "API key accepted and credits deducted" };
+}
+
+export async function checkApiKeyAndReduceBalance(
+  apiKey: string
+): Promise<{ success: boolean; message: string }> {
+  const billingRate = parseInt(getEnvironmentVariable("BILLING_RATE_INT_10K"));
+
+  // Get the master credit amount from the environment variable
+  if (process.env.MASTER_API_KEY && apiKey === process.env.MASTER_API_KEY) {
+    if (!process.env.MASTER_CREDIT_AMOUNT) {
+      return {
+        success: false,
+        message: "Master API key defined but no master credit amount",
+      };
     }
 
-    // Check if the user has enough credits
-    return data.credits_total_cents > 0;
-  } catch (error) {
-    console.error("Error in validateApiKey:", error);
-    return false;
+    const masterCreditAmount = parseInt(
+      getEnvironmentVariable("MASTER_CREDIT_AMOUNT")
+    );
+
+    if (masterCreditAmount >= billingRate) {
+      return { success: true, message: "Master API key accepted" };
+    }
+
+    if (masterCreditAmount < billingRate) {
+      return {
+        success: false,
+        message: "Master API key has insufficient credits",
+      };
+    }
   }
+
+  return await deductCredits(apiKey, billingRate);
 }
 
 export async function detectPiUsingVectorDatabase(

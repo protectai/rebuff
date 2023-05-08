@@ -28,10 +28,7 @@ function getHumanFriendlyTimestamp() {
 }
 const initState = {
   apikey: "",
-  credits: {
-    used: 0,
-    total: 0,
-  },
+  credits: 0,
   loading: false,
   stats: {
     last24h: {
@@ -143,10 +140,11 @@ export const AppProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const setApikey = (apikey: string) => {
     setAppState((prev) => ({ ...prev, apikey: apikey }));
   };
-  //TODO: To be implemented
-  const setCredits = (credits: { used: number; total: number }) => {
+
+  const setCredits = (credits: number) => {
     setAppState((prev) => ({ ...prev, credits: credits }));
   };
+
   const setStats = (stats: any) => {
     setAppState((prev) => ({ ...prev, stats: stats }));
   };

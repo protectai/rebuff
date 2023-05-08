@@ -13,10 +13,7 @@ export interface GlobalStats {
 
 export interface AppState {
   apikey: string;
-  credits: {
-    total: number;
-    used: number;
-  };
+  credits: number;
   stats: GlobalStats;
 }
 export interface AppStateCtx {

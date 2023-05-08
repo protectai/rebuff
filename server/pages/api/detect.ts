@@ -7,7 +7,7 @@ import {
 } from "@/lib/rebuff";
 import {
   runMiddleware,
-  isApiKeyValidAndHasCredits,
+  checkApiKeyAndReduceBalance,
   detectPiUsingVectorDatabase,
   detectPromptInjectionUsingHeuristicOnInput,
   callOpenAiToDetectPI,
@@ -43,13 +43,13 @@ export default async function handler(
       } as DetectApiFailureResponse);
     }
 
-    // Validate the API key
-    const isValidApiKey = await isApiKeyValidAndHasCredits(apiKey);
+    // Check if the API key is valid and reduce the account balance
+    const { success, message } = await checkApiKeyAndReduceBalance(apiKey);
 
-    if (!isValidApiKey) {
+    if (!success) {
       return res.status(401).json({
         error: "unauthorized",
-        message: "Invalid API key",
+        message: message,
       } as DetectApiFailureResponse);
     }
 
