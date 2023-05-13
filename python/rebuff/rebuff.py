@@ -2,7 +2,6 @@ import secrets
 from typing import Dict, Optional, Union
 
 import requests
-from langchain import PromptTemplate
 from pydantic import BaseModel
 
 
@@ -87,28 +86,33 @@ class Rebuff:
 
     def add_canaryword(
         self,
-        prompt: Union[str, PromptTemplate],
+        prompt,
         canary_word: Optional[str] = None,
         canary_format: str = "<!-- {canary_word} -->",
-    ) -> tuple[Union[PromptTemplate, str], str]:
+    ):
+
         # Generate a canary word if not provided
         if canary_word is None:
             canary_word = self.generate_canary_word()
 
         # Embed the canary word in the specified format
         canary_comment = canary_format.format(canary_word=canary_word)
-
-        if isinstance(prompt, PromptTemplate):
-            prompt.template = canary_comment + "\n" + prompt.template
-            return prompt, canary_word
         if isinstance(prompt, str):
             prompt_with_canary: str = canary_comment + "\n" + prompt
             return prompt_with_canary, canary_word
-        else:
-            raise TypeError(
-                f"prompt_template must be a PromptTemplate or a str, "
-                f"but was {type(prompt)}"
-            )
+
+        try:
+            from langchain import PromptTemplate
+            if isinstance(prompt, PromptTemplate):
+                prompt.template = canary_comment + "\n" + prompt.template
+                return prompt, canary_word
+        except ImportError:
+            pass
+
+        raise TypeError(
+            f"prompt_template must be a PromptTemplate or a str, "
+            f"but was {type(prompt)}"
+        )
 
     def is_canaryword_leaked(
         self,
