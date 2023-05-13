@@ -25,6 +25,7 @@
 </div>
 <div align="center">
 
+[![Python Tests](https://github.com/woop/rebuff/actions/workflows/python_tests.yaml/badge.svg)](https://github.com/woop/rebuff/actions/workflows/python_tests.yaml)
 [![playground](https://api.netlify.com/api/v1/badges/3ed260cd-09cd-467f-9771-c4e99290bd1c/deploy-status)](https://playground.rebuff.ai)
 
 </div>
