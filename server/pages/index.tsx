@@ -6,6 +6,7 @@ import { Button, Checkbox, Space, Textarea, Text, Title } from "@mantine/core";
 import ResultsViewer from "@/components/ResultsViewer";
 import { AppContext } from "@/components/AppContext";
 import ShortInstructions from "@/components/ShortInstructions";
+import { Prism } from "@mantine/prism";
 
 const Playground: FC = () => {
   const session = useSession();
@@ -88,6 +89,7 @@ const Playground: FC = () => {
         </div>
         <div className="flex flex-col gap-4 lg:flex-row">
           <div className="w-full lg:w-2/3">
+            <Title order={4}>Request a SQL query</Title>
             <Textarea
               autosize
               maxRows={15}
@@ -130,14 +132,14 @@ const Playground: FC = () => {
             </div>
           </div>
           <div className="w-full lg:w-1/3">
-            <Textarea
-              autosize
-              maxRows={15}
-              minRows={10}
-              disabled={disabled()}
-              readOnly
-              value={output()}
-            ></Textarea>
+            <Title order={4}>SQL Query Generated</Title>
+            <Prism
+              language="sql"
+              copyLabel="Copy code to clipboard"
+              copiedLabel="Code copied to clipboard"
+            >
+              {output()}
+            </Prism>
           </div>
         </div>
       </form>
