@@ -23,9 +23,19 @@ export interface DetectApiSuccessResponse {
   maxModelScore: number;
 }
 
-export interface DetectApiFailureResponse {
+export interface ApiFailureResponse {
   error: string;
   message: string;
+}
+
+export interface LogApiRequest {
+  user_input: string;
+  completion: string;
+  canaryWord: string;
+}
+
+export interface LogApiSuccessResponse {
+  success: boolean;
 }
 
 export class Rebuff {

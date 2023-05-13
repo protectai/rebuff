@@ -1,10 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import Cors from "cors";
 import { render_prompt_for_pi_detection } from "@/lib/templates";
-import {
-  DetectApiFailureResponse,
-  DetectApiSuccessResponse,
-} from "@/lib/rebuff";
+import { ApiFailureResponse, DetectApiSuccessResponse } from "@/lib/rebuff";
 import {
   runMiddleware,
   checkApiKeyAndReduceBalance,
@@ -29,7 +26,7 @@ export default async function handler(
     return res.status(405).json({
       error: "not_allowed",
       message: "Method not allowed",
-    } as DetectApiFailureResponse);
+    } as ApiFailureResponse);
   }
   try {
     // Extract the API key from the Authorization header
@@ -40,7 +37,7 @@ export default async function handler(
       return res.status(401).json({
         error: "unauthorized",
         message: "Missing API key",
-      } as DetectApiFailureResponse);
+      } as ApiFailureResponse);
     }
 
     // Check if the API key is valid and reduce the account balance
@@ -50,7 +47,7 @@ export default async function handler(
       return res.status(401).json({
         error: "unauthorized",
         message: message,
-      } as DetectApiFailureResponse);
+      } as ApiFailureResponse);
     }
 
     let {
@@ -72,7 +69,7 @@ export default async function handler(
         error: "bad_request",
         message:
           "maxHeuristicScore, maxModelScore, and maxVectorScore are required",
-      } as DetectApiFailureResponse);
+      } as ApiFailureResponse);
     }
 
     runHeuristicCheck = runHeuristicCheck === null ? true : runHeuristicCheck;
@@ -84,7 +81,7 @@ export default async function handler(
       return res.status(400).json({
         error: "bad_request",
         message: "input_base64 is required",
-      } as DetectApiFailureResponse);
+      } as ApiFailureResponse);
     }
 
     // Create a buffer from the hexadecimal string
@@ -131,6 +128,6 @@ export default async function handler(
     return res.status(500).json({
       error: "server_error",
       message: "Internal server error",
-    } as DetectApiFailureResponse);
+    } as ApiFailureResponse);
   }
 }

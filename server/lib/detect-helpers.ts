@@ -83,6 +83,29 @@ export async function checkApiKeyAndReduceBalance(
   return await deductCredits(apiKey, billingRate);
 }
 
+export async function checkApiKey(
+  apiKey: string
+): Promise<{ success: boolean; message: string; account_id?: string }> {
+  // Get the master credit amount from the environment variable
+  if (process.env.MASTER_API_KEY && apiKey === process.env.MASTER_API_KEY) {
+    return { success: true, message: "Master API key accepted" };
+  }
+
+  const { data, error } = await supabaseAdminClient
+    .from("accounts")
+    .select("id")
+    .eq("user_apikey", apiKey);
+
+  if (error || !data) {
+    return {
+      success: false,
+      message: "Invalid API key",
+    };
+  }
+
+  return { success: true, message: "API key accepted", account_id: data[0].id };
+}
+
 export async function detectPiUsingVectorDatabase(
   input: string,
   similarityThreshold: number

@@ -133,7 +133,7 @@ class Rebuff:
             "canaryWord": canary_word,
         }
         response = requests.post(
-            f"{self.api_url}/api/log_leakage", json=data, headers=self._headers
+            f"{self.api_url}/api/log", json=data, headers=self._headers
         )
         response.raise_for_status()
         return
