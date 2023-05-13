@@ -1,4 +1,4 @@
-import { AppState, AppStateCtx, Attempt } from "@/interfaces/ui";
+import { AppState, AppStateCtx, Attempt, PromptRequest } from "@/interfaces/ui";
 import React, {
   createContext,
   useState,
@@ -8,8 +8,8 @@ import React, {
 } from "react";
 import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
 import fetch from "node-fetch";
-
-import { Rebuff } from "@/lib/rebuff";
+import { DetectApiSuccessResponse } from "@/lib/rebuff";
+import { PromptResponse } from "@/lib/playground";
 
 function getHumanFriendlyTimestamp() {
   const date = new Date();
@@ -30,6 +30,7 @@ const initState = {
   apikey: "",
   credits: 0,
   loading: false,
+  accountLoading: false,
   stats: {
     last24h: {
       attempts: 0,
@@ -49,22 +50,48 @@ const initState = {
 export const AppContext = createContext<AppStateCtx>({
   appState: initState,
   loading: false,
+  accountLoading: false,
   attempts: [] as Attempt[],
   refreshAppState: async () => undefined,
   refreshApikey: async () => undefined,
-  submitPrompt: async (
-    user_input: string,
-    check_heuristic: boolean,
-    check_vector: boolean,
-    check_llm: boolean
-  ) => undefined,
+  submitPrompt: async (prompt: PromptRequest) => undefined,
   setLoading: () => null,
 });
 
+//TODO: Delete this once playground.ts is working
+async function genRandomResponse(): Promise<PromptResponse> {
+  const randomBool = () => Math.random() < 0.5;
+  const randomScore = () => Math.random() * 10;
+  await new Promise((resolve) => setTimeout(resolve, 2000));
+  if (Math.random() < 0.2) {
+    throw new Error("Random error");
+  }
+  return {
+    metrics: {
+      runHeuristicCheck: randomBool(),
+      runLanguageModelCheck: randomBool(),
+      runVectorCheck: randomBool(),
+      vectorScore: {
+        a: 0,
+        b: 1,
+      },
+      heuristicScore: randomScore(),
+      modelScore: randomScore(),
+      maxHeuristicScore: 0,
+      maxModelScore: 0,
+      maxVectorScore: 0,
+    },
+    is_injection: randomBool(),
+    llm_query: "query example",
+    canary_word: "example",
+    canary_word_leaked: randomBool(),
+  };
+}
 // Create a provider component
 export const AppProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [appState, setAppState] = useState<AppState>(initState);
   const [loading, setLoading] = useState<boolean>(false);
+  const [accountLoading, setAccountLoading] = useState<boolean>(false);
   const [attempts, setAttempts] = useState<Attempt[]>([] as Attempt[]);
   const session = useSession();
   const supabase = useSupabaseClient();
@@ -77,7 +104,7 @@ export const AppProvider: FC<{ children: ReactNode }> = ({ children }) => {
     [session]
   );
   const refreshAppState = async () => {
-    setLoading(true);
+    setAccountLoading(true);
     try {
       const response = await fetch("/api/account");
       const data = (await response.json()) as AppState;
@@ -85,7 +112,7 @@ export const AppProvider: FC<{ children: ReactNode }> = ({ children }) => {
     } catch (error) {
       console.error(error);
     } finally {
-      setLoading(false);
+      setAccountLoading(false);
     }
   };
   const refreshApikey = async () => {
@@ -102,36 +129,75 @@ export const AppProvider: FC<{ children: ReactNode }> = ({ children }) => {
       setLoading(false);
     }
   };
-  const submitPrompt = async (
-    user_input: string,
-    check_heuristic: boolean = true,
-    check_vector: boolean = true,
-    check_llm: boolean = true
-  ) => {
+  const submitPrompt = async (prompt: PromptRequest) => {
     setLoading(true);
     try {
-      if (!appState.apikey) throw new Error("No API key"); //should not happen
-      const rebuff = new Rebuff(appState.apikey, "");
-      const [metrics, is_injection] = await rebuff.is_injection_detected(
-        user_input,
-        0.75,
-        0.9,
-        0.9,
-        check_heuristic,
-        check_vector,
-        check_llm
-      );
+      const body = JSON.stringify(prompt);
+      // const response = await fetch("/api/playground", {
+      //   method: "POST",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //   },
+      //   body,
+      // });
+
+      // const data = await response.json();
+      const data = await genRandomResponse();
+      const {
+        metrics = {
+          runHeuristicCheck: false,
+          runLanguageModelCheck: false,
+          runVectorCheck: false,
+          vectorScore: {},
+          heuristicScore: 0,
+          modelScore: 0,
+          maxHeuristicScore: 0,
+          maxModelScore: 0,
+          maxVectorScore: 0,
+        } as DetectApiSuccessResponse,
+        is_injection = false,
+        llm_query = "",
+        canary_word = "",
+        canary_word_leaked,
+      } = data;
+
       setAttempts((prev) => [
         ...prev,
         {
-          timestamp: getHumanFriendlyTimestamp(),
-          input: user_input,
+          error: null,
+          timestamp: new Date(),
+          input: prompt.userInput || "",
           metrics,
           is_injection,
+          llm_query: llm_query || "",
+          canary_word,
+          canary_word_leaked,
         },
       ]);
-    } catch (error) {
-      console.error(error);
+    } catch (error: any) {
+      setAttempts((prev) => [
+        ...prev,
+        {
+          error,
+          timestamp: new Date(),
+          input: prompt.userInput || "",
+          metrics: {
+            runHeuristicCheck: false,
+            runLanguageModelCheck: false,
+            runVectorCheck: false,
+            vectorScore: {},
+            heuristicScore: 0,
+            modelScore: 0,
+            maxHeuristicScore: 0,
+            maxModelScore: 0,
+            maxVectorScore: 0,
+          },
+          is_injection: false,
+          llm_query: "",
+          canary_word: "",
+          canary_word_leaked: false,
+        },
+      ]);
     } finally {
       setLoading(false);
     }
@@ -154,6 +220,7 @@ export const AppProvider: FC<{ children: ReactNode }> = ({ children }) => {
       value={{
         appState,
         loading,
+        accountLoading,
         attempts,
         refreshAppState,
         refreshApikey,

@@ -1,23 +1,23 @@
 import { FC, useContext } from "react";
 import {
   Space,
-  Table,
-  Tabs,
   Title,
   LoadingOverlay,
-  Box,
   Text,
+  Group,
+  Accordion,
 } from "@mantine/core";
 import {
   IconAlertCircle,
   IconCircleCheck,
-  IconClock,
-  IconPrompt,
+  IconMoodSad,
 } from "@tabler/icons-react";
 import { AppContext } from "./AppContext";
+import { Attempt } from "@/interfaces/ui";
+import { timeDifference } from "@/lib/general-helpers";
 function trimString(str: string, length: number = 15) {
   if (str.length > length) {
-    str = str.slice(0, 15) + "...";
+    str = str.slice(0, length) + "...";
   }
   return str;
 }
@@ -30,37 +30,53 @@ function formatDictionary(dictionary: Record<string, any>) {
   }
   return result;
 }
+
+function AccordionLabel({
+  is_injection,
+  error,
+  input,
+  llm_query,
+  timestamp,
+}: Attempt) {
+  return (
+    <Group noWrap>
+      {error ? (
+        <IconMoodSad size={48} strokeWidth={2} color={"#bf4040"} />
+      ) : is_injection ? (
+        <IconAlertCircle size={48} strokeWidth={2} color={"#bf4040"} />
+      ) : (
+        <IconCircleCheck size={48} strokeWidth={2} color={"#2d863e"} />
+      )}
+      <div>
+        <p className="py-1 m-0">
+          <span className="text-gray pr-2 italic">
+            {timeDifference(timestamp)}
+          </span>
+          {trimString(input, 100)}
+        </p>
+        <Text size="md" color="dimmed" weight={400}>
+          {error
+            ? "error occurred"
+            : is_injection
+            ? "prompt injection detected"
+            : llm_query}
+        </Text>
+      </div>
+    </Group>
+  );
+}
+
 const ResultsViewer: FC = () => {
   const { attempts, loading } = useContext(AppContext);
   const rows = attempts.map((element, idx) => (
-    <tr key={idx}>
-      <td>
-        <IconPrompt className="pr-1" />
-        {element.timestamp}
-      </td>
-      <td alt-text={element.input}>{trimString(element.input)}</td>
-      <td>
-        {element.is_injection ? (
-          <IconAlertCircle size={48} strokeWidth={2} color={"#bf4040"} />
-        ) : (
-          <IconCircleCheck size={48} strokeWidth={2} color={"#2d863e"} />
-        )}
-      </td>
-      <td>
-        <Text>Heuristics</Text>
-        {element.metrics.runHeuristicCheck
-          ? element.metrics.heuristicScore
-          : "Not enabled"}
-        <Text>VectorDB</Text>
-        {element.metrics.runVectorCheck
-          ? formatDictionary(element.metrics.vectorScore)
-          : "Not enabled"}
-        <Text>LLM</Text>
-        {element.metrics.runLanguageModelCheck
-          ? element.metrics.modelScore
-          : "Not enabled"}
-      </td>
-    </tr>
+    <Accordion.Item value={element.input} key={idx}>
+      <Accordion.Control>
+        <AccordionLabel {...element} />
+      </Accordion.Control>
+      <Accordion.Panel>
+        <Text size="sm">{JSON.stringify(element)}</Text>
+      </Accordion.Panel>
+    </Accordion.Item>
   ));
   return (
     <div>
@@ -72,19 +88,9 @@ const ResultsViewer: FC = () => {
           Submit a prompt to see results.
         </Text>
       ) : (
-        <Table striped highlightOnHover>
-          <thead>
-            <tr>
-              <th>
-                <IconClock />
-              </th>
-              <th>Prompt</th>
-              <th>Injection Detected?</th>
-              <th>Checks</th>
-            </tr>
-          </thead>
-          <tbody>{rows}</tbody>
-        </Table>
+        <Accordion chevronPosition="right" variant="contained">
+          {rows}
+        </Accordion>
       )}
     </div>
   );

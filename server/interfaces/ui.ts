@@ -1,5 +1,6 @@
 import React from "react";
 import { DetectApiSuccessResponse } from "@/lib/rebuff";
+import { PromptResponse } from "@/lib/playground";
 
 interface stat {
   breaches: number;
@@ -19,20 +20,23 @@ export interface AppState {
 export interface AppStateCtx {
   appState: AppState;
   loading: boolean;
+  accountLoading: boolean;
   attempts: Attempt[];
   refreshAppState: () => Promise<void>;
   refreshApikey: () => Promise<void>;
-  submitPrompt: (
-    user_input: string,
-    check_heuristic: boolean,
-    check_vector: boolean,
-    check_llm: boolean
-  ) => Promise<void>;
+  submitPrompt: (prompt: PromptRequest) => Promise<void>;
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }
-export interface Attempt {
-  timestamp: string;
+
+export interface PromptRequest {
+  userInput: string;
+  runHeuristicCheck: boolean;
+  runVectorCheck: boolean;
+  runLanguageModelCheck: boolean;
+}
+
+export interface Attempt extends PromptResponse {
+  timestamp: Date;
   input: string;
-  metrics: DetectApiSuccessResponse;
-  is_injection: boolean;
+  error: Error | null;
 }
