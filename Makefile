@@ -22,7 +22,6 @@ init-python:
 init-server:
 	cd server; npm install
 
-integration-test:
-	cd server; npm run dev &  # Start the NextJS server
-	cd python; pytest -s tests/test_integration.py  # Run the integration test
-	pkill -f "next dev"  # Stop the NextJS server
+publish-python:
+    cd python; python setup.py sdist bdist_wheel
+    cd python; twine upload dist/*
