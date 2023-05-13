@@ -117,7 +117,7 @@ We'd love for you to join our community and help improve Rebuff! Here's how you 
 
 1. Star the project to show your support!
 2. Contribute to the open source project by submitting issues, improvements, or adding new features.
-3. Join our [Discord server](https://discord.gg/yRxggrrx).
+3. Join our [Discord server](https://discord.gg/6nD88UfS). 
 
 ## Development
 
