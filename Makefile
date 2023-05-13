@@ -13,8 +13,14 @@ format:
 	cd python; isort rebuff/ tests/
 	cd python; black rebuff/ tests/
 
-init:
+
+init: init-python init-server
+
+init-python:
 	cd python; pip install -e '.[dev]' -U
+
+init-server:
+	cd server; npm install
 
 integration-test:
 	cd server; npm run dev &  # Start the NextJS server
