@@ -24,5 +24,7 @@ jobs:
 
     - name: Run tests
       working-directory: python
+      env:
+        OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
       run: |
         pytest
