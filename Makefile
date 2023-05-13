@@ -23,5 +23,5 @@ init-server:
 	cd server; npm install
 
 publish-python:
-    cd python; python setup.py sdist bdist_wheel
-    cd python; twine upload dist/*
+	cd python; python setup.py sdist bdist_wheel
+	cd python; twine upload dist/*

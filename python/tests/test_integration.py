@@ -93,7 +93,7 @@ def test_canary_word_leak(server: Generator[None, None, None]) -> None:
     )
 
     # Did we detect a leak?
-    is_leak_detected = rb.is_canaryword_leaked(
+    is_leak_detected = rb.is_canary_word_leaked(
         user_input, response_completion, canary_word
     )
 
