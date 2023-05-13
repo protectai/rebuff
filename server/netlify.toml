@@ -1,5 +1,5 @@
 [[redirects]]
 from = "https://rebuff.ai/*"
 to = "https://rebuff.unicornplatform.page/:splat"
-status = 301
+status = 200
 force = true
