@@ -23,5 +23,14 @@ jobs:
       working-directory: python
       env:
         OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        BILLING_RATE_INT_10K: ${{ secrets.BILLING_RATE_INT_10K }}
+        MASTER_API_KEY: ${{ secrets.MASTER_API_KEY }}
+        MASTER_CREDIT_AMOUNT: ${{ secrets.MASTER_CREDIT_AMOUNT }}
+        NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+        NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+        PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
+        PINECONE_ENVIRONMENT: ${{ secrets.PINECONE_ENVIRONMENT }}
+        PINECONE_INDEX_NAME: ${{ secrets.PINECONE_INDEX_NAME }}
+        SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
       run: |
         pytest
