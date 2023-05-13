@@ -1,5 +1,5 @@
 import secrets
-from typing import Dict, Optional, Union
+from typing import Any, Dict, Optional, Union
 
 import requests
 from pydantic import BaseModel
@@ -47,7 +47,9 @@ class Rebuff:
         check_heuristic: bool = True,
         check_vector: bool = True,
         check_llm: bool = True,
-    ) -> tuple[Union[DetectApiSuccessResponse, DetectApiFailureResponse], bool]:
+    ) -> tuple[
+        Union[DetectApiSuccessResponse, DetectApiFailureResponse], bool
+    ]:
         request_data = DetectApiRequest(
             input_base64=encode_string(user_input),
             runHeuristicCheck=check_heuristic,
@@ -55,7 +57,7 @@ class Rebuff:
             runLanguageModelCheck=check_llm,
             maxVectorScore=max_vector_score,
             maxModelScore=max_model_score,
-            maxHeuristicScore=max_heuristic_score
+            maxHeuristicScore=max_heuristic_score,
         )
 
         response = requests.post(
@@ -72,7 +74,7 @@ class Rebuff:
         if (
             success_response.heuristicScore > max_heuristic_score
             or success_response.modelScore > max_model_score
-            or success_response.vectorScore['topScore'] > max_vector_score
+            or success_response.vectorScore["topScore"] > max_vector_score
         ):
             # Injection detected
             return success_response, True
@@ -86,11 +88,10 @@ class Rebuff:
 
     def add_canaryword(
         self,
-        prompt,
+        prompt: Any,
         canary_word: Optional[str] = None,
         canary_format: str = "<!-- {canary_word} -->",
-    ):
-
+    ) -> tuple[Any, str]:
         # Generate a canary word if not provided
         if canary_word is None:
             canary_word = self.generate_canary_word()
@@ -103,6 +104,7 @@ class Rebuff:
 
         try:
             from langchain import PromptTemplate
+
             if isinstance(prompt, PromptTemplate):
                 prompt.template = canary_comment + "\n" + prompt.template
                 return prompt, canary_word

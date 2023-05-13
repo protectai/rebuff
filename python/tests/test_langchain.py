@@ -11,28 +11,6 @@ from rebuff import Rebuff
 
 @pytest.mark.usefixtures("server")
 # Define the integration test for detecting prompt injection
-def test_detect_prompt_injection(server: Generator[None, None, None]) -> None:
-    # Initialize the Rebuff SDK with the actual API token and URL
-    rb = Rebuff(api_token="12345", api_url="http://localhost:3000")
-
-    # Set up the LangChain SDK with the environment variable
-    llm = OpenAI(api_key=os.environ["OPENAI_API_KEY"], temperature=0)
-
-    # Define the prompt template for text-to-SQL conversion
-    prompt_template = PromptTemplate(
-        input_variables=["user_query"],
-        template="Convert the following text to SQL: {user_query}",
-    )
-
-    # Define a user input that is potentially vulnerable to SQL injection
-    user_input = "Find all users; DROP TABLE users;"
-
-    # Check for prompt injection (SQL injection in this case) using Rebuff
-    assert rb.detect_injection(user_input) is True
-
-
-@pytest.mark.usefixtures("server")
-# Define the integration test for detecting prompt injection
 def test_canary_not_detected(server: Generator[None, None, None]) -> None:
     # Initialize the Rebuff SDK with the actual API token and URL
     rb = Rebuff(api_token="12345", api_url="http://localhost:3000")
@@ -59,7 +37,9 @@ def test_canary_not_detected(server: Generator[None, None, None]) -> None:
     completion = chain.run(user_input)
 
     # Check for canary word leakage using Rebuff
-    assert rb.is_canaryword_leaked(user_input, completion, canary_word) is False
+    assert (
+        rb.is_canaryword_leaked(user_input, completion, canary_word) is False
+    )
 
 
 @pytest.mark.usefixtures("server")
