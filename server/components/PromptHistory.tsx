@@ -46,7 +46,7 @@ function AccordionLabel({
             ? "error occurred"
             : is_injection
             ? "prompt injection attempt detected"
-            : output}
+            : trimString(output, 100)}
         </Text>
       </div>
     </div>

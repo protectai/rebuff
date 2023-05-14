@@ -9,13 +9,38 @@ import { PromptInjectionStats } from "@/components/PromptInjectionStats";
 import LoginButtonWithInstructions from "@/components/LoginButtonWithInstructions";
 import { Prism } from "@mantine/prism";
 
+function formatSQL(sql: string) {
+  const keywords = [
+    "SELECT",
+    "FROM",
+    "WHERE",
+    "LIMIT",
+    "INNER JOIN",
+    "LEFT JOIN",
+    "RIGHT JOIN",
+    "ORDER BY",
+    "GROUP BY",
+    "AND",
+    "OR",
+  ];
+
+  let formattedSql = sql;
+
+  keywords.forEach((keyword) => {
+    const regex = new RegExp(`\\b${keyword}\\b`, "gi");
+    formattedSql = formattedSql.replace(regex, `\n${keyword}`);
+  });
+
+  return formattedSql;
+}
+
 const Playground: FC = () => {
   const session = useSession();
   const { submitPrompt, attempts, promptLoading } = useContext(AppContext);
 
   const form = useForm({
     initialValues: {
-      prompt: "How many more orders did we get last week vs the previous week?",
+      prompt: "How many products did we sell yesterday?",
       heuristic: true,
       llm: true,
       vectordb: true,
@@ -30,10 +55,12 @@ const Playground: FC = () => {
       return attempt.is_injection
         ? "prompt injection detected"
         : attempt.output
-        ? attempt.output
+        ? formatSQL(attempt.output)
         : "An error occurred.";
     }
-    return "SELECT count distinct customer_id from orders WHERE order_date > now() - interval '1 week'";
+    return formatSQL(
+      `SELECT SUM(quantity) FROM order_details JOIN orders ON orders.order_id = order_details.order_id WHERE order_date = DATE_TRUNC('day', CURRENT_DATE - INTERVAL '1 day') AND fulfilled = true`
+    );
   };
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();

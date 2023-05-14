@@ -55,16 +55,22 @@ export function timeDifference(previous: Date) {
   if (elapsed === 0) {
     return "Just now";
   } else if (elapsed < msPerMinute) {
-    return Math.round(elapsed / 1000) + " seconds ago";
+    const seconds = Math.round(elapsed / 1000);
+    return seconds + ` ${seconds > 1 ? "seconds" : "second"} ago`;
   } else if (elapsed < msPerHour) {
-    return Math.round(elapsed / msPerMinute) + " minutes ago";
+    const minutes = Math.round(elapsed / msPerMinute);
+    return minutes + ` ${minutes > 1 ? "minutes" : "minute"} ago`;
   } else if (elapsed < msPerDay) {
-    return Math.round(elapsed / msPerHour) + " hours ago";
+    const hours = Math.round(elapsed / msPerHour);
+    return hours + ` ${hours > 1 ? "hours" : "hour"} ago`;
   } else if (elapsed < msPerMonth) {
-    return Math.round(elapsed / msPerDay) + " days ago";
+    const days = Math.round(elapsed / msPerDay);
+    return days + ` ${days > 1 ? "days" : "day"} ago`;
   } else if (elapsed < msPerYear) {
-    return Math.round(elapsed / msPerMonth) + " months ago";
+    const months = Math.round(elapsed / msPerMonth);
+    return months + ` ${months > 1 ? "months" : "month"} ago`;
   } else {
-    return Math.round(elapsed / msPerYear) + " years ago";
+    const years = Math.round(elapsed / msPerYear);
+    return years + ` ${years > 1 ? "years" : "year"} ago`;
   }
 }
