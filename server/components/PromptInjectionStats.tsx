@@ -16,8 +16,9 @@ interface StatsSegmentsProps {
   stats: {
     label: string;
     count: string;
-    part: number;
-    color: string;
+    part: number | null;
+    textColor: string;
+    borderColor: string;
   }[];
 }
 
@@ -25,22 +26,24 @@ export function PromptInjectionStats({ stats }: StatsSegmentsProps) {
   const { classes } = useStyles();
 
   const descriptions = stats.map((stat) => (
-    <Box
-      key={stat.label}
-      sx={{ borderBottomColor: stat.color }}
-      className={classes.stat}
-    >
+    <div key={stat.label} className={`${classes.stat} ${stat.borderColor}`}>
       <Text tt="uppercase" fz="xs" c="dimmed" fw={700}>
         {stat.label}
       </Text>
 
       <Group position="apart" align="flex-end" spacing={0}>
         <Text fw={700}>{stat.count}</Text>
-        <Text c={stat.color} fw={700} size="sm" className={classes.statCount}>
-          {stat.part}%
-        </Text>
+        {typeof stat.part === "number" && (
+          <Text
+            fw={700}
+            size="sm"
+            className={`${classes.statCount} ${stat.textColor}`}
+          >
+            {stat.part}%
+          </Text>
+        )}
       </Group>
-    </Box>
+    </div>
   ));
 
   return (

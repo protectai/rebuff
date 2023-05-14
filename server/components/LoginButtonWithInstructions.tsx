@@ -7,7 +7,7 @@ import { Auth, ThemeSupa } from "@supabase/auth-ui-react";
 const LoginButtonWithInstructions: FC = () => {
   const supabase = useSupabaseClient();
   const session = useSession();
-  if (session) {
+  if (session || window.localStorage.getItem("rebuff.allowLogin") !== "true") {
     return <></>;
   }
   return (
