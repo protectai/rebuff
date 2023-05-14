@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useEffect, useState } from "react";
 import { Alert } from "@mantine/core";
 import { IconAlertCircle, IconInfoCircle } from "@tabler/icons-react";
 import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
@@ -7,10 +7,16 @@ import { Auth, ThemeSupa } from "@supabase/auth-ui-react";
 const LoginButtonWithInstructions: FC = () => {
   const supabase = useSupabaseClient();
   const session = useSession();
-  if (session || window.localStorage.getItem("rebuff.allowLogin") !== "true") {
-    return <></>;
-  }
-  return (
+  const [allowLogin, setAllowLogin] = useState(false);
+  console.log(allowLogin);
+  useEffect(() => {
+    const lsAllowLogin =
+      window && window.localStorage.getItem("rebuff.allowLogin") === "true";
+    setAllowLogin(lsAllowLogin);
+  }, []);
+  return session || !allowLogin ? (
+    <></>
+  ) : (
     <div>
       <Alert
         icon={<IconAlertCircle size="1rem" />}
