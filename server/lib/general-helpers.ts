@@ -74,3 +74,28 @@ export function timeDifference(previous: Date) {
     return years + ` ${years > 1 ? "years" : "year"} ago`;
   }
 }
+
+export function formatSQL(sql: string) {
+  const keywords = [
+    "SELECT",
+    "FROM",
+    "WHERE",
+    "LIMIT",
+    "INNER JOIN",
+    "LEFT JOIN",
+    "RIGHT JOIN",
+    "ORDER BY",
+    "GROUP BY",
+    "AND",
+    "OR",
+  ];
+
+  let formattedSql = sql;
+
+  keywords.forEach((keyword) => {
+    const regex = new RegExp(`\\b${keyword}\\b`, "gi");
+    formattedSql = formattedSql.replace(regex, `\n${keyword}`);
+  });
+
+  return formattedSql;
+}

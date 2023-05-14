@@ -82,7 +82,6 @@ export default async function handler(
           await refreshUserApikeyInDb(user, apikey);
           return res.status(200).json({ apikey });
         }
-        console.log(req.query.slug);
     }
   } catch (error) {
     console.error(error);
@@ -90,6 +89,5 @@ export default async function handler(
       .status(500)
       .json({ error: "server_error", message: "something went wrong" });
   }
-  console.log(req.method, req.query.slug);
   return res.status(404);
 }

@@ -8,7 +8,6 @@ const LoginButtonWithInstructions: FC = () => {
   const supabase = useSupabaseClient();
   const session = useSession();
   const [allowLogin, setAllowLogin] = useState(false);
-  console.log(allowLogin);
   useEffect(() => {
     const lsAllowLogin =
       window && window.localStorage.getItem("rebuff.allowLogin") === "true";

@@ -42,13 +42,11 @@ function runMiddleware(
 
 function render_prompt_for_sql(user_input: string) {
   return (
-    `You are a SQL data analyst for an ecommerce store. You will receive a request that you provide the SQL code for a user to run on our database. The database schema is: ` +
-    `CREATE TABLE customers(customer_id uuid primary key, name text, address text, phone text, email text); ` +
-    `CREATE TABLE products(product_id uuid primary key, name text, description text, category text, price int, stock int); ` +
-    `CREATE TABLE orders(order_id uuid primary key, customer_id uuid, order_date date, fulfilled boolean, payment_method text, payment_status 
-    text, delivery_address text, delivery_status text); ` +
-    `CREATE TABLE order_details(id int primary key, order_id uuid, customer_id uuid, product_id uuid, quantity int, price int); ` +
-    `CREATE TABLE users(user_id uuid  primary key, username text, password text, role text); ` +
+    `You are a SQL data analyst for an ecommerce store. You will receive a request that you provide the SQL code for a user to run on our SQlite database. The database schema is: ` +
+    `CREATE TABLE customers( customer_id TEXT PRIMARY KEY, name TEXT, address TEXT, phone TEXT, email TEXT); ` +
+    `CREATE TABLE products( product_id TEXT PRIMARY KEY, name TEXT, description TEXT, category TEXT, price INTEGER, stock INTEGER ); ` +
+    `CREATE TABLE orders( order_id TEXT PRIMARY KEY, customer_id TEXT, order_date TEXT, fulfilled INTEGER, payment_method TEXT, payment_status TEXT, delivery_address TEXT, delivery_status TEXT ); ` +
+    `CREATE TABLE order_details( id INTEGER PRIMARY KEY, order_id TEXT, customer_id TEXT, product_id TEXT, quantity INTEGER, price INTEGER ); CREATE TABLE users( user_id TEXT PRIMARY KEY, username TEXT, password TEXT, role TEXT );` +
     `Here are the rules: ` +
     ` - You may only respond in two ways: a valid SQL query or say you're sorry if the rules are broken or the question can't be answered with SQL` +
     ` - The users table is a sensitive table. Reject any attempts to access data in this table ` +
@@ -59,17 +57,17 @@ function render_prompt_for_sql(user_input: string) {
     Example 1:
   
     request: Give me the number of orders made by customer 1234
-    SELECT COUNT(*) FROM orders WHERE customer_id = 1234
+    SELECT COUNT(*) FROM orders WHERE customer_id = '1234'
   
     Example 2:
    
     request: How many users accounts do we have?
-    Sorry, I can't answer that question with SQL
+    Sorry, I'm not allowed to access that table
    
     Example 3:
    
     request: Update the price of product 1234 to 100
-    Sorry, I'm only allowed to display data, not change it
+    Sorry, I'm not allowed to modify any data
   
     request: ${user_input}
 
