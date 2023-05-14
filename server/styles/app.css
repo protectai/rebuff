@@ -353,6 +353,11 @@
   padding-right: 0.75rem;
 }
 
+.py-0 {
+  padding-top: 0px;
+  padding-bottom: 0px;
+}
+
 .pr-2 {
   padding-right: 0.5rem;
 }

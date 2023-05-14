@@ -15,15 +15,6 @@ function trimString(str: string, length: number = 15) {
   }
   return str;
 }
-function formatDictionary(dictionary: Record<string, any>) {
-  let result = "";
-  for (const key in dictionary) {
-    if (dictionary.hasOwnProperty(key)) {
-      result += `${key}: ${dictionary[key]}\n`;
-    }
-  }
-  return result;
-}
 
 function AccordionLabel({
   is_injection,
@@ -36,15 +27,15 @@ function AccordionLabel({
     <div className="flex flex-row gap-2">
       <div className="min-w-12">
         {error ? (
-          <IconAlertCircle size={48} strokeWidth={2} color={"#DC2626"} />
+          <IconAlertCircle size={32} strokeWidth={2} color={"#DC2626"} />
         ) : is_injection ? (
-          <IconColumnsOff size={48} strokeWidth={2} color={"#EA580C"} />
+          <IconColumnsOff size={32} strokeWidth={2} color={"#EA580C"} />
         ) : (
-          <IconCircleCheck size={48} strokeWidth={2} color={"#16A34A"} />
+          <IconCircleCheck size={32} strokeWidth={2} color={"#16A34A"} />
         )}
       </div>
       <div>
-        <p className="py-1 m-0">
+        <p className="py-0 m-0">
           <span className="text-gray pr-2 italic">
             {timeDifference(timestamp)}
           </span>
