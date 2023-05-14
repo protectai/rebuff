@@ -58,35 +58,6 @@ export const AppContext = createContext<AppStateCtx>({
   setLoading: () => null,
 });
 
-//TODO: Delete this once playground.ts is working
-async function genRandomResponse(): Promise<PromptResponse> {
-  const randomBool = () => Math.random() < 0.5;
-  const randomScore = () => Math.random() * 10;
-  await new Promise((resolve) => setTimeout(resolve, 2000));
-  if (Math.random() < 0.2) {
-    throw new Error("Random error");
-  }
-  return {
-    metrics: {
-      runHeuristicCheck: randomBool(),
-      runLanguageModelCheck: randomBool(),
-      runVectorCheck: randomBool(),
-      vectorScore: {
-        a: 0,
-        b: 1,
-      },
-      heuristicScore: randomScore(),
-      modelScore: randomScore(),
-      maxHeuristicScore: 0,
-      maxModelScore: 0,
-      maxVectorScore: 0,
-    },
-    is_injection: randomBool(),
-    llm_query: "query example",
-    canary_word: "example",
-    canary_word_leaked: randomBool(),
-  };
-}
 // Create a provider component
 export const AppProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [appState, setAppState] = useState<AppState>(initState);
@@ -133,16 +104,16 @@ export const AppProvider: FC<{ children: ReactNode }> = ({ children }) => {
     setLoading(true);
     try {
       const body = JSON.stringify(prompt);
-      // const response = await fetch("/api/playground", {
-      //   method: "POST",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //   },
-      //   body,
-      // });
 
-      // const data = await response.json();
-      const data = await genRandomResponse();
+      const response = await fetch("/api/playground", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body,
+      });
+
+      const data = await response.json();
       const {
         metrics = {
           runHeuristicCheck: false,

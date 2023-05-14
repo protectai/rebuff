@@ -1,8 +1,7 @@
 import secrets
-from typing import Dict, Optional, Union
+from typing import Any, Dict, Optional, Union
 
 import requests
-from langchain import PromptTemplate
 from pydantic import BaseModel
 
 
@@ -25,13 +24,13 @@ class DetectApiSuccessResponse(BaseModel):
     runLanguageModelCheck: bool
 
 
-class DetectApiFailureResponse(BaseModel):
+class ApiFailureResponse(BaseModel):
     error: str
     message: str
 
 
 class Rebuff:
-    def __init__(self, api_token: str, api_url: str = "https://rebuff.ai"):
+    def __init__(self, api_token: str, api_url: str = "https://playground.rebuff.ai"):
         self.api_token = api_token
         self.api_url = api_url
         self._headers = {
@@ -48,7 +47,23 @@ class Rebuff:
         check_heuristic: bool = True,
         check_vector: bool = True,
         check_llm: bool = True,
-    ) -> tuple[Union[DetectApiSuccessResponse, DetectApiFailureResponse], bool]:
+    ) -> tuple[Union[DetectApiSuccessResponse, ApiFailureResponse], bool]:
+        """
+        Detects if the given user input contains an injection attempt.
+
+        Args:
+            user_input (str): The user input to be checked for injection.
+            max_heuristic_score (float, optional): The maximum heuristic score allowed. Defaults to 0.75.
+            max_vector_score (float, optional): The maximum vector score allowed. Defaults to 0.90.
+            max_model_score (float, optional): The maximum model (LLM) score allowed. Defaults to 0.9.
+            check_heuristic (bool, optional): Whether to run the heuristic check. Defaults to True.
+            check_vector (bool, optional): Whether to run the vector check. Defaults to True.
+            check_llm (bool, optional): Whether to run the language model check. Defaults to True.
+
+        Returns:
+            tuple[Union[DetectApiSuccessResponse, ApiFailureResponse], bool]: A tuple containing the detection
+                metrics and a boolean indicating if an injection was detected.
+        """
         request_data = DetectApiRequest(
             input_base64=encode_string(user_input),
             runHeuristicCheck=check_heuristic,
@@ -56,7 +71,7 @@ class Rebuff:
             runLanguageModelCheck=check_llm,
             maxVectorScore=max_vector_score,
             maxModelScore=max_model_score,
-            maxHeuristicScore=max_heuristic_score
+            maxHeuristicScore=max_heuristic_score,
         )
 
         response = requests.post(
@@ -73,7 +88,7 @@ class Rebuff:
         if (
             success_response.heuristicScore > max_heuristic_score
             or success_response.modelScore > max_model_score
-            or success_response.vectorScore['topScore'] > max_vector_score
+            or success_response.vectorScore["topScore"] > max_vector_score
         ):
             # Injection detected
             return success_response, True
@@ -81,43 +96,82 @@ class Rebuff:
             # No injection detected
             return success_response, False
 
-    def generate_canary_word(self, length: int = 8) -> str:
-        # Generate a secure random hexadecimal canary word
+    @staticmethod
+    def generate_canary_word(length: int = 8) -> str:
+        """
+        Generates a secure random hexadecimal canary word.
+
+        Args:
+            length (int, optional): The length of the canary word. Defaults to 8.
+
+        Returns:
+            str: The generated canary word.
+        """
         return secrets.token_hex(length // 2)
 
-    def add_canaryword(
+    def add_canary_word(
         self,
-        prompt: Union[str, PromptTemplate],
+        prompt: Any,
         canary_word: Optional[str] = None,
         canary_format: str = "<!-- {canary_word} -->",
-    ) -> tuple[Union[PromptTemplate, str], str]:
+    ) -> tuple[Any, str]:
+        """
+        Adds a canary word to the given prompt which we will use to detect leakage.
+
+        Args:
+            prompt (Any): The prompt to add the canary word to.
+            canary_word (Optional[str], optional): The canary word to add. If not provided, a random canary word will be
+             generated. Defaults to None.
+            canary_format (str, optional): The format in which the canary word should be added.
+            Defaults to "<!-- {canary_word} -->".
+
+        Returns:
+            tuple[Any, str]: A tuple containing the modified prompt with the canary word and the canary word itself.
+        """
+
         # Generate a canary word if not provided
         if canary_word is None:
             canary_word = self.generate_canary_word()
 
         # Embed the canary word in the specified format
         canary_comment = canary_format.format(canary_word=canary_word)
-
-        if isinstance(prompt, PromptTemplate):
-            prompt.template = canary_comment + "\n" + prompt.template
-            return prompt, canary_word
         if isinstance(prompt, str):
             prompt_with_canary: str = canary_comment + "\n" + prompt
             return prompt_with_canary, canary_word
-        else:
-            raise TypeError(
-                f"prompt_template must be a PromptTemplate or a str, "
-                f"but was {type(prompt)}"
-            )
 
-    def is_canaryword_leaked(
+        try:
+            import langchain
+
+            if isinstance(prompt, langchain.PromptTemplate):
+                prompt.template = canary_comment + "\n" + prompt.template
+                return prompt, canary_word
+        except ImportError:
+            pass
+
+        raise TypeError(
+            f"prompt_template must be a PromptTemplate or a str, "
+            f"but was {type(prompt)}"
+        )
+
+    def is_canary_word_leaked(
         self,
         user_input: str,
         completion: str,
         canary_word: str,
         log_outcome: bool = True,
     ) -> bool:
-        # Check if the canary word appears in the completion
+        """
+        Checks if the canary word is leaked in the completion.
+
+        Args:
+            user_input (str): The user input.
+            completion (str): The completion generated by the AI.
+            canary_word (str): The canary word to check for leakage.
+            log_outcome (bool, optional): Whether to log the outcome of the leakage check. Defaults to True.
+
+        Returns:
+            bool: True if the canary word is leaked, False otherwise.
+        """
         if canary_word in completion:
             if log_outcome:
                 self.log_leakage(user_input, completion, canary_word)
@@ -127,13 +181,21 @@ class Rebuff:
     def log_leakage(
         self, user_input: str, completion: str, canary_word: str
     ) -> None:
+        """
+            Logs the leakage of a canary word.
+
+            Args:
+                user_input (str): The user input.
+                completion (str): The completion generated by the AI.
+                canary_word (str): The leaked canary word.
+            """
         data = {
             "user_input": user_input,
             "completion": completion,
             "canaryWord": canary_word,
         }
         response = requests.post(
-            f"{self.api_url}/api/log_leakage", json=data, headers=self._headers
+            f"{self.api_url}/api/log", json=data, headers=self._headers
         )
         response.raise_for_status()
         return

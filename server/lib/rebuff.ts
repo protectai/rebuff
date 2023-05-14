@@ -23,9 +23,19 @@ export interface DetectApiSuccessResponse {
   maxModelScore: number;
 }
 
-export interface DetectApiFailureResponse {
+export interface ApiFailureResponse {
   error: string;
   message: string;
+}
+
+export interface LogApiRequest {
+  user_input: string;
+  completion: string;
+  canaryWord: string;
+}
+
+export interface LogApiSuccessResponse {
+  success: boolean;
 }
 
 export class Rebuff {
@@ -33,7 +43,10 @@ export class Rebuff {
   private readonly api_url: string;
   private readonly headers: Record<string, string>;
 
-  constructor(api_token: string, api_url: string = "https://rebuff.ai") {
+  constructor(
+    api_token: string,
+    api_url: string = "https://playground.rebuff.ai"
+  ) {
     this.api_token = api_token;
     this.api_url = api_url;
     this.headers = {

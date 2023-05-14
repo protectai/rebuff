@@ -13,10 +13,15 @@ format:
 	cd python; isort rebuff/ tests/
 	cd python; black rebuff/ tests/
 
-init:
+
+init: init-python init-server
+
+init-python:
 	cd python; pip install -e '.[dev]' -U
 
-integration-test:
-	cd server; npm run dev &  # Start the NextJS server
-	cd python; pytest -s tests/test_integration.py  # Run the integration test
-	pkill -f "next dev"  # Stop the NextJS server
+init-server:
+	cd server; npm install
+
+publish-python:
+	cd python; python setup.py sdist bdist_wheel
+	cd python; twine upload dist/*
