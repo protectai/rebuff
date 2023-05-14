@@ -140,12 +140,12 @@ export async function detectPiUsingVectorDatabase(
           continue;
         }
 
-        if (match.score >= similarityThreshold) {
-          countOverMaxVectorScore++;
+        if (match.score > topScore) {
+          topScore = match.score;
+        }
 
-          if (match.score > topScore) {
-            topScore = match.score;
-          }
+        if (match.score >= similarityThreshold && match.score > topScore) {
+          countOverMaxVectorScore++;
         }
       }
     }

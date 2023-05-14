@@ -109,7 +109,7 @@ class Rebuff:
         """
         return secrets.token_hex(length // 2)
 
-    def add_canaryword(
+    def add_canary_word(
         self,
         prompt: Any,
         canary_word: Optional[str] = None,
