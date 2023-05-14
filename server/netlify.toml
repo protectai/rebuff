@@ -6,6 +6,6 @@ force = true
 
 [[redirects]]
 from = "https://rebuff.ai/"
-to = "https://rebuff.unicornplatform.page/:splat"
+to = "https://rebuff.unicornplatform.page/"
 status = 200
 force = true
