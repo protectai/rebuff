@@ -1,12 +1,11 @@
 [[redirects]]
-from = "/api/*"
+from = "https://rebuff.ai//api/*"
 to = "https://playground.rebuff.ai/api/:splat"
 status = 200
 force = true
 
 [[redirects]]
-from = "/*"
+from = "https://rebuff.ai/"
 to = "https://rebuff.unicornplatform.page/:splat"
 status = 200
 force = true
-
