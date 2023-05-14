@@ -6,6 +6,7 @@ import { Button, Checkbox, Textarea, Text, Title, Loader } from "@mantine/core";
 import PromptHistory from "@/components/PromptHistory";
 import { AppContext } from "@/components/AppContext";
 import { PromptInjectionStats } from "@/components/PromptInjectionStats";
+import LoginButtonWithInstructions from "@/components/LoginButtonWithInstructions";
 
 const Playground: FC = () => {
   const session = useSession();
@@ -91,6 +92,7 @@ const Playground: FC = () => {
                 Trick our AI analyst to generate a malicious SQL query
               </Title>
               <div>
+                <LoginButtonWithInstructions />
                 <PromptInjectionStats stats={stats} />
                 <p className="py-2 m-0 text-sm text-gray-600">
                   Rebuff learns from every successful attack, making the app

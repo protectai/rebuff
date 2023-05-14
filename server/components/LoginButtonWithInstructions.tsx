@@ -4,21 +4,13 @@ import { IconAlertCircle, IconInfoCircle } from "@tabler/icons-react";
 import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
 import { Auth, ThemeSupa } from "@supabase/auth-ui-react";
 
-const ShortInstructions: FC = () => {
+const LoginButtonWithInstructions: FC = () => {
   const supabase = useSupabaseClient();
   const session = useSession();
-
-  return session ? (
-    <Alert
-      icon={<IconInfoCircle size="1rem" />}
-      title="How to play"
-      color={!session ? "gray" : ""}
-      withCloseButton={!session ? false : true}
-    >
-      Rebuff is an API to help minimize prompt injection attacks. The prompt
-      below 'should' generate valid SQL, try to breach our defenses!
-    </Alert>
-  ) : (
+  if (session) {
+    return <></>;
+  }
+  return (
     <div>
       <Alert
         icon={<IconAlertCircle size="1rem" />}
@@ -57,4 +49,4 @@ const ShortInstructions: FC = () => {
   );
 };
 
-export default ShortInstructions;
+export default LoginButtonWithInstructions;
