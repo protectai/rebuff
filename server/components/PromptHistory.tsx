@@ -1,5 +1,5 @@
 import { FC, useContext } from "react";
-import { LoadingOverlay, Text, Accordion } from "@mantine/core";
+import { Text, Accordion } from "@mantine/core";
 import {
   IconAlertCircle,
   IconCircleCheck,
@@ -63,7 +63,7 @@ function AccordionLabel({
 }
 
 const PromptHistory: FC = () => {
-  const { attempts, loading } = useContext(AppContext);
+  const { attempts } = useContext(AppContext);
   const rows = attempts.map((element, idx) => (
     <Accordion.Item value={element.input} key={idx}>
       <Accordion.Control>
@@ -78,7 +78,6 @@ const PromptHistory: FC = () => {
   ));
   return (
     <div>
-      <LoadingOverlay visible={loading} />
       {attempts.length == 0 ? (
         <Text size="sm" color="gray">
           Submit a prompt to see results.

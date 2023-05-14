@@ -1,15 +1,15 @@
-import { FC, useState, FormEvent, useContext } from "react";
+import { FC, FormEvent, useContext } from "react";
 import { useForm } from "@mantine/form";
 import { useSession } from "@supabase/auth-helpers-react";
 
-import { Button, Checkbox, Textarea, Text, Title } from "@mantine/core";
+import { Button, Checkbox, Textarea, Text, Title, Loader } from "@mantine/core";
 import PromptHistory from "@/components/PromptHistory";
 import { AppContext } from "@/components/AppContext";
 import { PromptInjectionStats } from "@/components/PromptInjectionStats";
 
 const Playground: FC = () => {
   const session = useSession();
-  const { submitPrompt, attempts } = useContext(AppContext);
+  const { submitPrompt, attempts, promptLoading } = useContext(AppContext);
 
   const form = useForm({
     initialValues: {
@@ -19,9 +19,8 @@ const Playground: FC = () => {
       vectordb: true,
     },
   });
-  const [loading, setLoading] = useState(false);
   const output = () => {
-    if (loading) {
+    if (promptLoading) {
       return "Loading...";
     }
     if (Array.isArray(attempts) && attempts.length > 0) {
@@ -36,7 +35,6 @@ const Playground: FC = () => {
   };
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setLoading(true);
     try {
       await submitPrompt({
         userInput: form.values.prompt,
@@ -49,11 +47,9 @@ const Playground: FC = () => {
       window.alert(
         "We're sorry, an error occurred submitting your prompt. Please try again later."
       );
-    } finally {
-      setLoading(false);
     }
   };
-  const disabled = () => !session || loading;
+  const disabled = () => !session || promptLoading;
   const cannedPrompts = [
     {
       text: "How many customers bought more than 10 items in the last month?",
@@ -101,13 +97,27 @@ const Playground: FC = () => {
                   increasingly harder to compromise.
                 </p>
               </div>
-              <Textarea
-                autosize
-                maxRows={15}
-                minRows={10}
-                disabled={disabled()}
-                {...form.getInputProps("prompt")}
-              ></Textarea>
+              <div className="relative">
+                <Textarea
+                  className="w-full p-2 resize-none border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-black focus:border-black sm:text-sm"
+                  minRows={10}
+                  maxRows={15}
+                  disabled={disabled()}
+                  {...form.getInputProps("prompt")}
+                ></Textarea>
+                <Button
+                  className="absolute bottom-4 right-4"
+                  type="submit"
+                  color="dark"
+                  disabled={disabled() || !form.values.prompt.length}
+                >
+                  {promptLoading ? (
+                    <Loader color="gray" variant="dots" />
+                  ) : (
+                    `Submit`
+                  )}
+                </Button>
+              </div>
               <div className="w-full flex flex-col gap-4">
                 <div className="flex flex-row flex-wrap gap-2 w-full">
                   {cannedPrompts.map((prompt, idx) => (
@@ -128,14 +138,6 @@ const Playground: FC = () => {
                   ))}
                 </div>
                 <div className="w-full flex flex-col gap-2 md:flex-row">
-                  <Button
-                    className="flex-grow"
-                    type="submit"
-                    color="dark"
-                    disabled={disabled() || !form.values.prompt.length}
-                  >
-                    Submit
-                  </Button>
                   <div className="py-1 flex flex-row flex-wrap gap-4 items-left">
                     <Text size="sm">Detection strategy:</Text>
                     <Checkbox

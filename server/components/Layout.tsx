@@ -12,7 +12,7 @@ interface Props {
 
 const Layout = ({ children }: Props) => {
   const session = useSession();
-  const { appState, refreshApikey, setLoading } = useContext(AppContext);
+  const { appState, refreshApikey } = useContext(AppContext);
   return (
     <>
       <Head>

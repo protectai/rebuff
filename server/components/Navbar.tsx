@@ -8,7 +8,11 @@ import { AppContext } from "./AppContext";
 const Navbar: FC = () => {
   const supabase = useSupabaseClient();
   const session = useSession();
-  const { appState, accountLoading, setLoading } = useContext(AppContext);
+  const {
+    appState,
+    accountLoading,
+    setPromptLoading: setLoading,
+  } = useContext(AppContext);
   const [mobileMenuOpened, setMobileMenuOpened] = useState(false);
   const creditsAvailable = () => {
     return new Intl.NumberFormat("en-US", {

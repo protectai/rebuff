@@ -19,13 +19,13 @@ export interface AppState {
 }
 export interface AppStateCtx {
   appState: AppState;
-  loading: boolean;
+  promptLoading: boolean;
   accountLoading: boolean;
   attempts: Attempt[];
   refreshAppState: () => Promise<void>;
   refreshApikey: () => Promise<void>;
   submitPrompt: (prompt: PromptRequest) => Promise<void>;
-  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  setPromptLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export interface PromptRequest {

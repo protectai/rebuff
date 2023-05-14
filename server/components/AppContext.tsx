@@ -13,7 +13,7 @@ import { DetectApiSuccessResponse } from "@/lib/rebuff";
 const initState = {
   apikey: "",
   credits: 0,
-  loading: false,
+  promptLoading: false,
   accountLoading: false,
   stats: {
     last24h: {
@@ -33,19 +33,19 @@ const initState = {
 // Create a context object
 export const AppContext = createContext<AppStateCtx>({
   appState: initState,
-  loading: false,
+  promptLoading: false,
   accountLoading: false,
   attempts: [] as Attempt[],
   refreshAppState: async () => undefined,
   refreshApikey: async () => undefined,
   submitPrompt: async (prompt: PromptRequest) => undefined,
-  setLoading: () => null,
+  setPromptLoading: () => null,
 });
 
 // Create a provider component
 export const AppProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [appState, setAppState] = useState<AppState>(initState);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [promptLoading, setPromptLoading] = useState<boolean>(false);
   const [accountLoading, setAccountLoading] = useState<boolean>(false);
   const [attempts, setAttempts] = useState<Attempt[]>([] as Attempt[]);
   const session = useSession();
@@ -71,7 +71,7 @@ export const AppProvider: FC<{ children: ReactNode }> = ({ children }) => {
     }
   };
   const refreshApikey = async () => {
-    setLoading(true);
+    setPromptLoading(true);
     try {
       const response = await fetch("/api/account/apikey", {
         method: "POST",
@@ -81,11 +81,11 @@ export const AppProvider: FC<{ children: ReactNode }> = ({ children }) => {
     } catch (error) {
       console.error(error);
     } finally {
-      setLoading(false);
+      setPromptLoading(false);
     }
   };
   const submitPrompt = async (prompt: PromptRequest) => {
-    setLoading(true);
+    setPromptLoading(true);
     try {
       const body = JSON.stringify(prompt);
 
@@ -154,7 +154,7 @@ export const AppProvider: FC<{ children: ReactNode }> = ({ children }) => {
         ...prev,
       ]);
     } finally {
-      setLoading(false);
+      setPromptLoading(false);
     }
   };
 
@@ -174,13 +174,13 @@ export const AppProvider: FC<{ children: ReactNode }> = ({ children }) => {
     <AppContext.Provider
       value={{
         appState,
-        loading,
+        promptLoading: promptLoading,
         accountLoading,
         attempts,
         refreshAppState,
         refreshApikey,
         submitPrompt,
-        setLoading,
+        setPromptLoading: setPromptLoading,
       }}
     >
       {children}

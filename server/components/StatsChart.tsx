@@ -4,7 +4,7 @@ import { GlobalStats } from "@/interfaces/ui";
 import { AppContext } from "./AppContext";
 
 const StatsCharts: FC = () => {
-  const { appState, loading } = useContext(AppContext);
+  const { appState, promptLoading: loading } = useContext(AppContext);
   const { stats } = appState;
   const value = (s: GlobalStats["alltime"]) =>
     s.attempts === 0 ? 0 : (s.breaches * 100) / s.attempts;
