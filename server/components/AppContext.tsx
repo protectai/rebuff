@@ -9,23 +9,7 @@ import React, {
 import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
 import fetch from "node-fetch";
 import { DetectApiSuccessResponse } from "@/lib/rebuff";
-import { PromptResponse } from "@/lib/playground";
 
-function getHumanFriendlyTimestamp() {
-  const date = new Date();
-
-  // Get the date and time components from the date object
-  const year = date.getFullYear();
-  const month = date.toLocaleString("default", { month: "long" });
-  const day = date.getDate();
-  const hours = date.getHours();
-  const minutes = date.getMinutes();
-
-  // Build the timestamp string using the date and time components
-  const timestamp = `${month} ${day}, ${year} at ${hours}:${minutes}`;
-
-  return timestamp;
-}
 const initState = {
   apikey: "",
   credits: 0,
@@ -127,7 +111,7 @@ export const AppProvider: FC<{ children: ReactNode }> = ({ children }) => {
           maxVectorScore: 0,
         } as DetectApiSuccessResponse,
         is_injection = false,
-        llm_query = "",
+        output = "",
         canary_word = "",
         canary_word_leaked,
       } = data;
@@ -140,14 +124,13 @@ export const AppProvider: FC<{ children: ReactNode }> = ({ children }) => {
           input: prompt.userInput || "",
           metrics,
           is_injection,
-          llm_query: llm_query || "",
+          output: output || "",
           canary_word,
           canary_word_leaked,
         },
       ]);
     } catch (error: any) {
       setAttempts((prev) => [
-        ...prev,
         {
           error,
           timestamp: new Date(),
@@ -164,10 +147,11 @@ export const AppProvider: FC<{ children: ReactNode }> = ({ children }) => {
             maxVectorScore: 0,
           },
           is_injection: false,
-          llm_query: "",
+          output: "",
           canary_word: "",
           canary_word_leaked: false,
         },
+        ...prev,
       ]);
     } finally {
       setLoading(false);

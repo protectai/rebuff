@@ -171,7 +171,7 @@ export default async function handler(
       response = {
         metrics,
         is_injection,
-        llm_query: "Prompt injection detected",
+        output: "Prompt injection detected",
         canary_word: "",
         canary_word_leaked: false,
       };
@@ -205,7 +205,7 @@ export default async function handler(
     response = {
       metrics,
       is_injection,
-      llm_query: llm_response.completion,
+      output: llm_response.completion,
       canary_word,
       canary_word_leaked,
     };

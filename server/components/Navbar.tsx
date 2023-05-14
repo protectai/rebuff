@@ -1,5 +1,5 @@
 import { FC, useContext, useState } from "react";
-import { Group, Image, Text, Title } from "@mantine/core";
+import { Group, Image, Loader, Text, Title } from "@mantine/core";
 import { IconLogout, IconMenu2, IconX } from "@tabler/icons-react";
 import Link from "next/link";
 import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
@@ -8,7 +8,7 @@ import { AppContext } from "./AppContext";
 const Navbar: FC = () => {
   const supabase = useSupabaseClient();
   const session = useSession();
-  const { appState, refreshApikey, setLoading } = useContext(AppContext);
+  const { appState, accountLoading, setLoading } = useContext(AppContext);
   const [mobileMenuOpened, setMobileMenuOpened] = useState(false);
   const creditsAvailable = () => {
     return new Intl.NumberFormat("en-US", {
@@ -23,7 +23,6 @@ const Navbar: FC = () => {
         <Link className="no-underline text-black" href="/">
           <Group spacing="lg">
             <Text fz="lg">
-              {" "}
               <Image
                 maw={100}
                 mx="auto"
@@ -33,10 +32,8 @@ const Navbar: FC = () => {
               />
             </Text>
             <Text>
-              <Title order={2} size={"xx-large"}>
-                Rebuff Playground
-              </Title>
-              <Text fz="md">Prompt Injection Detector</Text>
+              <Title order={4}>Rebuff Playground</Title>
+              <Text fz="sm">Prompt Injection Detector</Text>
             </Text>
           </Group>
         </Link>
@@ -56,7 +53,11 @@ const Navbar: FC = () => {
           {session && (
             <>
               <Text className="font-semibold text-sm  ml-auto mr-4">
-                Credits: {`${creditsAvailable()}`}
+                {accountLoading ? (
+                  <Loader color="gray" variant="dots" />
+                ) : (
+                  `Credits: ${creditsAvailable()}`
+                )}
               </Text>
             </>
           )}

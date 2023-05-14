@@ -3,6 +3,6 @@ export interface PromptResponse {
   canary_word: string;
   canary_word_leaked: boolean;
   is_injection: boolean;
-  llm_query: string;
+  output: string;
   metrics: DetectApiSuccessResponse;
 }

@@ -1,20 +1,14 @@
 import { FC, useContext } from "react";
-import {
-  Space,
-  Title,
-  LoadingOverlay,
-  Text,
-  Group,
-  Accordion,
-} from "@mantine/core";
+import { LoadingOverlay, Text, Accordion } from "@mantine/core";
 import {
   IconAlertCircle,
   IconCircleCheck,
-  IconMoodSad,
+  IconColumnsOff,
 } from "@tabler/icons-react";
 import { AppContext } from "./AppContext";
 import { Attempt } from "@/interfaces/ui";
 import { timeDifference } from "@/lib/general-helpers";
+import { Prism } from "@mantine/prism";
 function trimString(str: string, length: number = 15) {
   if (str.length > length) {
     str = str.slice(0, length) + "...";
@@ -35,18 +29,20 @@ function AccordionLabel({
   is_injection,
   error,
   input,
-  llm_query,
+  output,
   timestamp,
 }: Attempt) {
   return (
-    <Group noWrap>
-      {error ? (
-        <IconMoodSad size={48} strokeWidth={2} color={"#bf4040"} />
-      ) : is_injection ? (
-        <IconAlertCircle size={48} strokeWidth={2} color={"#bf4040"} />
-      ) : (
-        <IconCircleCheck size={48} strokeWidth={2} color={"#2d863e"} />
-      )}
+    <div className="flex flex-row gap-2">
+      <div className="min-w-12">
+        {error ? (
+          <IconAlertCircle size={48} strokeWidth={2} color={"#DC2626"} />
+        ) : is_injection ? (
+          <IconColumnsOff size={48} strokeWidth={2} color={"#EA580C"} />
+        ) : (
+          <IconCircleCheck size={48} strokeWidth={2} color={"#16A34A"} />
+        )}
+      </div>
       <div>
         <p className="py-1 m-0">
           <span className="text-gray pr-2 italic">
@@ -58,15 +54,15 @@ function AccordionLabel({
           {error
             ? "error occurred"
             : is_injection
-            ? "prompt injection detected"
-            : llm_query}
+            ? "prompt injection attempt detected"
+            : output}
         </Text>
       </div>
-    </Group>
+    </div>
   );
 }
 
-const ResultsViewer: FC = () => {
+const PromptHistory: FC = () => {
   const { attempts, loading } = useContext(AppContext);
   const rows = attempts.map((element, idx) => (
     <Accordion.Item value={element.input} key={idx}>
@@ -74,14 +70,14 @@ const ResultsViewer: FC = () => {
         <AccordionLabel {...element} />
       </Accordion.Control>
       <Accordion.Panel>
-        <Text size="sm">{JSON.stringify(element)}</Text>
+        <Prism copyLabel="Copy JSON" copiedLabel="Copied!" language="json">
+          {JSON.stringify(element, null, 2)}
+        </Prism>
       </Accordion.Panel>
     </Accordion.Item>
   ));
   return (
     <div>
-      <Title order={2}>Results</Title>
-      <Space h="md" />
       <LoadingOverlay visible={loading} />
       {attempts.length == 0 ? (
         <Text size="sm" color="gray">
@@ -96,4 +92,4 @@ const ResultsViewer: FC = () => {
   );
 };
 
-export default ResultsViewer;
+export default PromptHistory;
