@@ -98,3 +98,36 @@ def test_canary_word_leak(server: Generator[None, None, None]) -> None:
     )
 
     assert is_leak_detected is True
+
+
+@pytest.mark.usefixtures("server")
+def test_detect_injection_no_injection(server: Generator[None, None, None]) -> None:
+    rb = Rebuff(api_token="12345", api_url="http://localhost:3000")
+
+    user_input = "What is the weather like today?"
+
+    detection_metrics, is_injection = rb.detect_injection(user_input)
+
+    assert is_injection is False
+    assert isinstance(detection_metrics, DetectApiSuccessResponse)
+    assert hasattr(detection_metrics, "heuristicScore")
+    assert detection_metrics.heuristicScore == 0
+    assert hasattr(detection_metrics, "modelScore")
+    assert detection_metrics.modelScore == 0
+    assert hasattr(detection_metrics, "vectorScore")
+    assert detection_metrics.vectorScore["countOverMaxVectorScore"] == 0
+
+
+def test_canary_word_leak_no_leak() -> None:
+    rb = Rebuff(api_token="12345", api_url="http://localhost:3000")
+
+    user_input = "Tell me a joke about computers"
+    prompt_template = "Tell me a joke about \n{user_input}"
+
+    buffed_prompt, canary_word = rb.add_canaryword(prompt_template)
+
+    response_completion = "Why did the computer go to art school? Because it wanted to learn how to draw a better byte!"
+
+    is_leak_detected = rb.is_canary_word_leaked(user_input, response_completion, canary_word)
+
+    assert is_leak_detected is False
