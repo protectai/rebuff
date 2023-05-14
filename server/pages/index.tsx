@@ -5,7 +5,7 @@ import { useSession } from "@supabase/auth-helpers-react";
 import { Button, Checkbox, Space, Textarea, Text, Title } from "@mantine/core";
 import ResultsViewer from "@/components/ResultsViewer";
 import { AppContext } from "@/components/AppContext";
-import ShortInstructions from "@/components/ShortInstructions";
+
 import { Prism } from "@mantine/prism";
 
 const Playground: FC = () => {
@@ -62,10 +62,6 @@ const Playground: FC = () => {
   ];
   return (
     <div>
-      <div className="w-full" key={"what"}>
-        <Space h="md" />
-        <ShortInstructions />
-      </div>
       <Space h="lg" />
       <form onSubmit={handleSubmit}>
         <div className="py-4">

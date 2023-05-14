@@ -6,7 +6,10 @@ import { getSupabaseUser } from "@/lib/supabase";
 import { getUserAccountFromDb } from "@/lib/account-helpers";
 import { Rebuff } from "@/lib/rebuff";
 import { PromptResponse } from "@/lib/playground";
-import { tryUntilDeadline } from "@/lib/general-helpers";
+import {
+  getEnvironmentVariable,
+  tryUntilDeadline,
+} from "@/lib/general-helpers";
 
 type ErrorResponse = {
   error: string;
@@ -150,12 +153,9 @@ export default async function handler(
     const { apikey } = await getUserAccountFromDb(user);
     let response: PromptResponse;
     // get baseURL of server
-    const protocol = req.headers["x-forwarded-proto"] ? "https" : "http";
-    const baseURL = `${protocol}://${
-      req.headers["x-forwarded-host"] || req.headers.host
-    }`;
+    const rebuffApiUrl = getEnvironmentVariable("REBUFF_API") || undefined;
     // use rebuff to check if this is a prompt injection
-    const rebuff = new Rebuff(apikey, baseURL);
+    const rebuff = new Rebuff(apikey, rebuffApiUrl);
     const [metrics, is_injection] = await rebuff.is_injection_detected(
       userInput,
       maxHeuristicScore,
@@ -165,7 +165,7 @@ export default async function handler(
       runVectorCheck,
       runLanguageModelCheck
     );
-
+    //TODO: allow the user to define the parameters for defining an injection
     if (is_injection) {
       //if it is a prompt injection, return the metrics and don't proceed
       response = {
