@@ -1,5 +1,3 @@
-Update the README.md as follows:
-
 <!-- markdownlint-configure-file {
   "MD013": {
     "code_blocks": false,
