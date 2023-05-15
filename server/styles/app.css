@@ -59,6 +59,14 @@
   margin-right: 1rem;
 }
 
+.mr-2 {
+  margin-right: 0.5rem;
+}
+
+.ml-2 {
+  margin-left: 0.5rem;
+}
+
 .block {
   display: block;
 }
@@ -93,6 +101,18 @@
 
 .h-64 {
   height: 16rem;
+}
+
+.max-h-2 {
+  max-height: 0.5rem;
+}
+
+.max-h-3 {
+  max-height: 0.75rem;
+}
+
+.max-h-4 {
+  max-height: 1rem;
 }
 
 .min-h-screen {
@@ -147,6 +167,10 @@
   flex-grow: 1;
 }
 
+.grow-0 {
+  flex-grow: 0;
+}
+
 .table-auto {
   table-layout: auto;
 }
@@ -177,6 +201,10 @@
 
 .flex-wrap {
   flex-wrap: wrap;
+}
+
+.items-start {
+  align-items: flex-start;
 }
 
 .items-end {
@@ -219,8 +247,21 @@
   gap: 1.5rem;
 }
 
+.overflow-auto {
+  overflow: auto;
+}
+
 .overflow-x-auto {
   overflow-x: auto;
+}
+
+.whitespace-pre-wrap {
+  white-space: pre-wrap;
+}
+
+.break-normal {
+  overflow-wrap: normal;
+  word-break: normal;
 }
 
 .break-words {
@@ -297,6 +338,11 @@
   border-color: rgb(229 231 235 / var(--tw-border-opacity));
 }
 
+.border-yellow-300 {
+  --tw-border-opacity: 1;
+  border-color: rgb(253 224 71 / var(--tw-border-opacity));
+}
+
 .bg-gray-100 {
   --tw-bg-opacity: 1;
   background-color: rgb(243 244 246 / var(--tw-bg-opacity));
@@ -334,6 +380,11 @@
 .bg-gray-400 {
   --tw-bg-opacity: 1;
   background-color: rgb(156 163 175 / var(--tw-bg-opacity));
+}
+
+.bg-yellow-100 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(254 249 195 / var(--tw-bg-opacity));
 }
 
 .fill-current {
@@ -390,6 +441,16 @@
 .py-10 {
   padding-top: 2.5rem;
   padding-bottom: 2.5rem;
+}
+
+.px-2\.5 {
+  padding-left: 0.625rem;
+  padding-right: 0.625rem;
+}
+
+.py-0\.5 {
+  padding-top: 0.125rem;
+  padding-bottom: 0.125rem;
 }
 
 .pr-2 {
@@ -490,6 +551,11 @@
 .text-gray-700 {
   --tw-text-opacity: 1;
   color: rgb(55 65 81 / var(--tw-text-opacity));
+}
+
+.text-yellow-800 {
+  --tw-text-opacity: 1;
+  color: rgb(133 77 14 / var(--tw-text-opacity));
 }
 
 .no-underline {
@@ -651,6 +717,18 @@ h1 {
 
 .disabled\:opacity-50:disabled {
   opacity: 0.5;
+}
+
+@media (prefers-color-scheme: dark) {
+  .dark\:bg-gray-700 {
+    --tw-bg-opacity: 1;
+    background-color: rgb(55 65 81 / var(--tw-bg-opacity));
+  }
+
+  .dark\:text-yellow-300 {
+    --tw-text-opacity: 1;
+    color: rgb(253 224 71 / var(--tw-text-opacity));
+  }
 }
 
 @media (min-width: 640px) {

@@ -35,10 +35,15 @@ const Navbar: FC = () => {
                 style={{ clipPath: "inset(5% 15% 5% 15%)" }} // Apply cropping here
               />
             </Text>
-            <Text>
-              <Title order={4}>Rebuff Playground</Title>
+            <div>
+              <div className="flex flex-row items-start">
+                <Title order={4}>Rebuff Playground</Title>
+                <span className="bg-yellow-100 text-yellow-800 text-xs font-medium ml-2 px-2.5 py-0.5 rounded border border-yellow-300">
+                  Beta
+                </span>
+              </div>
               <Text fz="sm">Prompt Injection Detector</Text>
-            </Text>
+            </div>
           </Group>
         </Link>
         <button
