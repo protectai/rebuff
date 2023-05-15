@@ -34,11 +34,15 @@
 
 ## Features
 
+
 Rebuff offers 4 layers of defense:
 - Heuristics: Filter out potentially malicious input before it reaches the LLM.
 - LLM-based detection: Use a dedicated LLM to analyze incoming prompts and identify potential attacks.
 - VectorDB: Store embeddings of previous attacks in a vector database to recognize and prevent similar attacks in the future.
 - Canary tokens: Add canary tokens to prompts to detect leakages, allowing the framework to store embeddings about the incoming prompt in the vector database and prevent future attacks.
+
+![sequence](https://github.com/woop/rebuff/assets/6728866/706edcc5-349d-483f-93a5-cf9cbda5c671)
+
 
 ## Disclaimer
 
