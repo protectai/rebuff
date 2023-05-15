@@ -146,7 +146,7 @@ export class Rebuff {
       canaryWord: canary_word,
     };
 
-    const response = await fetch(`${this.api_url}/api/log_leakage`, {
+    const response = await fetch(`${this.api_url}/api/log`, {
       method: "POST",
       body: JSON.stringify(data),
       headers: this.headers,
