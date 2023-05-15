@@ -96,7 +96,7 @@ const Playground: FC = () => {
         <form onSubmit={handleSubmit} className="flex flex-col gap-6">
           <div>
             <LoginButtonWithInstructions />
-            <PromptInjectionStats stats={stats} />
+            {/* <PromptInjectionStats stats={stats} /> */}
             <p className="py-2 m-0 text-sm text-gray-600">
               Rebuff learns from every successful attack, making the app
               increasingly harder to compromise.
