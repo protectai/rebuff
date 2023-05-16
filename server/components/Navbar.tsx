@@ -31,8 +31,8 @@ const Navbar: FC = () => {
                 maw={100}
                 mx="auto"
                 radius="md"
-                src="https://camo.githubusercontent.com/9ff0256fdbfa8dbbc8e61201bf9ccc34f985c77e690967052d14b61eae6fee24/68747470733a2f2f692e696d6775722e636f6d2f62366770574f422e706e67"
-                style={{ clipPath: "inset(5% 15% 5% 15%)" }} // Apply cropping here
+                src="https://i.imgur.com/ishzqSK.png"
+                style={{ clipPath: "inset(0% 0% 0% 0%)" }} // Apply cropping here
               />
             </Text>
             <div>

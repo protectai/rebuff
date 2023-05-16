@@ -9,8 +9,8 @@ const LoginButtonWithInstructions: FC = () => {
   const session = useSession();
   const [allowLogin, setAllowLogin] = useState(false);
   useEffect(() => {
-    const lsAllowLogin =
-      window && window.localStorage.getItem("rebuff.allowLogin") === "true";
+    const lsAllowLogin = true;
+    // window && window.localStorage.getItem("rebuff.allowLogin") === "true";
     setAllowLogin(lsAllowLogin);
   }, []);
   return session || !allowLogin ? (

@@ -18,7 +18,7 @@ const Playground: FC = () => {
 
   const form = useForm({
     initialValues: {
-      prompt: "How many products did we sell yesterday?",
+      prompt: "How many customers do we have?",
       heuristic: true,
       llm: true,
       vectordb: true,
@@ -36,9 +36,7 @@ const Playground: FC = () => {
         ? formatSQL(lastAttempt.output)
         : "An error occurred.";
     }
-    return formatSQL(
-      `SELECT SUM(quantity) FROM order_details JOIN orders ON orders.order_id = order_details.order_id WHERE order_date = DATE_TRUNC('day', CURRENT_DATE - INTERVAL '1 day') AND fulfilled = true`
-    );
+    return formatSQL(`SELECT COUNT(*) FROM customers`);
   };
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -187,7 +185,10 @@ const Playground: FC = () => {
           <PromptHistory />
         </Section>
         <Section title="Prompt Template">
-          <pre className="overflow-auto whitespace-pre-wrap">
+          <pre
+            style={{ fontSize: "0.9rem", lineHeight: "1.4rem" }}
+            className="overflow-auto whitespace-pre-wrap"
+          >
             {render_prompt_for_sql("user_input")}
           </pre>
         </Section>

@@ -5,6 +5,12 @@ status = 200
 force = true
 
 [[redirects]]
+from = "https://alpha.rebuff.ai/api/*"
+to = "https://playground.rebuff.ai/api/:splat"
+status = 200
+force = true
+
+[[redirects]]
 from = "https://rebuff.ai/api/*"
 to = "https://playground.rebuff.ai/api/:splat"
 status = 200
