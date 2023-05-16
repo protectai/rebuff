@@ -9,7 +9,7 @@
 
 <div align="center">
 
-  ## Rebuff
+  ## Rebuff.ai
 
   <img width="250" src="https://imgur.com/ishzqSK.png" alt="Rebuff Logo">
 
