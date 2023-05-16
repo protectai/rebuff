@@ -138,7 +138,8 @@ docker run -d -p 3000:3000 \
 Now, the Rebuff server should be running at `http://localhost:3000`.
 
 ## How it works
-![Untitled (1)](https://github.com/woop/rebuff/assets/6728866/279f17f0-6125-44ac-ac41-4760969869d7)
+![Untitled (1)](https://github.com/woop/rebuff/assets/6728866/3d90ebb3-d149-42e8-b991-a46c46d5a9e7)
+
 
 ## Contributing
 
