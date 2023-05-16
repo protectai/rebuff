@@ -10,11 +10,13 @@ import LoginButtonWithInstructions from "@/components/LoginButtonWithInstruction
 import { Prism } from "@mantine/prism";
 import { formatSQL, render_prompt_for_sql } from "@/lib/general-helpers";
 import Section from "@/components/Section";
+import ApikeyDisplay from "@/components/ApikeyDisplay";
 
 const Playground: FC = () => {
   const session = useSession();
 
-  const { submitPrompt, attempts, promptLoading } = useContext(AppContext);
+  const { submitPrompt, attempts, promptLoading, appState, refreshApikey } =
+    useContext(AppContext);
 
   const form = useForm({
     initialValues: {
@@ -165,6 +167,24 @@ const Playground: FC = () => {
           <pre className="text-[0.9rem] leading-[1.4rem] overflow-auto whitespace-pre-wrap">
             {render_prompt_for_sql("user_input")}
           </pre>
+        </Section>
+        <Section title="Add Rebuff to your own app">
+          <p>
+            Read the{" "}
+            <a className="py-4" href="https://docs.rebuff.ai" target="_blank">
+              docs
+            </a>{" "}
+            for a quick start guide and code samples. Use the apikey below in
+            your code.
+          </p>
+          {session ? (
+            <ApikeyDisplay
+              apiKey={appState?.apikey ?? ""}
+              onRefresh={refreshApikey}
+            />
+          ) : (
+            <Text size="sm">Login to view your API key</Text>
+          )}
         </Section>
       </div>
     </div>

@@ -22,6 +22,7 @@ const initState = {
       user: 0,
     },
     detections: 0,
+    requests: 0,
   },
 } as AppState;
 // Create a context object

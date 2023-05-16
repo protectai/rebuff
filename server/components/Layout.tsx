@@ -26,14 +26,14 @@ const Layout = ({ children }: Props) => {
           <div className="flex justify-between items-center">
             <div className="text-left">© {new Date().getFullYear()}</div>
             <div>
-              {session && (
-                <>
-                  <ApikeyDisplay
-                    apiKey={appState?.apikey ?? ""}
-                    onRefresh={refreshApikey}
-                  />
-                </>
-              )}
+              Made by{" "}
+              <a href="https://twitter.com/willpienaar" target="_blank">
+                @willpienaar
+              </a>{" "}
+              and{" "}
+              <a href="https://twitter.com/shrumm" target="_blank">
+                @shrumm
+              </a>
             </div>
             <div className="flex flex-row justify-right items-center">
               <div className="text-sm">Questions? Get in touch.</div>

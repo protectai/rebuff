@@ -15,6 +15,7 @@ const Navbar: FC = () => {
   } = useContext(AppContext);
   const [mobileMenuOpened, setMobileMenuOpened] = useState(false);
   const creditsAvailable = () => {
+    if (typeof appState.credits !== "number") return "";
     return new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "USD",
@@ -28,7 +29,7 @@ const Navbar: FC = () => {
           <Group spacing="lg">
             <Text fz="lg">
               <Image
-                maw={100}
+                maw={80}
                 mx="auto"
                 radius="md"
                 src="https://i.imgur.com/ishzqSK.png"

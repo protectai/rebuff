@@ -33,7 +33,7 @@ const ApikeyDisplay: FC<ApikeyDisplayProps> = ({ apiKey, onRefresh }) => {
   return (
     <div className="flex items-center hover:bg-gray-100 cursor-pointer">
       <div className="flex flex-row items-center" onClick={copyToClipboard}>
-        <Text className="font-semibold text-sm break-all">
+        <Text className="text-md break-all">
           {`Apikey: ${
             copyMessage ? copyMessage : show ? apiKey : "************"
           }`}
@@ -42,14 +42,14 @@ const ApikeyDisplay: FC<ApikeyDisplayProps> = ({ apiKey, onRefresh }) => {
       <button
         onClick={() => setShow(!show)}
         title={show ? "Hide API key" : "Show API key"}
-        className="text-black text-sm text-center inline-flex items-center bg-transparent border-none cursor-pointer"
+        className="text-black text-md text-center inline-flex items-center bg-transparent border-none cursor-pointer"
       >
         {show ? <IconX /> : <IconEye />}
       </button>
       <button
         onClick={onRefresh}
         title="Refresh API key"
-        className="text-black text-sm text-center inline-flex items-center bg-transparent border-none cursor-pointer"
+        className="text-black text-md text-center inline-flex items-center bg-transparent border-none cursor-pointer"
       >
         <IconRefresh />
       </button>
