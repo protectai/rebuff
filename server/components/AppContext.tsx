@@ -70,7 +70,16 @@ export const AppProvider: FC<{ children: ReactNode }> = ({ children }) => {
     try {
       const response = await fetch("/api/account/stats");
       const data = (await response.json()) as AppState["stats"];
-      setStats(data);
+      if (!data) return;
+      if (
+        typeof data?.breaches?.total ??
+        (undefined === "number" && typeof data?.breaches?.user) ??
+        (undefined === "number" && typeof data?.detections) ??
+        (undefined === "number" && typeof data?.requests) ??
+        undefined === "number"
+      ) {
+        setStats(data);
+      }
     } catch (error) {
       console.error(error);
     } finally {

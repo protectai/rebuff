@@ -75,7 +75,9 @@ export function timeDifference(previous: Date) {
   }
 }
 
-export function formatSQL(sql: string) {
+export function formatSQL(sql: string): string {
+  if (typeof sql !== "string") return "";
+  if (sql.length < 50) return sql;
   const keywords = [
     "SELECT",
     "FROM",

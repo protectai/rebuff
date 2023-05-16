@@ -62,23 +62,37 @@ export const refreshUserApikeyInDb = async (
   }
 };
 
-export const refreshStats = async (user: any): Promise<AppState["stats"]> => {
+export const getUserStats = async (user: any): Promise<AppState["stats"]> => {
   let stats = {
     breaches: { total: 0, user: 0 },
     detections: 0,
+    requests: 0,
   } as AppState["stats"];
   const { data, error } = await supabaseAdminClient.rpc(
     "get_attempt_aggregates",
     { user_id: user.id }
   );
-  stats.breaches.user = data.total_breach;
-  stats.detections = data.user_breach;
-  stats.detections = data.injection;
   if (error) {
     console.error(`Error getting stats for user ${user.id}`);
     console.error(error);
     throw new Error("Error getting stats");
   }
+  const updateObjectValues = (init: any, fromDb: any) => {
+    for (const key in init) {
+      if (fromDb.hasOwnProperty(key)) {
+        if (typeof fromDb[key] === "number" && isFinite(fromDb[key])) {
+          init[key] = fromDb[key];
+        } else if (
+          typeof fromDb[key] === "object" &&
+          typeof init[key] === "object"
+        ) {
+          updateObjectValues(init[key], fromDb[key]);
+        }
+      }
+    }
+    return init as AppState["stats"];
+  };
+  stats = updateObjectValues(stats, data);
   return stats;
 };
 

@@ -7,6 +7,7 @@ interface PlaygroundStats {
     user: number;
   };
   detections: number;
+  requests: number;
 }
 
 export interface AppState {

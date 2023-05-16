@@ -4,7 +4,7 @@ import { createClient } from "@supabase/supabase-js";
 import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
 import { generateApiKey } from "@/utils/apikeys";
 import { supabaseAdminClient, supabaseAnonClient } from "@/lib/supabase";
-import { refreshStats } from "@/lib/account-helpers";
+import { getUserStats } from "@/lib/account-helpers";
 
 const cors = Cors({
   methods: ["POST", "GET", "HEAD"],
@@ -63,7 +63,7 @@ export default async function handler(
       .json({ error: "not_authenticated", message: "not authenticated" });
   }
   try {
-    const stats = await refreshStats(user);
+    const stats = await getUserStats(user);
     return res.status(200).json(stats);
   } catch (error) {
     console.error(error);
