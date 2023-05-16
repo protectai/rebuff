@@ -4,6 +4,8 @@ description: Self-hardening prompt injection detector
 
 # Rebuff AI
 
+<figure><img src=".gitbook/assets/willem_a_simple_mascot_for_a_defense_company_fire_white_backgro_8da30536-6c6f-4207-abf4-9fb6f8d3663c (1).png" alt="" width="150"><figcaption></figcaption></figure>
+
 {% hint style="danger" %}
 Rebuff is still in an alpha state!
 {% endhint %}
