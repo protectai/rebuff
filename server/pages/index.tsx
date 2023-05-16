@@ -18,7 +18,6 @@ const Playground: FC = () => {
 
   const { submitPrompt, attempts, promptLoading, appState, refreshApikey } =
     useContext(AppContext);
-
   const form = useForm({
     initialValues: {
       prompt: "How many customers do we have?",
@@ -27,6 +26,21 @@ const Playground: FC = () => {
       vectordb: true,
     },
   });
+  const strategyType = () => {
+    const speed =
+      form.values.heuristic && !form.values.llm && !form.values.vectordb
+        ? "fastest"
+        : !form.values.llm && form.values.vectordb
+        ? "fast"
+        : "slow";
+    const safety =
+      form.values.heuristic && form.values.vectordb && form.values.llm
+        ? "safest"
+        : !form.values.llm && !form.values.vectordb
+        ? "unsafe"
+        : "safe";
+    return `${speed}, ${safety}`;
+  };
   const lastAttempt = Array.isArray(attempts) && attempts[0];
   const output = () => {
     if (promptLoading) {
@@ -126,7 +140,10 @@ const Playground: FC = () => {
             </div>
             <div className="w-full flex flex-col gap-2 md:flex-row">
               <div className="py-1 flex flex-row flex-wrap gap-4 items-left">
-                <Text size="sm">Detection strategy:</Text>
+                <Text size="sm">
+                  Detection strategy:{" "}
+                  <span className="font-bold pr-2">{strategyType()}</span>
+                </Text>
                 <Checkbox
                   size="sm"
                   color="dark"

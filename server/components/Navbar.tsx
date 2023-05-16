@@ -60,8 +60,10 @@ const Navbar: FC = () => {
         } bg-gray-100 p-2 shadow-md justify-between items-center flex-grow flex-row gap-4 md:flex md:shadow-none md:p-0 md:bg-transparent md:gap-0`}
       >
         <div className="flex items-center justify-end md:justify-end gap-2 mr-2 flex-grow">
-          <a href="#add-to-app" className="text-black no-underline">
-            <Text className="font-semibold text-sm">Add to my app</Text>
+          <a href="#add-to-app" className="no-underline">
+            <div className="p-2 border border-black border-solid cursor-pointer hover:bg-black hover:text-white rounded font-semibold text-black text-sm">
+              <Text>Add to my app</Text>
+            </div>
           </a>
           {session && (
             <>
