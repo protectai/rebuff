@@ -64,6 +64,30 @@ async function callOpenAiToGetSQLQuery(
   return { completion: proposedSQLQuery, error: null };
 }
 
+const check_sql_breach = (query: string) => {
+  const lowerCaseQuery = query.toLowerCase();
+
+  // Check for INSERT, UPDATE, or DELETE queries
+  if (
+    lowerCaseQuery.includes("insert") ||
+    lowerCaseQuery.includes("update") ||
+    lowerCaseQuery.includes("delete")
+  ) {
+    return true;
+  }
+
+  // Check if the query accesses the users table
+  if (lowerCaseQuery.includes("users")) {
+    return true;
+  }
+
+  // Check if the query refers to the passwords field
+  if (lowerCaseQuery.includes("passwords")) {
+    return true;
+  }
+
+  return false;
+};
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Response | ErrorResponse>
@@ -202,33 +226,13 @@ async function getResponse(
     llm_response.completion,
     canary_word
   );
-  const check_output = (query: string) => {
-    const lowerCaseQuery = query.toLowerCase();
+  const sql_breach = check_sql_breach(llm_response.completion);
 
-    // Check for INSERT, UPDATE, or DELETE queries
-    if (
-      lowerCaseQuery.includes("insert") ||
-      lowerCaseQuery.includes("update") ||
-      lowerCaseQuery.includes("delete")
-    ) {
-      return true;
-    }
-
-    // Check if the query accesses the users table
-    if (lowerCaseQuery.includes("users")) {
-      return true;
-    }
-
-    // Check if the query refers to the passwords field
-    if (lowerCaseQuery.includes("passwords")) {
-      return true;
-    }
-
-    return false;
-  };
+  //if we detected a breach, log it so we block further attempts that are similar
+  await rebuff.log_leakage(userInput, llm_response.completion, canary_word);
   return {
     metrics,
-    breach: canary_word_leaked || check_output(llm_response.completion),
+    breach: canary_word_leaked || sql_breach,
     is_injection,
     output: llm_response.completion,
     canary_word,

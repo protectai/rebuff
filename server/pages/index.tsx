@@ -11,6 +11,7 @@ import { Prism } from "@mantine/prism";
 import { formatSQL, render_prompt_for_sql } from "@/lib/general-helpers";
 import Section from "@/components/Section";
 import ApikeyDisplay from "@/components/ApikeyDisplay";
+import SequenceDiagram from "@/components/SequenceDiagram";
 
 const Playground: FC = () => {
   const session = useSession();
@@ -26,7 +27,7 @@ const Playground: FC = () => {
       vectordb: true,
     },
   });
-  const lastAttempt = Array.isArray(attempts) && attempts[attempts.length - 1];
+  const lastAttempt = Array.isArray(attempts) && attempts[0];
   const output = () => {
     if (promptLoading) {
       return "Loading...";
@@ -168,14 +169,14 @@ const Playground: FC = () => {
             {render_prompt_for_sql("user_input")}
           </pre>
         </Section>
-        <Section title="Add Rebuff to your own app">
+        <Section id="add-to-app" title="Add Rebuff to your own app">
           <p>
             Read the{" "}
             <a className="py-4" href="https://docs.rebuff.ai" target="_blank">
               docs
             </a>{" "}
-            for a quick start guide and code samples. Use the apikey below in
-            your code.
+            for a quick start guide and code samples. You'll need the apikey
+            below for authentication.
           </p>
           {session ? (
             <ApikeyDisplay
@@ -185,6 +186,9 @@ const Playground: FC = () => {
           ) : (
             <Text size="sm">Login to view your API key</Text>
           )}
+        </Section>
+        <Section title="How Rebuff works">
+          <SequenceDiagram />
         </Section>
       </div>
     </div>

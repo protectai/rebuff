@@ -59,10 +59,13 @@ const Navbar: FC = () => {
           mobileMenuOpened ? "flex" : "hidden"
         } bg-gray-100 p-2 shadow-md justify-between items-center flex-grow flex-row gap-4 md:flex md:shadow-none md:p-0 md:bg-transparent md:gap-0`}
       >
-        <div className="flex items-center justify-start md:justify-center gap-2 flex-grow">
+        <div className="flex items-center justify-end md:justify-end gap-2 mr-2 flex-grow">
+          <a href="#add-to-app" className="text-black no-underline">
+            <Text className="font-semibold text-sm">Add to my app</Text>
+          </a>
           {session && (
             <>
-              <Text className="font-semibold text-sm  ml-auto mr-4">
+              <Text className="font-semibold text-sm">
                 {accountLoading ? (
                   <Loader color="gray" variant="dots" />
                 ) : (

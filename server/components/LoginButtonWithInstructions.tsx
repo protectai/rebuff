@@ -1,6 +1,6 @@
-import { FC, useEffect, useState } from "react";
+import { FC } from "react";
 import { Alert } from "@mantine/core";
-import { IconAlertCircle, IconInfoCircle } from "@tabler/icons-react";
+import { IconAlertCircle } from "@tabler/icons-react";
 import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
 import { Auth, ThemeSupa } from "@supabase/auth-ui-react";
 

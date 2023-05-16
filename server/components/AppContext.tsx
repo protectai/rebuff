@@ -48,13 +48,7 @@ export const AppProvider: FC<{ children: ReactNode }> = ({ children }) => {
   useEffect(
     function onChange() {
       if (session) {
-        refreshAppState()
-          .then(() => {
-            refreshStats();
-          })
-          .catch((error) => {
-            console.error("Error refreshing app state or stats:", error);
-          });
+        refreshAppState();
       }
     },
     [session]

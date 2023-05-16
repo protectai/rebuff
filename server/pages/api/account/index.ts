@@ -4,8 +4,10 @@ import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
 import { generateApiKey } from "@/utils/apikeys";
 import {
   getUserAccountFromDb,
+  getUserStats,
   refreshUserApikeyInDb,
 } from "@/lib/account-helpers";
+import { AppState } from "@/interfaces/ui";
 
 const cors = Cors({
   methods: ["POST", "GET", "HEAD"],
@@ -68,7 +70,32 @@ export default async function handler(
       case "GET":
         if (!req.query.slug) {
           //only handle the /api/account endpoint
-          const appState = await getUserAccountFromDb(user);
+          const results = await Promise.allSettled([
+            getUserAccountFromDb(user),
+            getUserStats(user),
+          ]);
+          let appState: AppState = {
+            apikey: "",
+            credits: 0,
+            stats: {
+              breaches: { total: 0, user: 0 },
+              detections: 0,
+              requests: 0,
+            },
+          };
+          if (results[0].status === "fulfilled") {
+            appState.apikey = results[0].value.apikey;
+            appState.credits = results[0].value.credits;
+          } else {
+            console.error(
+              `Error getting apikey + credits for user: ${user.id}`
+            );
+          }
+          if (results[1].status === "fulfilled") {
+            appState.stats = results[1].value;
+          } else {
+            console.error(`Error getting stats for user: ${user.id}`);
+          }
           return res.status(200).json(appState);
         }
       case "POST":
