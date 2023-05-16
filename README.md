@@ -17,12 +17,14 @@
 
   Rebuff is designed to protect AI applications from prompt injection (PI) attacks through a [multi-layered defense](#features).
 
-  [Playground](https://playground.rebuff.ai/) •
+  [Playground](https://playground.rebuff.ai/) • 
+  [Discord](https://discord.gg/6nD88UfS) •
   [Features](#features) •
   [Installation](#installation) •
   [Getting started](#getting-started) •
   [Self-hosting](#self-hosting) •
-  [Contributing](#contributing)
+  [Contributing](#contributing) •
+  [Docs](https://docs.rebuff.ai) •
 
 </div>
 <div align="center">
@@ -41,8 +43,17 @@ Rebuff offers 4 layers of defense:
 - VectorDB: Store embeddings of previous attacks in a vector database to recognize and prevent similar attacks in the future.
 - Canary tokens: Add canary tokens to prompts to detect leakages, allowing the framework to store embeddings about the incoming prompt in the vector database and prevent future attacks.
 
-![sequence](https://github.com/woop/rebuff/assets/6728866/706edcc5-349d-483f-93a5-cf9cbda5c671)
+## Roadmap
 
+- [x] Prompt Injection Detection
+- [x] Canary Word Leak Detection
+- [x] Attack Signature Learning
+- [ ] PII Leak Detection
+- [ ] Toxic or Offensive Language Detection
+- [ ] User Defined Detection Strategies
+- [ ] Multi tenancy
+- [ ] Local-only mode
+- [ ] JavaScript/TypeScript client
 
 ## Disclaimer
 
@@ -125,6 +136,10 @@ docker run -d -p 3000:3000 \
 ```
 
 Now, the Rebuff server should be running at `http://localhost:3000`.
+
+## How it works
+
+![Untitled](https://github.com/woop/rebuff/assets/6728866/73450b13-3620-4c9c-9817-2ee57a7b7b94)
 
 ## Contributing
 
