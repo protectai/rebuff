@@ -1,5 +1,5 @@
 # Table of contents
 
 * [Rebuff AI](README.md)
-* [Quickstart (Python)](quickstart-python.md)
+* [Quickstart](quickstart.md)
 * [Self-hosting](self-hosting.md)
