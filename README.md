@@ -41,8 +41,6 @@ Rebuff offers 4 layers of defense:
 - VectorDB: Store embeddings of previous attacks in a vector database to recognize and prevent similar attacks in the future.
 - Canary tokens: Add canary tokens to prompts to detect leakages, allowing the framework to store embeddings about the incoming prompt in the vector database and prevent future attacks.
 
-![sequence](https://github.com/woop/rebuff/assets/6728866/706edcc5-349d-483f-93a5-cf9cbda5c671)
-
 
 ## Disclaimer
 
@@ -125,6 +123,10 @@ docker run -d -p 3000:3000 \
 ```
 
 Now, the Rebuff server should be running at `http://localhost:3000`.
+
+## How it works
+
+![Untitled](https://github.com/woop/rebuff/assets/6728866/73450b13-3620-4c9c-9817-2ee57a7b7b94)
 
 ## Contributing
 
