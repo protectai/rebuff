@@ -185,7 +185,10 @@ const Playground: FC = () => {
           <PromptHistory />
         </Section>
         <Section title="Prompt Template">
-          <pre className="overflow-auto whitespace-pre-wrap">
+          <pre
+            style={{ fontSize: "0.9rem", lineHeight: "1.4rem" }}
+            className="overflow-auto whitespace-pre-wrap"
+          >
             {render_prompt_for_sql("user_input")}
           </pre>
         </Section>

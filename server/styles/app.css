@@ -44,6 +44,14 @@
   margin-right: 1rem;
 }
 
+.mr-10 {
+  margin-right: 2.5rem;
+}
+
+.mr-8 {
+  margin-right: 2rem;
+}
+
 .inline-block {
   display: inline-block;
 }
@@ -506,6 +514,10 @@ h1 {
 }
 
 @media (min-width: 768px) {
+  .md\:inline {
+    display: inline;
+  }
+
   .md\:flex {
     display: flex;
   }
