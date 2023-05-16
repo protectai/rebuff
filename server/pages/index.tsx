@@ -68,36 +68,13 @@ const Playground: FC = () => {
       safe: false,
     },
   ];
-  const stats = [
-    {
-      label: "total requests",
-      count: "0",
-      part: null,
-      textColor: "text-gray-500",
-      borderColor: "border-gray-500",
-    },
-    {
-      label: "injections detected",
-      count: "0",
-      part: null,
-      textColor: "text-gray-500",
-      borderColor: "border-gray-500",
-    },
-    {
-      label: "learned attack signatures",
-      count: "0",
-      part: null,
-      textColor: "text-gray-500",
-      borderColor: "border-green-700",
-    },
-  ];
   return (
     <div className="flex flex-row w-full justify-center items-center">
       <div className="w-full md:max-w-4xl">
         <form onSubmit={handleSubmit} className="flex flex-col gap-6">
           <div>
             <LoginButtonWithInstructions />
-            {/* <PromptInjectionStats stats={stats} /> */}
+            <PromptInjectionStats />
             <p className="py-2 m-0 text-sm text-gray-600">
               Rebuff learns from every successful attack, making the app
               increasingly harder to compromise.
@@ -187,7 +164,7 @@ const Playground: FC = () => {
           <PromptHistory />
         </Section>
         <Section title="Prompt Template">
-          <pre className="overflow-auto whitespace-pre-wrap">
+          <pre className="overflow-auto whitespace-pre-wrap bg-gray-100 rounded border-2 border-gray-600 shadow-sm p-2">
             {render_prompt_for_sql("user_input")}
           </pre>
         </Section>

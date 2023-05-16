@@ -1,21 +1,18 @@
 import React from "react";
-import { DetectApiSuccessResponse } from "@/lib/rebuff";
 import { PromptResponse } from "@/lib/playground";
 
-interface stat {
-  breaches: number;
-  attempts: number;
-}
-export interface GlobalStats {
-  last24h: stat;
-  last7d: stat;
-  alltime: stat;
+interface PlaygroundStats {
+  breaches: {
+    total: number;
+    user: number;
+  };
+  detections: number;
 }
 
 export interface AppState {
   apikey: string;
   credits: number;
-  stats: GlobalStats;
+  stats: PlaygroundStats;
 }
 export interface AppStateCtx {
   appState: AppState;

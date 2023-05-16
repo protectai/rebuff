@@ -1,4 +1,6 @@
 import { createStyles, Box, Text, Group, SimpleGrid, rem } from "@mantine/core";
+import { useContext, useEffect, useState } from "react";
+import { AppContext } from "./AppContext";
 
 const useStyles = createStyles((theme) => ({
   stat: {
@@ -12,19 +14,50 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
-interface StatsSegmentsProps {
-  stats: {
-    label: string;
-    count: string;
-    part: number | null;
-    textColor: string;
-    borderColor: string;
-  }[];
-}
-
-export function PromptInjectionStats({ stats }: StatsSegmentsProps) {
+export function PromptInjectionStats() {
   const { classes } = useStyles();
+  const { appState } = useContext(AppContext);
 
+  const [stats, setStats] = useState([
+    {
+      label: "total requests",
+      count: "0",
+      part: null,
+      textColor: "text-gray-500",
+      borderColor: "border-gray-500",
+    },
+    {
+      label: "injections detected",
+      count: "0",
+      part: null,
+      textColor: "text-gray-500",
+      borderColor: "border-gray-500",
+    },
+    {
+      label: "learned attack signatures",
+      count: "0",
+      part: null,
+      textColor: "text-gray-500",
+      borderColor: "border-green-700",
+    },
+  ]);
+  useEffect(
+    function onChange() {
+      const newStats = appState.stats;
+      if (!newStats) return;
+      if (typeof newStats.breaches.total === "number") {
+        stats[0].count = newStats.breaches.total.toLocaleString();
+      }
+      if (typeof newStats.breaches.user === "number") {
+        stats[1].count = newStats.breaches.user.toLocaleString();
+      }
+      if (typeof newStats.detections === "number") {
+        stats[2].count = newStats.detections.toLocaleString();
+      }
+      setStats(stats);
+    },
+    [appState.stats]
+  );
   const descriptions = stats.map((stat) => (
     <div key={stat.label} className={`${classes.stat} ${stat.borderColor}`}>
       <Text tt="uppercase" fz="xs" c="dimmed" fw={700}>

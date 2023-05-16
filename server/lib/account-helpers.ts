@@ -1,6 +1,8 @@
 import { AppState } from "@/interfaces/ui";
 import { generateApiKey } from "@/utils/apikeys";
 import { supabaseAdminClient } from "@/lib/supabase";
+import { User } from "@supabase/supabase-js";
+import { PromptResponse } from "./playground";
 
 export const getUserAccountFromDb = async (user: any): Promise<AppState> => {
   const { data, error } = await supabaseAdminClient
@@ -57,5 +59,43 @@ export const refreshUserApikeyInDb = async (
     console.error(`Error updating apikey for user ${user.id}`);
     console.error(error);
     throw new Error("Error updating apikey");
+  }
+};
+
+export const refreshStats = async (user: any): Promise<AppState["stats"]> => {
+  let stats = {
+    breaches: { total: 0, user: 0 },
+    detections: 0,
+  } as AppState["stats"];
+  const { data, error } = await supabaseAdminClient.rpc(
+    "get_attempt_aggregates",
+    { user_id: user.id }
+  );
+  stats.breaches.user = data.total_breach;
+  stats.detections = data.user_breach;
+  stats.detections = data.injection;
+  if (error) {
+    console.error(`Error getting stats for user ${user.id}`);
+    console.error(error);
+    throw new Error("Error getting stats");
+  }
+  return stats;
+};
+
+export const logAttempt = async (
+  user: User,
+  request: any,
+  response: PromptResponse
+): Promise<void> => {
+  const { error } = await supabaseAdminClient.from("attempts").insert({
+    user_id: user.id,
+    request: request,
+    response: response,
+    breach: response.breach,
+  });
+  if (error) {
+    console.error(`Error logging attempt for user ${user.id}`);
+    console.error(error);
+    throw error;
   }
 };
