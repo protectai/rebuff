@@ -1,0 +1,57 @@
+title Detect Injection
+
+actor User
+
+participant RebuffClient
+
+participant RebuffAIAPI
+participant LLM
+participant VectorDB
+
+
+
+User -> RebuffClient : user input
+activate RebuffClient
+RebuffClient -> RebuffAIAPI : detect_injection()
+activate RebuffAIAPI
+alt heuristic check
+  RebuffAIAPI --> RebuffAIAPI : stage 1
+end
+alt LLM check
+  RebuffAIAPI -> LLM : validate input
+  activate LLM
+  LLM --> RebuffAIAPI : validation result
+  deactivate LLM
+end
+alt vectordb check
+  RebuffAIAPI -> VectorDB : check input
+  activate VectorDB
+  VectorDB --> RebuffAIAPI : check result
+  deactivate VectorDB
+end
+RebuffAIAPI --> RebuffClient : response
+deactivate RebuffAIAPI
+RebuffClient --> User : response
+deactivate RebuffClient
+
+User -> RebuffClient : user input with canary word
+activate RebuffClient
+RebuffClient -> LLM : send prompt with canary word
+activate LLM
+LLM --> RebuffClient : response completion
+deactivate LLM
+RebuffClient --> User : detect_canary_word()
+deactivate RebuffClient
+
+User -> RebuffClient : user input (leak==true)
+activate RebuffClient
+RebuffClient -> RebuffAIAPI : report_leak()
+activate RebuffAIAPI
+RebuffAIAPI->VectorDB:log_leak()
+activate VectorDB
+VectorDB-->RebuffAIAPI:save confirmation
+deactivate VectorDB
+RebuffAIAPI --> RebuffClient : confirmation
+deactivate RebuffAIAPI
+RebuffClient --> User : confirmation
+deactivate RebuffClient
