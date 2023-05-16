@@ -2,8 +2,9 @@ import { FC, useContext } from "react";
 import { Text, Accordion } from "@mantine/core";
 import {
   IconAlertCircle,
+  IconBarrierBlock,
+  IconBug,
   IconCircleCheck,
-  IconColumnsOff,
 } from "@tabler/icons-react";
 import { AppContext } from "./AppContext";
 import { Attempt } from "@/interfaces/ui";
@@ -18,6 +19,7 @@ function trimString(str: string, length: number = 15) {
 
 function AccordionLabel({
   is_injection,
+  breach,
   error,
   input,
   output,
@@ -27,9 +29,11 @@ function AccordionLabel({
     <div className="flex flex-row gap-2">
       <div className="min-w-12">
         {error ? (
+          <IconBug size={32} strokeWidth={2} color={"#333"} />
+        ) : breach ? (
           <IconAlertCircle size={32} strokeWidth={2} color={"#DC2626"} />
         ) : is_injection ? (
-          <IconColumnsOff size={32} strokeWidth={2} color={"#EA580C"} />
+          <IconBarrierBlock size={32} strokeWidth={2} color={"#16A34A"} />
         ) : (
           <IconCircleCheck size={32} strokeWidth={2} color={"#16A34A"} />
         )}

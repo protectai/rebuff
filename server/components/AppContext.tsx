@@ -9,6 +9,7 @@ import React, {
 import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
 import fetch from "node-fetch";
 import { DetectApiSuccessResponse } from "@/lib/rebuff";
+import { PromptResponse } from "@/lib/playground";
 
 const initState = {
   apikey: "",
@@ -16,18 +17,11 @@ const initState = {
   promptLoading: false,
   accountLoading: false,
   stats: {
-    last24h: {
-      attempts: 0,
-      breaches: 0,
+    breaches: {
+      total: 0,
+      user: 0,
     },
-    last7d: {
-      attempts: 0,
-      breaches: 0,
-    },
-    alltime: {
-      attempts: 0,
-      breaches: 0,
-    },
+    detections: 0,
   },
 } as AppState;
 // Create a context object
@@ -54,6 +48,7 @@ export const AppProvider: FC<{ children: ReactNode }> = ({ children }) => {
     function onChange() {
       if (session) {
         refreshAppState();
+        refreshStats();
       }
     },
     [session]
@@ -64,6 +59,18 @@ export const AppProvider: FC<{ children: ReactNode }> = ({ children }) => {
       const response = await fetch("/api/account");
       const data = (await response.json()) as AppState;
       setAppState(data);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setAccountLoading(false);
+    }
+  };
+  const refreshStats = async () => {
+    setAccountLoading(true);
+    try {
+      const response = await fetch("/api/account/stats");
+      const data = (await response.json()) as AppState["stats"];
+      setStats(data);
     } catch (error) {
       console.error(error);
     } finally {
@@ -97,7 +104,7 @@ export const AppProvider: FC<{ children: ReactNode }> = ({ children }) => {
         body,
       });
 
-      const data = await response.json();
+      const data = (await response.json()) as PromptResponse;
       const {
         metrics = {
           runHeuristicCheck: false,
@@ -112,22 +119,24 @@ export const AppProvider: FC<{ children: ReactNode }> = ({ children }) => {
         } as DetectApiSuccessResponse,
         is_injection = false,
         output = "",
+        breach = false,
         canary_word = "",
         canary_word_leaked,
       } = data;
 
       setAttempts((prev) => [
-        ...prev,
         {
           error: null,
           timestamp: new Date(),
           input: prompt.userInput || "",
+          breach,
           metrics,
           is_injection,
           output: output || "",
           canary_word,
           canary_word_leaked,
         },
+        ...prev,
       ]);
     } catch (error: any) {
       setAttempts((prev) => [
@@ -135,6 +144,7 @@ export const AppProvider: FC<{ children: ReactNode }> = ({ children }) => {
           error,
           timestamp: new Date(),
           input: prompt.userInput || "",
+          breach: false,
           metrics: {
             runHeuristicCheck: false,
             runLanguageModelCheck: false,
@@ -154,6 +164,7 @@ export const AppProvider: FC<{ children: ReactNode }> = ({ children }) => {
         ...prev,
       ]);
     } finally {
+      refreshStats();
       setPromptLoading(false);
     }
   };
@@ -166,7 +177,7 @@ export const AppProvider: FC<{ children: ReactNode }> = ({ children }) => {
     setAppState((prev) => ({ ...prev, credits: credits }));
   };
 
-  const setStats = (stats: any) => {
+  const setStats = (stats: AppState["stats"]) => {
     setAppState((prev) => ({ ...prev, stats: stats }));
   };
 
