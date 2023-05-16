@@ -18,6 +18,4 @@ It is designed to protect AI applications from prompt injection (PI) attacks thr
 
 
 
-<figure><img src=".gitbook/assets/sequence.svg" alt=""><figcaption></figcaption></figure>
-
-<table data-view="cards"><thead><tr><th></th><th></th><th></th><th data-hidden data-card-target data-type="content-ref"></th></tr></thead><tbody><tr><td></td><td>Quickstart (Python)</td><td></td><td><a href="quickstart.md">quickstart.md</a></td></tr><tr><td></td><td>Self-hosting</td><td></td><td><a href="self-hosting.md">self-hosting.md</a></td></tr></tbody></table>
+<table data-view="cards"><thead><tr><th></th><th></th><th></th><th data-hidden data-card-target data-type="content-ref"></th></tr></thead><tbody><tr><td></td><td>Quickstart (Python)</td><td></td><td><a href="quickstart.md">quickstart.md</a></td></tr><tr><td></td><td>Self-hosting</td><td></td><td><a href="self-hosting.md">self-hosting.md</a></td></tr><tr><td></td><td>How it works</td><td></td><td><a href="how-it-works.md">how-it-works.md</a></td></tr></tbody></table>
