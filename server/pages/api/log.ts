@@ -8,6 +8,10 @@ import {
 } from "@/lib/rebuff";
 import { runMiddleware, checkApiKey } from "@/lib/detect-helpers";
 import { supabaseAdminClient } from "@/lib/supabase";
+import { openai } from "@/lib/openai";
+import { pinecone } from "@/lib/pinecone-client";
+import { getEnvironmentVariable } from "@/lib/general-helpers";
+import { v4 as uuidv4 } from "uuid";
 
 const cors = Cors({
   methods: ["POST"],
@@ -22,6 +26,37 @@ interface LogRow {
   created_at?: string;
   metadata_json?: Json | null;
   user_input: string;
+}
+
+async function writeTextAsEmbeddingToPinecone(input: string, user: string) {
+  // Create embedding from input
+  const emb = await openai.createEmbedding({
+    model: "text-embedding-ada-002",
+    input: input,
+  });
+
+  // Get Pinecone Index
+  const index = (await pinecone).Index(
+    getEnvironmentVariable("PINECONE_INDEX_NAME")
+  );
+
+  // Insert embedding into index
+  const upsertRes = await index.upsert({
+    upsertRequest: {
+      vectors: [
+        {
+          id: uuidv4(),
+          values: emb.data.data[0].embedding,
+          metadata: {
+            input: input,
+            user: user,
+          },
+        },
+      ],
+    },
+  });
+
+  console.log("Rows upserted", upsertRes);
 }
 
 export default async function handler(
@@ -84,6 +119,8 @@ export default async function handler(
         message: "Internal server error",
       } as ApiFailureResponse);
     }
+
+    await writeTextAsEmbeddingToPinecone(user_input, account_id);
 
     return res.status(200).json({
       success: true,
