@@ -60,6 +60,7 @@ export default async function handler(
     // TODO: Add support for logging while using master key
     // Check if account id is present
     if (account_id === null || account_id === undefined) {
+      console.log("ignoring log leak request, no account_id found");
       return res.status(200).json({
         success: true,
       } as LogApiSuccessResponse);

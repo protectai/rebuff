@@ -229,7 +229,10 @@ async function getResponse(
   const sql_breach = check_sql_breach(llm_response.completion);
 
   //if we detected a breach, log it so we block further attempts that are similar
-  await rebuff.log_leakage(userInput, llm_response.completion, canary_word);
+  if (sql_breach) {
+    console.log(`SQL breach detected!`);
+    await rebuff.log_leakage(userInput, llm_response.completion, canary_word);
+  }
   return {
     metrics,
     breach: canary_word_leaked || sql_breach,
