@@ -17,7 +17,8 @@
 
   Rebuff is designed to protect AI applications from prompt injection (PI) attacks through a [multi-layered defense](#features).
 
-  [Playground](https://playground.rebuff.ai/) •
+  [Playground](https://playground.rebuff.ai/) • 
+  [Discord](https://discord.gg/6nD88UfS) •
   [Features](#features) •
   [Installation](#installation) •
   [Getting started](#getting-started) •
