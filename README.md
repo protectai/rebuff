@@ -11,7 +11,7 @@
 
   ## Rebuff
 
-  <img width="250" src="https://i.imgur.com/b6gpWOB.png" alt="Rebuff Logo">
+  <img width="250" src="https://imgur.com/ishzqSK.png" alt="Rebuff Logo">
 
   Rebuff is a **self-hardening prompt injection detector**.
 
