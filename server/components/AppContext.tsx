@@ -54,7 +54,6 @@ export const AppProvider: FC<{ children: ReactNode }> = ({ children }) => {
           })
           .catch((error) => {
             console.error("Error refreshing app state or stats:", error);
-            // You could potentially set some state here to display an error message to the user.
           });
       }
     },
