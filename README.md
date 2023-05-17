@@ -33,6 +33,11 @@
 
 </div>
 
+
+## Disclaimer
+
+Rebuff is still a prototype and **cannot provide 100% protection** against prompt injection attacks!
+
 ## Features
 
 
@@ -53,10 +58,6 @@ Rebuff offers 4 layers of defense:
 - [ ] Multi tenancy
 - [ ] Local-only mode
 - [ ] JavaScript/TypeScript client
-
-## Disclaimer
-
-Rebuff is still a prototype and **cannot provide 100% protection** against prompt injection attacks.
 
 ## Installation
 
