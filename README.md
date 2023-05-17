@@ -23,7 +23,7 @@
   [Getting started](#getting-started) •
   [Self-hosting](#self-hosting) •
   [Contributing](#contributing) •
-  [Docs](https://docs.rebuff.ai) •
+  [Docs](https://docs.rebuff.ai)
 
 </div>
 <div align="center">
