@@ -26,16 +26,8 @@ const Navbar: FC = () => {
     <nav className="flex w-full flex-col md:flex-row">
       <div className="flex w-full justify-between md:justify-center md:w-fit">
         <Link className="no-underline text-black" href="/">
-          <Group spacing="lg">
-            <Text fz="lg">
-              <Image
-                maw={80}
-                mx="auto"
-                radius="md"
-                src="https://i.imgur.com/ishzqSK.png"
-                style={{ clipPath: "inset(0% 0% 0% 0%)" }} // Apply cropping here
-              />
-            </Text>
+          <div className="flex gap-4 pb-2 justify-center items-center">
+            <img className="w-20 rounded-md" src="/logo.png" />
             <div>
               <div className="flex flex-row items-start">
                 <Title order={4}>Rebuff Playground</Title>
@@ -45,7 +37,7 @@ const Navbar: FC = () => {
               </div>
               <Text fz="sm">Prompt Injection Detector</Text>
             </div>
-          </Group>
+          </div>
         </Link>
         <button
           onClick={() => setMobileMenuOpened(!mobileMenuOpened)}
