@@ -23,7 +23,7 @@
   [Getting started](#getting-started) •
   [Self-hosting](#self-hosting) •
   [Contributing](#contributing) •
-  [Docs](https://docs.rebuff.ai) •
+  [Docs](https://docs.rebuff.ai)
 
 </div>
 <div align="center">
@@ -32,6 +32,11 @@
 [![playground](https://api.netlify.com/api/v1/badges/3ed260cd-09cd-467f-9771-c4e99290bd1c/deploy-status)](https://playground.rebuff.ai)
 
 </div>
+
+
+## Disclaimer
+
+Rebuff is still a prototype and **cannot provide 100% protection** against prompt injection attacks!
 
 ## Features
 
@@ -53,10 +58,6 @@ Rebuff offers 4 layers of defense:
 - [ ] Multi tenancy
 - [ ] Local-only mode
 - [ ] JavaScript/TypeScript client
-
-## Disclaimer
-
-Rebuff is still a prototype and **cannot provide 100% protection** against prompt injection attacks.
 
 ## Installation
 
