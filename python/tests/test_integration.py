@@ -101,7 +101,9 @@ def test_canary_word_leak(server: Generator[None, None, None]) -> None:
 
 
 @pytest.mark.usefixtures("server")
-def test_detect_injection_no_injection(server: Generator[None, None, None]) -> None:
+def test_detect_injection_no_injection(
+    server: Generator[None, None, None]
+) -> None:
     rb = Rebuff(api_token="12345", api_url="http://localhost:3000")
 
     user_input = "What is the weather like today?"
@@ -128,6 +130,8 @@ def test_canary_word_leak_no_leak() -> None:
 
     response_completion = "Why did the computer go to art school? Because it wanted to learn how to draw a better byte!"
 
-    is_leak_detected = rb.is_canary_word_leaked(user_input, response_completion, canary_word)
+    is_leak_detected = rb.is_canary_word_leaked(
+        user_input, response_completion, canary_word
+    )
 
     assert is_leak_detected is False
