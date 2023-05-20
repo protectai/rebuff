@@ -1,5 +1,5 @@
 import secrets
-from typing import Any, Dict, Optional, Union
+from typing import Any, Dict, Optional, Union, Tuple
 
 import requests
 from pydantic import BaseModel
@@ -47,7 +47,7 @@ class Rebuff:
         check_heuristic: bool = True,
         check_vector: bool = True,
         check_llm: bool = True,
-    ) -> tuple[Union[DetectApiSuccessResponse, ApiFailureResponse], bool]:
+    ) -> Tuple[Union[DetectApiSuccessResponse, ApiFailureResponse], bool]:
         """
         Detects if the given user input contains an injection attempt.
 
@@ -61,7 +61,7 @@ class Rebuff:
             check_llm (bool, optional): Whether to run the language model check. Defaults to True.
 
         Returns:
-            tuple[Union[DetectApiSuccessResponse, ApiFailureResponse], bool]: A tuple containing the detection
+            Tuple[Union[DetectApiSuccessResponse, ApiFailureResponse], bool]: A tuple containing the detection
                 metrics and a boolean indicating if an injection was detected.
         """
         request_data = DetectApiRequest(
@@ -114,7 +114,7 @@ class Rebuff:
         prompt: Any,
         canary_word: Optional[str] = None,
         canary_format: str = "<!-- {canary_word} -->",
-    ) -> tuple[Any, str]:
+    ) -> Tuple[Any, str]:
         """
         Adds a canary word to the given prompt which we will use to detect leakage.
 
@@ -126,7 +126,7 @@ class Rebuff:
             Defaults to "<!-- {canary_word} -->".
 
         Returns:
-            tuple[Any, str]: A tuple containing the modified prompt with the canary word and the canary word itself.
+            Tuple[Any, str]: A tuple containing the modified prompt with the canary word and the canary word itself.
         """
 
         # Generate a canary word if not provided
