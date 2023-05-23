@@ -42,7 +42,7 @@ const SocialIcons: FC = () => {
         </svg>
       </a>
       <a
-        href="https://discord.gg/6nD88UfS"
+        href="https://discord.gg/RXafhXBj"
         alt-text="Discord"
         target="_blank"
         className="text-black inline-block hover:text-blue-500"
