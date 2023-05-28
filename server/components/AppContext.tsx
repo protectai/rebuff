@@ -8,7 +8,7 @@ import React, {
 } from "react";
 import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
 import fetch from "node-fetch";
-import { DetectApiSuccessResponse } from "@/lib/rebuff";
+import { DetectApiSuccessResponse } from "../../sdk/dist";
 import { PromptResponse } from "@/lib/playground";
 
 const initState = {

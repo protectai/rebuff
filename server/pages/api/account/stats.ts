@@ -1,9 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import Cors from "cors";
-import { createClient } from "@supabase/supabase-js";
 import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
-import { generateApiKey } from "@/utils/apikeys";
-import { supabaseAdminClient, supabaseAnonClient } from "@/lib/supabase";
 import { getUserStats } from "@/lib/account-helpers";
 
 const cors = Cors({

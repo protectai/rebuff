@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import Cors from "cors";
 import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
-import { generateApiKey } from "@/utils/apikeys";
+import generateApiKey from "@/utils/apikeys";
 import {
   getUserAccountFromDb,
   getUserStats,

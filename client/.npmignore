@@ -1,0 +1,6 @@
+# Files and directories to exclude from npm package
+.git
+.vscode
+node_modules
+src
+tsconfig.json

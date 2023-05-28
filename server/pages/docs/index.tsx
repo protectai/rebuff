@@ -1,14 +1,10 @@
-import { FC, useState } from "react";
-import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
+import { FC } from "react";
 
 import { Container } from "@mantine/core";
 import Navbar from "@/components/Navbar";
 import Head from "next/head";
 import CodeSamples from "@/components/CodeSamples";
 const Docs: FC = () => {
-  const [loading, setLoading] = useState(false);
-  const [apiKey, setApiKey] = useState("");
-
   return (
     <Container size="lg">
       <Head>

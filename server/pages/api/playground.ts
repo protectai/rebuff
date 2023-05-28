@@ -4,7 +4,7 @@ import { User } from "@supabase/auth-helpers-react";
 import Cors from "cors";
 import { getSupabaseUser } from "@/lib/supabase";
 import { getUserAccountFromDb, logAttempt } from "@/lib/account-helpers";
-import { Rebuff } from "@/lib/rebuff";
+import Rebuff from "@rebuff/client/src/index";
 import { PromptResponse } from "@/lib/playground";
 import {
   getEnvironmentVariable,
@@ -184,7 +184,7 @@ async function getResponse(
   const rebuffApiUrl = getEnvironmentVariable("REBUFF_API") || undefined;
   // use rebuff to check if this is a prompt injection
   const rebuff = new Rebuff(apikey, rebuffApiUrl);
-  const [metrics, is_injection] = await rebuff.is_injection_detected(
+  const [metrics, is_injection] = await rebuff.detectInjection(
     userInput,
     maxHeuristicScore,
     maxVectorScore,
@@ -206,7 +206,7 @@ async function getResponse(
     };
   }
   // if it is not a prompt injection, add a canary word to the prompt before we send it to the LLM
-  const [prompt_with_canary, canary_word] = rebuff.add_canaryword(userInput);
+  const [prompt_with_canary, canary_word] = Rebuff.addCanaryWord(userInput);
   const llm_response = await tryUntilDeadline(
     5000,
     callOpenAiToGetSQLQuery(prompt_with_canary),
@@ -221,7 +221,7 @@ async function getResponse(
     throw new Error("No response from LLM");
   }
   // check if the canary word is in the response
-  const canary_word_leaked = rebuff.is_canaryword_leaked(
+  const canary_word_leaked = rebuff.isCanaryWordLeaked(
     userInput,
     llm_response.completion,
     canary_word
@@ -231,7 +231,7 @@ async function getResponse(
   //if we detected a breach, log it so we block further attempts that are similar
   if (sql_breach) {
     console.log(`SQL breach detected!`);
-    await rebuff.log_leakage(userInput, llm_response.completion, canary_word);
+    await rebuff.logLeakage(userInput, llm_response.completion, canary_word);
   }
   return {
     metrics,

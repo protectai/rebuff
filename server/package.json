@@ -1,6 +1,6 @@
 {
-  "name": "rebuff",
-  "version": "0.0.1",
+  "name": "@rebuff/server",
+  "version": "0.0.5",
   "private": true,
   "scripts": {
     "dev": "concurrently \"npm run dev:css\" \"next dev\"",

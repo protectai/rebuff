@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import Cors from "cors";
 import { render_prompt_for_pi_detection } from "@/lib/templates";
-import { ApiFailureResponse, DetectApiSuccessResponse } from "@/lib/rebuff";
+import { ApiFailureResponse, DetectApiSuccessResponse } from "../../../packages/types/api";
 import {
   runMiddleware,
   checkApiKeyAndReduceBalance,

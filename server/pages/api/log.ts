@@ -5,7 +5,7 @@ import {
   ApiFailureResponse,
   LogApiRequest,
   LogApiSuccessResponse,
-} from "@/lib/rebuff";
+} from "../../../sdk/dist";
 import { runMiddleware, checkApiKey } from "@/lib/detect-helpers";
 import { supabaseAdminClient } from "@/lib/supabase";
 import { openai } from "@/lib/openai";

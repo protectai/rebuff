@@ -1,5 +1,5 @@
 import { AppState } from "@/interfaces/ui";
-import { generateApiKey } from "@/utils/apikeys";
+import generateApiKey from "@/utils/apikeys";
 import { supabaseAdminClient } from "@/lib/supabase";
 import { User } from "@supabase/supabase-js";
 import { PromptResponse } from "./playground";

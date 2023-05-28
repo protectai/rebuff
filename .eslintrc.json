@@ -1,0 +1,50 @@
+{
+  "root": true,
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "project": [
+      "./tsconfig.json",
+      "./client/tsconfig.json",
+      "./server/tsconfig.json",
+      "./types/tsconfig.json"
+    ]
+  },
+  "env": {
+    "browser": true,
+    "es2021": true,
+    "node": true
+  },
+  "plugins": ["@typescript-eslint", "import", "react", "react-hooks"],
+  "extends": ["airbnb-typescript", "plugin:import/typescript", "prettier"],
+  "settings": {
+    "import/resolver": {
+      "typescript": {},
+      "alias": {
+        "map": [["@/*", "./*"]],
+        "extensions": [".ts", ".tsx", ".js", ".jsx", ".json"]
+      }
+    }
+  },
+  "overrides": [
+    {
+      "files": ["**/*.test.ts"],
+      "env": {
+        "mocha": true
+      }
+    }
+  ],
+  "rules": {
+    "import/extensions": "off",
+    "react/jsx-filename-extension": [1, { "extensions": [".tsx"] }],
+    "@typescript-eslint/dot-notation": "error",
+    "camelcase": [
+      "error",
+      {
+        "properties": "always",
+        "ignoreDestructuring": false,
+        "ignoreImports": true
+      }
+    ]
+  },
+  "ignorePatterns": ["dist/", "tailwind.config.js", "postcss.config.js"]
+}

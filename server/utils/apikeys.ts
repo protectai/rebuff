@@ -1,6 +1,6 @@
 import { randomBytes } from "crypto";
 
-export function generateApiKey(length: number = 64): string {
+export default function generateApiKey(length: number = 64): string {
   // Generate half the number of bytes, since each byte is represented by two hexadecimal characters
   const numBytes = Math.ceil(length / 2);
   const apiKey = randomBytes(numBytes).toString("hex");

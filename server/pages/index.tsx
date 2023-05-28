@@ -1,13 +1,13 @@
-import { FC, FormEvent, useContext, useState } from "react";
+import { FC, FormEvent, useContext } from "react";
 import { useForm } from "@mantine/form";
 import { useSession } from "@supabase/auth-helpers-react";
 
 import { Button, Checkbox, Textarea, Text, Title, Loader } from "@mantine/core";
+import { Prism } from "@mantine/prism";
 import PromptHistory from "@/components/PromptHistory";
 import { AppContext } from "@/components/AppContext";
 import { PromptInjectionStats } from "@/components/PromptInjectionStats";
 import LoginButtonWithInstructions from "@/components/LoginButtonWithInstructions";
-import { Prism } from "@mantine/prism";
 import { formatSQL, render_prompt_for_sql } from "@/lib/general-helpers";
 import Section from "@/components/Section";
 import ApikeyDisplay from "@/components/ApikeyDisplay";
@@ -26,20 +26,23 @@ const Playground: FC = () => {
       vectordb: true,
     },
   });
-  const strategyType = () => {
-    const speed =
-      form.values.heuristic && !form.values.llm && !form.values.vectordb
-        ? "fastest"
-        : !form.values.llm && form.values.vectordb
-        ? "fast"
-        : "slow";
-    const safety =
-      form.values.heuristic && form.values.vectordb && form.values.llm
-        ? "safest"
-        : !form.values.llm && !form.values.vectordb
-        ? "unsafe"
-        : "safe";
-    return `${speed}, ${safety}`;
+  const getStrategyType = () => {
+    const isFastest =
+      form.values.heuristic && !form.values.llm && !form.values.vectordb;
+    const isFast = !form.values.llm && form.values.vectordb;
+    const isSafe =
+      form.values.heuristic && form.values.vectordb && form.values.llm;
+    const isUnsafe = !form.values.llm && !form.values.vectordb;
+
+    if (isFastest) {
+      return "fastest, safest";
+    } else if (isFast) {
+      return "fast, safe";
+    } else if (isSafe) {
+      return "slow, safe";
+    } else if (isUnsafe) {
+      return "slow, unsafe";
+    }
   };
   const lastAttempt = Array.isArray(attempts) && attempts[0];
   const output = () => {
@@ -142,7 +145,7 @@ const Playground: FC = () => {
               <div className="py-1 flex flex-row flex-wrap gap-4 items-left">
                 <Text size="sm">
                   Detection strategy:{" "}
-                  <span className="font-bold pr-2">{strategyType()}</span>
+                  <span className="font-bold pr-2">{getStrategyType()}</span>
                 </Text>
                 <Checkbox
                   size="sm"

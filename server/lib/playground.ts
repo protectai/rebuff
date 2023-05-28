@@ -1,4 +1,4 @@
-import { DetectApiSuccessResponse } from "@/lib/rebuff";
+import { DetectApiSuccessResponse } from "../../packages/types/api";
 export interface PromptResponse {
   canary_word: string;
   canary_word_leaked: boolean;

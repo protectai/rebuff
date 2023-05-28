@@ -1,0 +1,32 @@
+{
+  "name": "@rebuff/client",
+  "version": "0.0.5",
+  "description": "Rebuff's Javascript client SDK for Node and the browser",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "mocha --require ts-node/register tests/**/*.test.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/woop/rebuff.git"
+  },
+  "author": "W Pienaar, S Anver",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/woop/rebuff/issues"
+  },
+  "homepage": "https://github.com/woop/rebuff#readme",
+  "dependencies": {
+    "@rebuff/types": "^0.0.5",
+    "node-fetch": "^3.3.1"
+  },
+  "devDependencies": {
+    "@types/chai": "^4.3.5",
+    "@types/mocha": "^10.0.1",
+    "@types/node": "^20.2.5",
+    "chai": "^4.3.7",
+    "mocha": "^10.2.0"
+  }
+}
