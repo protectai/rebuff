@@ -1,21 +1,23 @@
 import fetch from "node-fetch";
-import crypto from "crypto";
+import { randomBytes } from "crypto";
 import {
   DetectApiFailureResponse,
   DetectApiRequest,
   DetectApiSuccessResponse,
 } from "@rebuff/types/src/api";
 
-function generateCanaryWord(length = 8): string {
+function generateCanaryWord(length: number = 8): string {
   // Generate a secure random hexadecimal canary word
-  return crypto.randomBytes(length / 2).toString("hex");
+  return randomBytes(length / 2).toString("hex");
+}
+
+function encodeString(message: string): string {
+  return Buffer.from(message, "utf-8").toString("hex");
 }
 
 export default class Rebuff {
   private readonly apiToken: string;
-
   private readonly apiUrl: string;
-
   private readonly headers: Record<string, string>;
 
   constructor(apiToken: string, apiUrl = "https://playground.rebuff.ai") {
@@ -29,15 +31,24 @@ export default class Rebuff {
 
   async detectInjection(
     userInput: string,
-    maxHeuristicScore = 0.75,
-    maxVectorScore = 0.9,
-    maxModelScore = 0.9,
-    checkHeuristic = true,
-    checkVector = true,
-    checkLLM = true
+    {
+      maxHeuristicScore = 0.75,
+      maxVectorScore = 0.9,
+      maxModelScore = 0.9,
+      checkHeuristic = true,
+      checkVector = true,
+      checkLLM = true,
+    }: {
+      maxHeuristicScore?: number;
+      maxVectorScore?: number;
+      maxModelScore?: number;
+      checkHeuristic?: boolean;
+      checkVector?: boolean;
+      checkLLM?: boolean;
+    } = {}
   ): Promise<[DetectApiSuccessResponse, boolean]> {
     const requestData: DetectApiRequest = {
-      input_base64: encodeString(userInput) /*eslint-disable-line*/,
+      input_base64: encodeString(userInput),
       runHeuristicCheck: checkHeuristic,
       runVectorCheck: checkVector,
       runLanguageModelCheck: checkLLM,
@@ -52,18 +63,20 @@ export default class Rebuff {
       headers: this.headers,
     });
 
-    const responseData = (await response.json()) as DetectApiSuccessResponse;
-
     if (!response.ok) {
-      const error = responseData as unknown as DetectApiFailureResponse;
-      throw new Error(`Error detecting injection: ${error.message}`);
+      const responseData = (await response.json()) as DetectApiFailureResponse;
+      throw new Error(`Error detecting injection: ${responseData.message}`);
     }
+
+    const responseData = (await response.json()) as DetectApiSuccessResponse;
+    const { heuristicScore, modelScore, vectorScore } = responseData;
+
     const isInjection =
-      responseData.heuristicScore > maxHeuristicScore ||
-      responseData.modelScore > maxModelScore ||
-      responseData.vectorScore.topScore > maxVectorScore;
-    const detectionMetrics = responseData as DetectApiSuccessResponse;
-    return [detectionMetrics, isInjection];
+      heuristicScore > maxHeuristicScore ||
+      modelScore > maxModelScore ||
+      vectorScore.topScore > maxVectorScore;
+
+    return [responseData, isInjection];
   }
 
   static addCanaryWord(
@@ -71,7 +84,6 @@ export default class Rebuff {
     canaryWord: string = generateCanaryWord(),
     canaryFormat = "<!-- {canary_word} -->"
   ): [string, string] {
-    // Embed the canary word in the specified format
     const canaryComment = canaryFormat.replace("{canary_word}", canaryWord);
     const promptWithCanary = `${canaryComment}\n${prompt}`;
     return [promptWithCanary, canaryWord];
@@ -83,7 +95,6 @@ export default class Rebuff {
     canaryWord: string,
     logOutcome = true
   ): boolean {
-    // Check if the canary word appears in the completion
     if (completion.includes(canaryWord)) {
       if (logOutcome) {
         this.logLeakage(userInput, completion, canaryWord);
@@ -99,7 +110,7 @@ export default class Rebuff {
     canaryWord: string
   ): Promise<void> {
     const data = {
-      user_input: userInput, //eslint-disable-line
+      user_input: userInput,
       completion,
       canaryWord,
     };
@@ -114,8 +125,4 @@ export default class Rebuff {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
   }
-}
-
-function encodeString(message: string): string {
-  return Buffer.from(message, "utf-8").toString("hex");
 }
