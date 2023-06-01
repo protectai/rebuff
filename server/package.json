@@ -55,5 +55,5 @@
     "prettier": "^2.8.7",
     "tailwindcss": "^3.3.2"
   },
-  "license": "Apache 2.0"
+  "license": "Apache-2.0"
 }
