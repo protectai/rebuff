@@ -5,7 +5,7 @@ import {
   DetectApiRequest,
   DetectApiSuccessResponse,
 } from "@rebuff/types/src/api";
-import Rebuff from "@rebuff/client/src/index";
+import Rebuff from "../src/index";
 import { ChildProcessWithoutNullStreams } from "child_process";
 import { startServer, stopServer } from "./helpers";
 

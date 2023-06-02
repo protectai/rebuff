@@ -4,7 +4,7 @@ import { User } from "@supabase/auth-helpers-react";
 import Cors from "cors";
 import { getSupabaseUser } from "@/lib/supabase";
 import { getUserAccountFromDb, logAttempt } from "@/lib/account-helpers";
-import Rebuff from "@rebuff/client/src/index";
+import Rebuff from "@rebuff/client/index";
 import { PromptResponse } from "@/lib/playground";
 import {
   getEnvironmentVariable,

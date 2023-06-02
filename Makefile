@@ -1,27 +1,27 @@
 .PHONY: test lint format
 
 test:
-	cd python; pytest tests/
+	cd py-client; pytest tests/
 
 lint:
-	cd python; black rebuff/ tests/
-	cd python; flake8 rebuff/ tests/
-	cd python; isort rebuff/ tests/
-	cd python; mypy rebuff/ tests/
+	cd py-client; black rebuff/ tests/
+	cd py-client; flake8 rebuff/ tests/
+	cd py-client; isort rebuff/ tests/
+	cd py-client; mypy rebuff/ tests/
 
 format:
-	cd python; isort rebuff/ tests/
-	cd python; black rebuff/ tests/
+	cd py-client; isort rebuff/ tests/
+	cd py-client; black rebuff/ tests/
 
 
-init: init-python init-server
+init: init-py-client init-server
 
-init-python:
-	cd python; pip install -e '.[dev]' -U
+init-py-client:
+	cd py-client; pip install -e '.[dev]' -U
 
 init-server:
 	cd server; npm install
 
-publish-python:
-	cd python; python setup.py sdist bdist_wheel
-	cd python; twine upload dist/*
+publish-py-client:
+	cd py-client; py-client setup.py sdist bdist_wheel
+	cd py-client; twine upload dist/*

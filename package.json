@@ -18,7 +18,7 @@
     "url": "git+https://github.com/woop/rebuff.git"
   },
   "author": "W Pienaar, S Anver",
-  "license": "ISC",
+  "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/woop/rebuff/issues"
   },

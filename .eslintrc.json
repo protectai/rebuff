@@ -4,7 +4,7 @@
   "parserOptions": {
     "project": [
       "./tsconfig.json",
-      "./client/tsconfig.json",
+      "./js-client/tsconfig.json",
       "./server/tsconfig.json",
       "./types/tsconfig.json"
     ]
