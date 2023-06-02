@@ -33,7 +33,10 @@ class Rebuff:
     def __init__(self, api_token: str, api_url: str = "https://playground.rebuff.ai"):
         self.api_token = api_token
         self.api_url = api_url
-        self.headers = {
+
+    @property
+    def headers(self) -> Dict[str, str]:
+        return {
             "Authorization": f"Bearer {self.api_token}",
             "Content-Type": "application/json",
         }
