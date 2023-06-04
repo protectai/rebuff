@@ -4,9 +4,8 @@
   "parserOptions": {
     "project": [
       "./tsconfig.json",
-      "./js-client/tsconfig.json",
-      "./server/tsconfig.json",
-      "./types/tsconfig.json"
+      "./javascript-sdk/tsconfig.json",
+      "./api/tsconfig.json"
     ]
   },
   "env": {
@@ -36,6 +35,15 @@
   "rules": {
     "import/extensions": "off",
     "react/jsx-filename-extension": [1, { "extensions": [".tsx"] }],
+    "import/no-extraneous-dependencies": [
+      "error",
+      {
+        "devDependencies": true,
+        "optionalDependencies": false,
+        "peerDependencies": false,
+        "packageDir": "./"
+      }
+    ],
     "@typescript-eslint/dot-notation": "error",
     "camelcase": [
       "error",

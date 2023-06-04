@@ -1,0 +1,23 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "skipLibCheck": true,
+    "incremental": true,
+    "outDir": "dist",
+    "rootDir": "./",
+    "baseUrl": ".",
+    "composite": true,
+    "resolveJsonModule": true,
+    "paths": {
+      "@rebuff/sdk": ["javascript-sdk/src/*"],
+      "@/*": ["./*"]
+    }
+  },
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+  "exclude": ["node_modules", "dist"],
+  "references": [
+    {
+      "path": "../javascript-sdk"
+    }
+  ]
+}
