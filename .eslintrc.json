@@ -5,7 +5,7 @@
     "project": [
       "./tsconfig.json",
       "./javascript-sdk/tsconfig.json",
-      "./api/tsconfig.json"
+      "./server/tsconfig.json"
     ]
   },
   "env": {

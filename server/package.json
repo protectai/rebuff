@@ -1,5 +1,5 @@
 {
-  "name": "@rebuff/api",
+  "name": "@rebuff/server",
   "version": "0.0.5",
   "private": true,
   "scripts": {
