@@ -10,7 +10,7 @@ import { AppProvider } from "@/components/AppContext";
 
 export default function App(props: AppProps<{ initialSession: Session }>) {
   const { Component, pageProps } = props;
-  const [supabaseClient] = useState(() => createBrowserSupabaseClient());
+  // const [supabaseClient] = useState(() => createBrowserSupabaseClient());
 
   return (
     <>
@@ -30,16 +30,16 @@ export default function App(props: AppProps<{ initialSession: Session }>) {
           colorScheme: "light",
         }}
       >
-        <SessionContextProvider
-          supabaseClient={supabaseClient}
-          initialSession={pageProps.initialSession}
-        >
-          <AppProvider>
-            <Layout>
-              <Component {...pageProps} />
-            </Layout>
-          </AppProvider>
-        </SessionContextProvider>
+        {/*<SessionContextProvider*/}
+        {/*  supabaseClient={supabaseClient}*/}
+        {/*  initialSession={pageProps.initialSession}*/}
+        {/*>*/}
+        <AppProvider>
+          <Layout>
+            <Component {...pageProps} />
+          </Layout>
+        </AppProvider>
+        {/*</SessionContextProvider>*/}
       </MantineProvider>
     </>
   );
