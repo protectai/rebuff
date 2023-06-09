@@ -1,45 +1,41 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { AppState } from "@/interfaces/game";
+import { characterQuips } from "@/lib/quips";
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  try {
-    // Fetch or compute data for gameState
-    const gameState = {
-      level: 1,
-      attempts: 0,
-      character: {
-        name: "",
-        image: "",
-        response: "",
-      },
-    };
+  const techBroQuips = characterQuips["Tech Bro"];
 
-    // Fetch or compute data for leaderboardState
-    const leaderboardState = {
-      // ...
-    };
+  // Fetch or compute data for gameState
+  const gameState = {
+    level: 1,
+    attempts: 0,
+    character: {
+      name: "",
+      image: "",
+      response: "",
+    },
+  };
 
-    // Fetch or compute data for playersEventState
-    const playersEventState = {
-      // ...
-    };
+  // Fetch or compute data for leaderboardState
+  const leaderboardState = {
+    // ...
+  };
 
-    const promptLoading = false;
+  // Fetch or compute data for playersEventState
+  const playersEventState = {
+    // ...
+  };
 
-    // Construct the appState
-    const appState: AppState = {
-      gameState,
-      leaderboardState,
-      playersEventState,
-      promptLoading,
-    };
+  const promptLoading = false;
 
-    // Respond with appState
-    res.status(200).json(appState);
-  } catch (error) {
-    res.status(500).json({ statusCode: 500, message: error.message });
-  }
+  // Construct the appState
+  const appState: AppState = {
+    gameState,
+    leaderboardState,
+    playersEventState,
+    promptLoading,
+  };
 }
