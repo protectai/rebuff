@@ -8,7 +8,6 @@ const Game: FC = () => {
   const { submitPrompt, attempts, promptLoading, appState, refreshApikey } =
     useContext(AppContext);
 
-  // Character Object
   const gameState = {
     level: 1,
     character: {
