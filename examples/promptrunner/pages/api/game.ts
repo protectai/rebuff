@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { AppState, Attempt } from "@/interfaces/game";
+import { AppState } from "@/interfaces/game";
 
 export default async function handler(
   req: NextApiRequest,
