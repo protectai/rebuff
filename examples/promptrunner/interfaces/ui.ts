@@ -28,9 +28,6 @@ export interface AppStateCtx {
 
 export interface PromptRequest {
   userInput: string;
-  runHeuristicCheck: boolean;
-  runVectorCheck: boolean;
-  runLanguageModelCheck: boolean;
 }
 
 export interface Attempt extends PromptResponse {
