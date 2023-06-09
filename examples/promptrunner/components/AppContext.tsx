@@ -67,7 +67,7 @@ export const AppProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const refreshAppState = async () => {
     // setAccountLoading(true);
     try {
-      const response = await fetch("/api/appstate");
+      const response = await fetch("/api/game");
       const data = (await response.json()) as AppState;
       setAppState(data);
     } catch (error) {
@@ -82,7 +82,7 @@ export const AppProvider: FC<{ children: ReactNode }> = ({ children }) => {
     try {
       const body = JSON.stringify(prompt);
 
-      const response = await fetch("/api/playground", {
+      const response = await fetch("/api/game", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

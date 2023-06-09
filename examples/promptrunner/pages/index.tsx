@@ -101,7 +101,6 @@ const Game: FC = () => {
     <div
       className="grid md:grid-cols-3 gap-6 min-h-screen"
       style={{
-        gridTemplateColumns: "400px auto 400px",
         gap: "20px",
       }}
     >

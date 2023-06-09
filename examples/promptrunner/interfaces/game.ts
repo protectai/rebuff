@@ -4,6 +4,7 @@ export interface AppState {
   gameState: GameState;
   leaderboardState: LeaderboardState;
   playersEventState: PlayersEventState;
+  promptLoading: boolean;
 }
 
 export interface AppStateCtx {
