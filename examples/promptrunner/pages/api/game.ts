@@ -38,4 +38,7 @@ export default async function handler(
     playersEventState,
     promptLoading,
   };
+
+  // Return the appState
+  return res.status(200).json(appState);
 }
