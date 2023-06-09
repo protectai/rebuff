@@ -1,30 +1,34 @@
 import React from "react";
-import { PromptResponse } from "@/lib/playground";
-
-interface PlaygroundStats {
-  breaches: {
-    total: number;
-    user: number;
-  };
-  detections: number;
-  requests: number;
-}
 
 export interface AppState {
-  apikey: string;
-  credits: number;
-  stats: PlaygroundStats;
+  gameState: GameState;
+  leaderboardState: LeaderboardState;
+  playersEventState: PlayersEventState;
 }
+
 export interface AppStateCtx {
   appState: AppState;
   promptLoading: boolean;
-  accountLoading: boolean;
-  attempts: Attempt[];
   refreshAppState: () => Promise<void>;
-  refreshApikey: () => Promise<void>;
   submitPrompt: (prompt: PromptRequest) => Promise<void>;
   setPromptLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }
+
+export interface GameState {
+  level: number;
+  attempts: number;
+  character: Character;
+}
+
+interface Character {
+  name: string;
+  image: string;
+  response: string;
+}
+
+export interface LeaderboardState {}
+
+export interface PlayersEventState {}
 
 export interface PromptRequest {
   userInput: string;
@@ -34,4 +38,12 @@ export interface Attempt extends PromptResponse {
   timestamp: Date;
   input: string;
   error: Error | null;
+}
+
+export interface PromptResponse {
+  canary_word: string;
+  canary_word_leaked: boolean;
+  breach: boolean;
+  is_injection: boolean;
+  output: string;
 }
