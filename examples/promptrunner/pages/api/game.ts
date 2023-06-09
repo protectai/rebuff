@@ -1,11 +1,14 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { AppState } from "@/interfaces/game";
 import { characterQuips } from "@/lib/quips";
+import { cors, runMiddleware } from "@/lib/middleware";
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  await runMiddleware(req, res, cors);
+
   const quips = characterQuips["Tech Bro"];
 
   // Fetch or compute data for gameState
