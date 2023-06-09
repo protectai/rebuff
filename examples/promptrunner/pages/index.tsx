@@ -1,12 +1,11 @@
 import { FC, FormEvent, useContext } from "react";
 import { useForm } from "@mantine/form";
 
-import { Button, Textarea, Title, Loader } from "@mantine/core";
+import { Button, Textarea, Title, Loader, Table } from "@mantine/core";
 import { AppContext } from "@/components/AppContext";
 
 const Game: FC = () => {
-  const { submitPrompt, attempts, promptLoading, appState, refreshApikey } =
-    useContext(AppContext);
+  const { submitPrompt, promptLoading, appState } = useContext(AppContext);
 
   const gameState = {
     level: 1,
@@ -24,7 +23,7 @@ const Game: FC = () => {
     },
   });
 
-  const lastAttempt = Array.isArray(attempts) && attempts[0];
+  // const lastAttempt = Array.isArray(attempts) && attempts[0];
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -38,44 +37,86 @@ const Game: FC = () => {
     }
   };
 
-  return (
-    <div className="flex flex-col items-center w-full justify-center">
-      <div className="w-full md:max-w-4xl text-center">
-        <Title order={1}>Level {gameState.level}</Title>
-        <img
-          src={gameState.character.image}
-          alt="Description of image"
-          className="my-4 mx-auto"
-          height={500}
-        />
-        <section className="mt-2 mb-8">
-          {" "}
-          <text>
-            {gameState.character.name}: Can you get me to reveal my password?
-          </text>
-        </section>
+  const leaderboard = (
+    <Table>
+      <thead>
+        <tr>
+          <th>Rank</th>
+          <th>Player</th>
+          <th>Score</th>
+        </tr>
+      </thead>
+      <tbody>{/* Fill this with leaderboard data */}</tbody>
+    </Table>
+  );
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-          <div className="relative">
-            <Textarea
-              className="w-full p-2 resize-none border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-black focus:border-black sm:text-sm"
-              minRows={10}
-              maxRows={15}
-              {...form.getInputProps("prompt")}
-            ></Textarea>
-            <Button
-              className="absolute bottom-4 right-4"
-              type="submit"
-              color="dark"
-            >
-              {promptLoading ? (
-                <Loader color="gray" variant="dots" />
-              ) : (
-                `Submit`
-              )}
-            </Button>
-          </div>
-        </form>
+  const eventLog = (
+    <Table>
+      <thead>
+        <tr>
+          <th>Event</th>
+          <th>Timestamp</th>
+        </tr>
+      </thead>
+      <tbody>{/* Fill this with event log data */}</tbody>
+    </Table>
+  );
+
+  const game = (
+    <div className="w-full md:max-w-4xl text-center">
+      <Title order={1}>Level {gameState.level}</Title>
+      <img
+        src={gameState.character.image}
+        alt="Description of image"
+        className="my-4 mx-auto"
+        height={500}
+      />
+      <section className="mt-2 mb-8">
+        <text>
+          {gameState.character.name}: Can you get me to reveal my password?
+        </text>
+      </section>
+
+      <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+        <div className="relative">
+          <Textarea
+            className="w-full p-2 resize-none border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-black focus:border-black sm:text-sm"
+            minRows={10}
+            maxRows={15}
+            {...form.getInputProps("prompt")}
+          ></Textarea>
+          <Button
+            className="absolute bottom-4 right-4"
+            type="submit"
+            color="dark"
+          >
+            {promptLoading ? <Loader color="gray" variant="dots" /> : `Submit`}
+          </Button>
+        </div>
+      </form>
+    </div>
+  );
+
+  return (
+    <div
+      className="grid md:grid-cols-3 gap-6 min-h-screen"
+      style={{
+        gridTemplateColumns: "400px auto 400px",
+        gap: "20px",
+      }}
+    >
+      <div className="order-2 md:order-1 md:col-start-1 p-4 bg-gray-200 overflow-auto">
+        {leaderboard}
+      </div>
+
+      <div className="order-1 md:order-2 md:col-start-2 p-4 overflow-auto">
+        <div className="flex flex-col items-center w-full justify-center">
+          {game}
+        </div>
+      </div>
+
+      <div className="order-3 md:order-3 md:col-start-3 p-4 bg-gray-200 overflow-auto">
+        {eventLog}
       </div>
     </div>
   );

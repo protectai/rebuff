@@ -1,4 +1,10 @@
-import { AppState, AppStateCtx, Attempt, PromptRequest } from "@/interfaces/ui";
+import {
+  AppState,
+  AppStateCtx,
+  Attempt,
+  PromptRequest,
+  PromptResponse,
+} from "@/interfaces/game";
 import React, {
   createContext,
   useState,
@@ -9,30 +15,28 @@ import React, {
 import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
 import fetch from "node-fetch";
 import { DetectApiSuccessResponse } from "@/lib/rebuff";
-import { PromptResponse } from "@/lib/playground";
 
-const initState = {
-  apikey: "",
-  credits: 0,
+export const initState = {
   promptLoading: false,
-  accountLoading: false,
-  stats: {
-    breaches: {
-      total: 0,
-      user: 0,
+  attempts: [] as Attempt[],
+  gameState: {
+    level: 1,
+    attempts: 0,
+    character: {
+      name: "",
+      image: "",
+      response: "",
     },
-    detections: 0,
-    requests: 0,
   },
-} as AppState;
+  leaderboardState: {},
+  playersEventState: {},
+};
+
 // Create a context object
 export const AppContext = createContext<AppStateCtx>({
   appState: initState,
   promptLoading: false,
-  accountLoading: false,
-  attempts: [] as Attempt[],
   refreshAppState: async () => undefined,
-  refreshApikey: async () => undefined,
   submitPrompt: async (prompt: PromptRequest) => undefined,
   setPromptLoading: () => null,
 });
@@ -41,10 +45,10 @@ export const AppContext = createContext<AppStateCtx>({
 export const AppProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [appState, setAppState] = useState<AppState>(initState);
   const [promptLoading, setPromptLoading] = useState<boolean>(false);
-  const [accountLoading, setAccountLoading] = useState<boolean>(false);
   const [attempts, setAttempts] = useState<Attempt[]>([] as Attempt[]);
   const session = useSession();
   const supabase = useSupabaseClient();
+
   useEffect(
     function onChange() {
       if (session) {
@@ -53,53 +57,26 @@ export const AppProvider: FC<{ children: ReactNode }> = ({ children }) => {
     },
     [session]
   );
+
+  useEffect(() => {
+    refreshGameState();
+    refreshLeaderboardState();
+    refreshPlayerEventsState();
+  }, []);
+
   const refreshAppState = async () => {
-    setAccountLoading(true);
+    // setAccountLoading(true);
     try {
-      const response = await fetch("/api/account");
+      const response = await fetch("/api/appstate");
       const data = (await response.json()) as AppState;
       setAppState(data);
     } catch (error) {
       console.error(error);
     } finally {
-      setAccountLoading(false);
+      // setAccountLoading(false);
     }
   };
-  const refreshStats = async () => {
-    setAccountLoading(true);
-    try {
-      const response = await fetch("/api/account/stats");
-      const data = (await response.json()) as AppState["stats"];
-      if (!data) return;
-      if (
-        typeof data?.breaches?.total ??
-        (undefined === "number" && typeof data?.breaches?.user) ??
-        (undefined === "number" && typeof data?.detections) ??
-        (undefined === "number" && typeof data?.requests) ??
-        undefined === "number"
-      ) {
-        setStats(data);
-      }
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setAccountLoading(false);
-    }
-  };
-  const refreshApikey = async () => {
-    setPromptLoading(true);
-    try {
-      const response = await fetch("/api/account/apikey", {
-        method: "POST",
-      });
-      const data = await response.json();
-      setApikey(data.apikey);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setPromptLoading(false);
-    }
-  };
+
   const submitPrompt = async (prompt: PromptRequest) => {
     setPromptLoading(true);
     try {
@@ -115,17 +92,6 @@ export const AppProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
       const data = (await response.json()) as PromptResponse;
       const {
-        metrics = {
-          runHeuristicCheck: false,
-          runLanguageModelCheck: false,
-          runVectorCheck: false,
-          vectorScore: {},
-          heuristicScore: 0,
-          modelScore: 0,
-          maxHeuristicScore: 0,
-          maxModelScore: 0,
-          maxVectorScore: 0,
-        } as DetectApiSuccessResponse,
         is_injection = false,
         output = "",
         breach = false,
@@ -139,7 +105,6 @@ export const AppProvider: FC<{ children: ReactNode }> = ({ children }) => {
           timestamp: new Date(),
           input: prompt.userInput || "",
           breach,
-          metrics,
           is_injection,
           output: output || "",
           canary_word,
@@ -148,46 +113,32 @@ export const AppProvider: FC<{ children: ReactNode }> = ({ children }) => {
         ...prev,
       ]);
     } catch (error: any) {
-      setAttempts((prev) => [
-        {
-          error,
-          timestamp: new Date(),
-          input: prompt.userInput || "",
-          breach: false,
-          metrics: {
-            runHeuristicCheck: false,
-            runLanguageModelCheck: false,
-            runVectorCheck: false,
-            vectorScore: {},
-            heuristicScore: 0,
-            modelScore: 0,
-            maxHeuristicScore: 0,
-            maxModelScore: 0,
-            maxVectorScore: 0,
-          },
-          is_injection: false,
-          output: "",
-          canary_word: "",
-          canary_word_leaked: false,
-        },
-        ...prev,
-      ]);
+      console.error(error);
     } finally {
-      refreshStats();
+      await refreshGameState();
+      await refreshLeaderboardState();
+      await refreshPlayerEventsState();
       setPromptLoading(false);
     }
-  };
-
-  const setApikey = (apikey: string) => {
-    setAppState((prev) => ({ ...prev, apikey: apikey }));
   };
 
   const setCredits = (credits: number) => {
     setAppState((prev) => ({ ...prev, credits: credits }));
   };
 
-  const setStats = (stats: AppState["stats"]) => {
-    setAppState((prev) => ({ ...prev, stats: stats }));
+  const refreshGameState = async () => {
+    // ...
+    // Fetch gameState from server and update local state with setGameState
+  };
+
+  const refreshLeaderboardState = async () => {
+    // ...
+    // Fetch leaderboardState from server and update local state with setLeaderboardState
+  };
+
+  const refreshPlayerEventsState = async () => {
+    // ...
+    // Fetch playerEventsState from server and update local state with setPlayerEventsState
   };
 
   return (
@@ -195,10 +146,7 @@ export const AppProvider: FC<{ children: ReactNode }> = ({ children }) => {
       value={{
         appState,
         promptLoading: promptLoading,
-        accountLoading,
-        attempts,
         refreshAppState,
-        refreshApikey,
         submitPrompt,
         setPromptLoading: setPromptLoading,
       }}
