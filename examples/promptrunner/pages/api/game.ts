@@ -6,7 +6,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const techBroQuips = characterQuips["Tech Bro"];
+  const quips = characterQuips["Tech Bro"];
 
   // Fetch or compute data for gameState
   const gameState = {
