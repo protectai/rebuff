@@ -40,10 +40,10 @@ const Game: FC = () => {
   const leaderBoardEntry = appState.leaderboardState.entries.map(
     (element, index) => (
       <tr key={element.name}>
-        <td>{index}</td>
+        <td>{index + 1}</td>
         <td>{element.name}</td>
         <td>{element.level}</td>
-        <td>{element.date}</td>
+        <td>{element.attempts}</td>
       </tr>
     )
   );
@@ -57,25 +57,10 @@ const Game: FC = () => {
             <th>Rank</th>
             <th>Name</th>
             <th>Level</th>
-            <th>Date</th>
+            <th>Attempts</th>
           </tr>
         </thead>
-        {/*<tbody>{leaderBoardEntry}</tbody>*/}
-        <tbody>
-          <tr>
-            <td>1</td>
-            <td>John Doe</td>
-            <td>5</td>
-            <td>12/12/2023</td>
-          </tr>
-          <tr>
-            <td>2</td>
-            <td>Jane Doe</td>
-            <td>4</td>
-            <td>12/11/2023</td>
-          </tr>
-        </tbody>
-        <tbody>{/* Fill this with leaderboard data */}</tbody>
+        <tbody>{leaderBoardEntry}</tbody>
       </Table>
     </div>
   );
