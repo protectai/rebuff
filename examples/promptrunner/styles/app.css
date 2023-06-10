@@ -110,6 +110,14 @@
   max-width: 768px;
 }
 
+.max-w-screen-lg {
+  max-width: 1024px;
+}
+
+.max-w-screen-xl {
+  max-width: 1280px;
+}
+
 .flex-grow {
   flex-grow: 1;
 }

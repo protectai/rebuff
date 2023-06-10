@@ -27,7 +27,16 @@ interface Character {
   response: string;
 }
 
-export interface LeaderboardState {}
+export interface LeaderboardState {
+  entries: LeaderboardEntry[];
+}
+
+interface LeaderboardEntry {
+  name: string;
+  attempts: number;
+  level: number;
+  date: string;
+}
 
 export interface PlayersEventState {}
 
