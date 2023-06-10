@@ -1,100 +1,42 @@
-import { AppState } from "@/interfaces/game";
-import { generateApiKey } from "@/utils/apikeys";
 import { supabaseAdminClient } from "@/lib/supabase";
 import { User } from "@supabase/supabase-js";
-import { PromptResponse } from "./playground";
+import {
+  adjectives,
+  animals,
+  uniqueNamesGenerator,
+} from "unique-names-generator";
 
-export const getUserAccountFromDb = async (user: any): Promise<AppState> => {
-  const { data, error } = await supabaseAdminClient
-    .from("accounts")
-    .select("user_apikey, credits_total_cents_10k")
-    .eq("id", user.id)
+function generateAnimalName() {
+  return uniqueNamesGenerator({
+    dictionaries: [adjectives, animals],
+  });
+}
+
+export async function getOrCreateProfile(uid: string) {
+  let { data: profile, error } = await supabaseAdminClient
+    .from("profiles")
+    .select("*")
+    .eq("id", uid);
+
+  if (error) throw error;
+  if (profile && profile.length == 1) {
+    return profile[0];
+  }
+
+  if (profile && profile.length > 1) {
+    throw new Error("Multiple profiles found for user");
+  }
+
+  // if not exists, create a new one
+  const { data: newProfile, error: insertError } = await supabaseAdminClient
+    .from("profiles")
+    .insert([{ id: uid, level: 1, name: generateAnimalName() }])
+    .select()
     .single();
 
-  if (error && error?.code === "PGRST116") {
-    console.log("No account found for user, creating new account");
-    return await createNewAccountInDb(user);
-  }
-  if (error) {
-    console.error("Error getting account for user");
-    console.error(error);
-    throw error;
-  }
-  return {
-    apikey: data.user_apikey,
-    credits: data.credits_total_cents_10k,
-  } as AppState;
-};
-
-export const createNewAccountInDb = async (user: any): Promise<AppState> => {
-  const { data, error } = await supabaseAdminClient
-    .from("accounts")
-    .insert({
-      id: user.id,
-      user_apikey: generateApiKey(),
-      name: user.email,
-      credits_total_cents_10k: 1000,
-    })
-    .select("*");
-  if (error) {
-    console.error(`Error creating account for user ${user.id}`);
-    console.error(error);
-    throw error;
-  }
-  return {
-    apikey: data[0].user_apikey,
-    credits: data[0].credits_total_cents_10k,
-  } as AppState;
-};
-
-export const refreshUserApikeyInDb = async (
-  user: any,
-  apikey: string
-): Promise<void> => {
-  const { data, error } = await supabaseAdminClient
-    .from("accounts")
-    .update({ user_apikey: apikey })
-    .eq("id", user.id);
-  if (error) {
-    console.error(`Error updating apikey for user ${user.id}`);
-    console.error(error);
-    throw new Error("Error updating apikey");
-  }
-};
-
-export const getUserStats = async (user: any): Promise<AppState["stats"]> => {
-  let stats = {
-    breaches: { total: 0, user: 0 },
-    detections: 0,
-    requests: 0,
-  } as AppState["stats"];
-  const { data, error } = await supabaseAdminClient.rpc(
-    "get_attempt_aggregates",
-    { user_id: user.id }
-  );
-  if (error) {
-    console.error(`Error getting stats for user ${user.id}`);
-    console.error(error);
-    throw new Error("Error getting stats");
-  }
-  const updateObjectValues = (init: any, fromDb: any) => {
-    for (const key in init) {
-      if (fromDb.hasOwnProperty(key)) {
-        if (typeof fromDb[key] === "number" && isFinite(fromDb[key])) {
-          init[key] = fromDb[key];
-        } else if (
-          typeof fromDb[key] === "object" &&
-          typeof init[key] === "object"
-        ) {
-          updateObjectValues(init[key], fromDb[key]);
-        }
-      }
-    }
-    return init as AppState["stats"];
-  };
-  stats = updateObjectValues(stats, data);
-  return stats;
-};
+  if (insertError) throw insertError;
+  return newProfile; // return the newly created profile
+}
 
 export const logAttempt = async (
   user: User,
