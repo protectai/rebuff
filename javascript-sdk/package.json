@@ -17,12 +17,5 @@
   "bugs": {
     "url": "https://github.com/woop/rebuff/issues"
   },
-  "homepage": "https://github.com/woop/rebuff#readme",
-  "devDependencies": {
-    "@types/chai": "^4.3.5",
-    "@types/mocha": "^10.0.1",
-    "@types/node": "^20.2.5",
-    "chai": "^4.3.7",
-    "mocha": "^10.2.0"
-  }
+  "homepage": "https://github.com/woop/rebuff#readme"
 }

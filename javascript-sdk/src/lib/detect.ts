@@ -2,7 +2,7 @@ import stringSimilarity from "string-similarity";
 import { normalizeString } from "./prompts";
 import { PineconeClient } from "@pinecone-database/pinecone";
 import { OpenAIApi } from "openai";
-import { RebuffError } from "src/interface";
+import { RebuffError } from "../interface";
 
 export async function detectPiUsingVectorDatabase(
   input: string,
