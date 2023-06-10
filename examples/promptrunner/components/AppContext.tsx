@@ -31,14 +31,12 @@ export const initState = {
   leaderboardState: {
     entries: [
       {
-        id: 1,
         name: "John Doe",
         level: 2,
         date: "12/12/2023",
         attempts: 11,
       },
       {
-        id: 2,
         name: "Jane Doe",
         level: 4,
         date: "12/11/2023",
@@ -131,10 +129,6 @@ export const AppProvider: FC<{ children: ReactNode }> = ({ children }) => {
     } finally {
       setPromptLoading(false);
     }
-  };
-
-  const setCredits = (credits: number) => {
-    setAppState((prev) => ({ ...prev, credits: credits }));
   };
 
   const refreshGameState = async () => {
