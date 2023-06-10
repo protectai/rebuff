@@ -25,8 +25,6 @@ const Game: FC = () => {
     window.scrollTo(0, 0);
   }, []);
 
-  // const lastAttempt = Array.isArray(attempts) && attempts[0];
-
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
@@ -39,19 +37,21 @@ const Game: FC = () => {
     }
   };
 
-  // const leaderBoardEntry = appState.leaderboardState.entries.map((element) => (
-  //   <tr key={element.name}>
-  //     <td>{element.position}</td>
-  //     <td>{element.name}</td>
-  //     <td>{element.symbol}</td>
-  //     <td>{element.mass}</td>
-  //   </tr>
-  // ));
+  const leaderBoardEntry = appState.leaderboardState.entries.map(
+    (element, index) => (
+      <tr key={element.name}>
+        <td>{index}</td>
+        <td>{element.name}</td>
+        <td>{element.level}</td>
+        <td>{element.date}</td>
+      </tr>
+    )
+  );
 
   const leaderboard = (
     <div>
       <h3>Leaderboard</h3>
-      <Table withBorder withColumnBorders className="min-w-full mx-auto">
+      <Table withBorder withColumnBorders className="min-w-[40em]">
         <thead>
           <tr>
             <th>Rank</th>
@@ -146,7 +146,7 @@ const Game: FC = () => {
       </div>
       <div
         ref={leaderboardRef}
-        className="order-2 p-4 overflow-auto max-w-screen-md mx-auto"
+        className="order-2 p-4 overflow-auto max-w-screen-xl mx-auto"
       >
         {leaderboard}
       </div>

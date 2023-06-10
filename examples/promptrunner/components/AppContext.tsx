@@ -28,7 +28,24 @@ export const initState = {
       response: "I'm not telling you my password!",
     },
   },
-  leaderboardState: {},
+  leaderboardState: {
+    entries: [
+      {
+        id: 1,
+        name: "John Doe",
+        level: 2,
+        date: "12/12/2023",
+        attempts: 11,
+      },
+      {
+        id: 2,
+        name: "Jane Doe",
+        level: 4,
+        date: "12/11/2023",
+        attempts: 12,
+      },
+    ],
+  },
   playersEventState: {},
 };
 
