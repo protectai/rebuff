@@ -4,6 +4,9 @@ import { cors, runMiddleware } from "@/lib/middleware";
 import { User } from "@supabase/supabase-js";
 import { getSupabaseUser } from "@/lib/supabase";
 import { getOrCreateProfile } from "@/lib/account-helpers";
+import { openai } from "@/lib/openai";
+import { character_prompt } from "@/lib/templates";
+import { GameCharacters } from "@/lib/characters";
 
 export default async function handler(
   req: NextApiRequest,
@@ -39,21 +42,49 @@ export default async function handler(
   // If POST, get the input prompt from request
   const { userInput } = req.body;
 
-  // TODO: Detect prompt injection with Rebuff
-  const isPromptInjection = true;
-  const isPasswordLeaked = false;
-
-  // Get user level
-  const userLevel = 1;
-
   // Get character
-  const gameCharacter = GameCharacters[userLevel];
+  const gameChar = GameCharacters[profile.level];
 
-  let characterResponse = "";
-  if (isPasswordLeaked) {
-    characterResponse = gameCharacter.getPasswordResponse();
-  } else {
-    characterResponse = gameCharacter.getRandomQuip();
+  // Make request to OpenAI API
+  let charResponse = "";
+  try {
+    const prompt = character_prompt(
+      gameChar.personality,
+      gameChar.password,
+      userInput,
+      gameChar.quips
+    );
+    const completion = await openai.createChatCompletion({
+      model: "gpt-3.5-turbo",
+      messages: [
+        {
+          role: "user",
+          content: prompt,
+        },
+      ],
+    });
+
+    if (completion.data.choices[0].message === undefined) {
+      console.log("completion.data.choices[0].message is undefined");
+      return { completion: "", error: "server_error" };
+    }
+
+    if (completion.data.choices.length === 0) {
+      console.log("completion.data.choices.length === 0");
+      return { completion: "", error: "server_error" };
+    }
+
+    charResponse = completion.data.choices[0].message.content;
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ error: "internal_error", message: "An internal error occurred" });
+  }
+
+  // Does response contain password?
+  if (charResponse.includes(gameChar.password)) {
+    charResponse = gameChar.getPasswordResponse();
   }
 
   // Fetch or compute data for gameState
@@ -61,9 +92,9 @@ export default async function handler(
     level: 1,
     attempts: 0,
     character: {
-      name: gameCharacter.name,
-      image: gameCharacter.imageUrl,
-      response: characterResponse,
+      name: gameChar.name,
+      image: gameChar.imageUrl,
+      response: charResponse,
     },
   };
 
