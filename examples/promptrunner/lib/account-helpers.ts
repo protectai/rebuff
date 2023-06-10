@@ -5,11 +5,59 @@ import {
   animals,
   uniqueNamesGenerator,
 } from "unique-names-generator";
+import { LeaderboardEntry } from "@/interfaces/game";
 
 function generateAnimalName() {
   return uniqueNamesGenerator({
     dictionaries: [adjectives, animals],
   });
+}
+
+export async function getProfile(uid: string) {
+  let { data: profile, error } = await supabaseAdminClient
+    .from("profiles")
+    .select("*")
+    .eq("id", uid);
+
+  if (error) throw error;
+  if (!profile || profile.length != 1) {
+    throw new Error("Profile not found");
+  }
+
+  return profile[0];
+}
+
+export async function getLeaderboardEntries(uid: string) {
+  let { data: profiles, error } = await supabaseAdminClient
+    .from("profiles")
+    .select("*")
+    .eq("id", uid);
+
+  if (error) throw error;
+  if (!profiles) {
+    throw new Error("Profiles not found");
+  }
+
+  // Create a LeaderboardEntry for each profile
+  const leaderboardEntries = profiles.map((profile) => {
+    return {
+      name: profile.name,
+      attempts: profile.attempts,
+      level: profile.level,
+      date: profile.updated_at,
+    } as LeaderboardEntry;
+  });
+
+  // Rank by highest level then by lowest attempts
+  leaderboardEntries.sort((a, b) => {
+    if (a.level > b.level) return -1;
+    if (a.level < b.level) return 1;
+    if (a.attempts < b.attempts) return -1;
+    if (a.attempts > b.attempts) return 1;
+    return 0;
+  });
+
+  return leaderboardEntries;
 }
 
 export async function getOrCreateProfile(uid: string) {

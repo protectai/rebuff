@@ -3,7 +3,10 @@ import { AppState } from "@/interfaces/game";
 import { cors, runMiddleware } from "@/lib/middleware";
 import { User } from "@supabase/supabase-js";
 import { getSupabaseUser } from "@/lib/supabase";
-import { getOrCreateProfile } from "@/lib/account-helpers";
+import {
+  getLeaderboardEntries,
+  getOrCreateProfile,
+} from "@/lib/account-helpers";
 import { openai } from "@/lib/openai";
 import { character_prompt } from "@/lib/templates";
 import { GameCharacters } from "@/lib/characters";
@@ -95,8 +98,9 @@ export default async function handler(
   };
 
   // Fetch or compute data for leaderboardState
+  const entries = await getLeaderboardEntries(uid);
   const leaderboardState = {
-    // ...
+    entries,
   };
 
   // Fetch or compute data for playersEventState

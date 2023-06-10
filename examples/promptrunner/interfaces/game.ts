@@ -31,7 +31,7 @@ export interface LeaderboardState {
   entries: LeaderboardEntry[];
 }
 
-interface LeaderboardEntry {
+export interface LeaderboardEntry {
   name: string;
   attempts: number;
   level: number;
