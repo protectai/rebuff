@@ -1,5 +1,6 @@
 interface GameCharacterData {
   name: string;
+  personality: string;
   level: number;
   quips: string[];
   imageUrl: string;
@@ -9,7 +10,8 @@ interface GameCharacterData {
 const gameCharactersData: GameCharacterData[] = [
   {
     level: 1,
-    name: "tech_bro",
+    name: "Chad",
+    personality: "Tech Bro",
     quips: [
       "Seems like your password predicting algorithm needs a bit more training data.",
       "Maybe you should try applying a few more neural networks to that guess.",
@@ -34,13 +36,14 @@ const gameCharactersData: GameCharacterData[] = [
     ],
     imageUrl:
       "https://cdn.discordapp.com/attachments/1099199712344686595/1116590688893673582/willem_steelpunk_character_full_body_white_background_6efdb26e-ead0-484c-9c2a-5970577c472a.png",
-    password: "password",
+    password: "ultracool",
   },
 ];
 
 class GameCharacter {
   constructor(
     public name: string,
+    public personality: string,
     public level: number,
     public quips: string[],
     public imageUrl: string,
@@ -61,9 +64,12 @@ const GameCharacters: { [level: number]: GameCharacter } = {};
 gameCharactersData.forEach((gameCharacterData) => {
   GameCharacters[gameCharacterData.level] = new GameCharacter(
     gameCharacterData.name,
+    gameCharacterData.personality,
     gameCharacterData.level,
     gameCharacterData.quips,
     gameCharacterData.imageUrl,
     gameCharacterData.password
   );
 });
+
+export { GameCharacters };
