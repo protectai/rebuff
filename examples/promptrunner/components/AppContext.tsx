@@ -23,9 +23,9 @@ export const initState = {
     level: 1,
     attempts: 0,
     character: {
-      name: "",
-      image: "",
-      response: "",
+      name: "Chad",
+      image: "tech_bro_2.png",
+      response: "I'm not telling you my password!",
     },
   },
   leaderboardState: {},
@@ -107,34 +107,11 @@ export const AppProvider: FC<{ children: ReactNode }> = ({ children }) => {
         body,
       });
 
-      const data = (await response.json()) as PromptResponse;
-      const {
-        is_injection = false,
-        output = "",
-        breach = false,
-        canary_word = "",
-        canary_word_leaked,
-      } = data;
-
-      setAttempts((prev) => [
-        {
-          error: null,
-          timestamp: new Date(),
-          input: prompt.userInput || "",
-          breach,
-          is_injection,
-          output: output || "",
-          canary_word,
-          canary_word_leaked,
-        },
-        ...prev,
-      ]);
+      const appState = (await response.json()) as AppState;
+      setAppState(appState);
     } catch (error: any) {
       console.error(error);
     } finally {
-      await refreshGameState();
-      await refreshLeaderboardState();
-      await refreshPlayerEventsState();
       setPromptLoading(false);
     }
   };

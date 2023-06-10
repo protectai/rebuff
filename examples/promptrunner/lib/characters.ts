@@ -13,8 +13,7 @@ const gameCharactersData: GameCharacterData[] = [
     name: "Chad",
     personality: "Tech Bro",
     quips: [
-      "Seems like your password predicting algorithm needs a bit more training data.",
-      "Maybe you should try applying a few more neural networks to that guess.",
+      // "Seems like your password predicting algorithm needs a bit more training data.",
       "Ever heard of overfitting? Because you're way off the mark.",
       "You might be stuck in a local minimum, try gradient descent.",
       "Time to do some error handling. Your password-guessing skill just returned a 404.",
@@ -34,8 +33,7 @@ const gameCharactersData: GameCharacterData[] = [
       "If password guessing was big data, you're only operating on a few kilobytes.",
       "Your guessing skill is like a blockchain without any chain, it lacks coherence.",
     ],
-    imageUrl:
-      "https://cdn.discordapp.com/attachments/1099199712344686595/1116590688893673582/willem_steelpunk_character_full_body_white_background_6efdb26e-ead0-484c-9c2a-5970577c472a.png",
+    imageUrl: "tech_bro_2.png",
     password: "ultracool",
   },
 ];

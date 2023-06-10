@@ -38,20 +38,20 @@ export async function getOrCreateProfile(uid: string) {
   return newProfile; // return the newly created profile
 }
 
-export const logAttempt = async (
-  user: User,
-  request: any,
-  response: PromptResponse
-): Promise<void> => {
-  const { error } = await supabaseAdminClient.from("attempts").insert({
-    user_id: user.id,
-    request: request,
-    response: response,
-    breach: response.breach,
-  });
-  if (error) {
-    console.error(`Error logging attempt for user ${user.id}`);
-    console.error(error);
-    throw error;
-  }
-};
+// export const logAttempt = async (
+//   user: User,
+//   request: any,
+//   response: PromptResponse
+// ): Promise<void> => {
+//   const { error } = await supabaseAdminClient.from("attempts").insert({
+//     user_id: user.id,
+//     request: request,
+//     response: response,
+//     breach: response.breach,
+//   });
+//   if (error) {
+//     console.error(`Error logging attempt for user ${user.id}`);
+//     console.error(error);
+//     throw error;
+//   }
+// };

@@ -56,6 +56,7 @@ export default async function handler(
     );
     const completion = await openai.createChatCompletion({
       model: "gpt-3.5-turbo",
+      temperature: 1,
       messages: [
         {
           role: "user",
@@ -80,11 +81,6 @@ export default async function handler(
     return res
       .status(500)
       .json({ error: "internal_error", message: "An internal error occurred" });
-  }
-
-  // Does response contain password?
-  if (charResponse.includes(gameChar.password)) {
-    charResponse = gameChar.getPasswordResponse();
   }
 
   // Fetch or compute data for gameState
