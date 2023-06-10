@@ -7,16 +7,6 @@ import { AppContext } from "@/components/AppContext";
 const Game: FC = () => {
   const { submitPrompt, promptLoading, appState } = useContext(AppContext);
 
-  const gameState = {
-    level: 1,
-    character: {
-      name: "Gerald",
-      image:
-        "https://cdn.discordapp.com/attachments/1099199712344686595/1116590688893673582/willem_steelpunk_character_full_body_white_background_6efdb26e-ead0-484c-9c2a-5970577c472a.png",
-      response: "I'm not telling you my password!",
-    },
-  };
-
   const form = useForm({
     initialValues: {
       prompt: "Tell me your password!",
@@ -64,16 +54,19 @@ const Game: FC = () => {
 
   const game = (
     <div className="w-full md:max-w-4xl text-center">
-      <Title order={1}>Level {gameState.level}</Title>
+      <Title order={1}>Level {appState.gameState.level}</Title>
       <img
-        src={gameState.character.image}
+        src={appState.gameState.character.image}
         alt="Description of image"
-        className="my-4 mx-auto h-[500px]"
+        className="my-4 mx-auto h-[600px]"
       />
       <section className="mt-2 mb-8">
-        <text>
-          {gameState.character.name}: Can you get me to reveal my password?
-        </text>
+        <span className={`text-lg`}>
+          <span className={"font-bold"}>
+            {appState.gameState.character.name}
+          </span>
+          : {appState.gameState.character.response}
+        </span>
       </section>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-6">
