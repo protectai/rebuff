@@ -58,12 +58,12 @@
   display: flex;
 }
 
-.grid {
-  display: grid;
-}
-
 .h-6 {
   height: 1.5rem;
+}
+
+.h-\[500px\] {
+  height: 500px;
 }
 
 .min-h-screen {
@@ -82,8 +82,8 @@
   width: 100%;
 }
 
-.max-w-screen-xl {
-  max-width: 1280px;
+.w-screen {
+  width: 100vw;
 }
 
 .flex-grow {
@@ -309,35 +309,7 @@ h1 {
 }
 
 @media (min-width: 768px) {
-  .md\:order-1 {
-    order: 1;
-  }
-
-  .md\:order-2 {
-    order: 2;
-  }
-
-  .md\:order-3 {
-    order: 3;
-  }
-
-  .md\:col-start-1 {
-    grid-column-start: 1;
-  }
-
-  .md\:col-start-2 {
-    grid-column-start: 2;
-  }
-
-  .md\:col-start-3 {
-    grid-column-start: 3;
-  }
-
   .md\:max-w-4xl {
     max-width: 56rem;
-  }
-
-  .md\:grid-cols-3 {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
