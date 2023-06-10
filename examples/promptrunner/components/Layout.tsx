@@ -13,7 +13,7 @@ const Layout = ({ children }: Props) => {
         <title>Prompt Runner</title>
         <meta property="og:title" content="Rebuff Playground" key="title" />
       </Head>
-      <div className="min-h-screen p-4 flex flex-col justify-center items-center max-w-screen-xl mx-auto">
+      <div className="min-h-screen p-4 flex flex-col justify-center items-center w-screen mx-auto">
         <main className="flex-grow w-full">{children}</main>
         <footer className="w-full text-gray-500">
           <div className="flex justify-between items-center">

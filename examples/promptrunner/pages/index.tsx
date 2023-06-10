@@ -68,8 +68,7 @@ const Game: FC = () => {
       <img
         src={gameState.character.image}
         alt="Description of image"
-        className="my-4 mx-auto"
-        height={500}
+        className="my-4 mx-auto h-[500px]"
       />
       <section className="mt-2 mb-8">
         <text>
@@ -98,25 +97,16 @@ const Game: FC = () => {
   );
 
   return (
-    <div
-      className="grid md:grid-cols-3 gap-6 min-h-screen"
-      style={{
-        gap: "20px",
-      }}
-    >
-      <div className="order-2 md:order-1 md:col-start-1 p-4 bg-gray-200 overflow-auto">
-        {leaderboard}
-      </div>
+    <div className="flex flex-col gap-6 min-h-screen ">
+      <div className="order-2 p-4 bg-gray-200 overflow-auto">{leaderboard}</div>
 
-      <div className="order-1 md:order-2 md:col-start-2 p-4 overflow-auto">
+      <div className="order-1 p-4 overflow-auto">
         <div className="flex flex-col items-center w-full justify-center">
           {game}
         </div>
       </div>
 
-      <div className="order-3 md:order-3 md:col-start-3 p-4 bg-gray-200 overflow-auto">
-        {eventLog}
-      </div>
+      <div className="order-3 p-4 bg-gray-200 overflow-auto">{eventLog}</div>
     </div>
   );
 };
