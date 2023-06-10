@@ -72,8 +72,8 @@ const Game: FC = () => {
       <form onSubmit={handleSubmit} className="flex flex-col gap-6">
         <div className="relative">
           <Textarea
-            className="w-full p-2 resize-none border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-black focus:border-black sm:text-sm"
-            minRows={10}
+            className="mx-auto max-w-[36em]  p-2 resize-none border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-black focus:border-black sm:text-sm"
+            minRows={4}
             maxRows={15}
             {...form.getInputProps("prompt")}
           ></Textarea>

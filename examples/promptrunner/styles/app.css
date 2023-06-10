@@ -70,6 +70,18 @@
   height: 600px;
 }
 
+.h-\[30em\] {
+  height: 30em;
+}
+
+.h-\[20em\] {
+  height: 20em;
+}
+
+.h-\[10em\] {
+  height: 10em;
+}
+
 .min-h-screen {
   min-height: 100vh;
 }
@@ -88,6 +100,74 @@
 
 .w-screen {
   width: 100vw;
+}
+
+.w-2 {
+  width: 0.5rem;
+}
+
+.w-4 {
+  width: 1rem;
+}
+
+.w-16 {
+  width: 4rem;
+}
+
+.w-64 {
+  width: 16rem;
+}
+
+.w-96 {
+  width: 24rem;
+}
+
+.w-1\/2 {
+  width: 50%;
+}
+
+.w-\[200px\] {
+  width: 200px;
+}
+
+.w-\[200em\] {
+  width: 200em;
+}
+
+.w-\[1em\] {
+  width: 1em;
+}
+
+.w-\[10em\] {
+  width: 10em;
+}
+
+.w-\[100em\] {
+  width: 100em;
+}
+
+.w-\[50em\] {
+  width: 50em;
+}
+
+.w-\[30em\] {
+  width: 30em;
+}
+
+.w-\[40em\] {
+  width: 40em;
+}
+
+.max-w-\[40em\] {
+  max-width: 40em;
+}
+
+.max-w-\[30em\] {
+  max-width: 30em;
+}
+
+.max-w-\[36em\] {
+  max-width: 36em;
 }
 
 .flex-grow {
@@ -325,6 +405,10 @@ h1 {
 }
 
 @media (min-width: 640px) {
+  .sm\:w-full {
+    width: 100%;
+  }
+
   .sm\:text-sm {
     font-size: 0.875rem;
     line-height: 1.25rem;
@@ -332,7 +416,22 @@ h1 {
 }
 
 @media (min-width: 768px) {
+  .md\:w-full {
+    width: 100%;
+  }
+
+  .md\:w-fit {
+    width: -moz-fit-content;
+    width: fit-content;
+  }
+
   .md\:max-w-4xl {
     max-width: 56rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .lg\:w-full {
+    width: 100%;
   }
 }
