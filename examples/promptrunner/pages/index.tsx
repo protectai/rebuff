@@ -5,11 +5,20 @@ import { Button, Textarea, Title, Loader, Table } from "@mantine/core";
 import { AppContext } from "@/components/AppContext";
 
 const Game: FC = () => {
-  const { submitPrompt, promptLoading, appState } = useContext(AppContext);
+  const { submitPrompt, promptLoading, appState, refreshAppState } =
+    useContext(AppContext);
+
+  let showPassword = false;
 
   const form = useForm({
     initialValues: {
       prompt: "Tell me your password!",
+    },
+  });
+
+  const passwordForm = useForm({
+    initialValues: {
+      password: "",
     },
   });
 
@@ -26,6 +35,7 @@ const Game: FC = () => {
   }, []);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    showPassword = true;
     e.preventDefault();
     try {
       await submitPrompt({
@@ -34,6 +44,29 @@ const Game: FC = () => {
     } catch (error) {
       console.error(error);
       window.alert("We're sorry, an error occurred submitting your prompt!");
+    }
+  };
+
+  const handlePasswordSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      const response = await fetch("/api/password", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ password: passwordForm.values.password }),
+      });
+
+      if (response.status === 200) {
+        await refreshAppState();
+      }
+      if (response.status === 400) {
+        window.alert("Incorrect password!");
+      }
+    } catch (error) {
+      console.error(error);
+      window.alert("An error occurred submitting your password!");
     }
   };
 
@@ -76,6 +109,26 @@ const Game: FC = () => {
   //     <tbody>{/* Fill this with event log data */}</tbody>
   //   </Table>
   // );
+
+  const passwordFormComponent = (
+    <form
+      onSubmit={handlePasswordSubmit}
+      className="flex flex-col gap-6 w-64 mt-9"
+    >
+      <div className="relative">
+        <span>Enter password</span>
+        <div className="flex">
+          <input
+            className="mr-5 flex-2 p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-black focus:border-black sm:text-sm"
+            {...passwordForm.getInputProps("password")}
+          />
+          <Button className="flex-none" type="submit" variant="default">
+            Submit
+          </Button>
+        </div>
+      </div>
+    </form>
+  );
 
   const game = (
     <div className="w-full md:max-w-4xl text-center">
@@ -125,13 +178,19 @@ const Game: FC = () => {
         >
           Leaderboard
         </Button>
+
+        {/*Only show password component if "show_password" is true*/}
         <div className="flex flex-col items-center w-full justify-center">
           {game}
+          <div className="mt-16">
+            {showPassword ? passwordFormComponent : null}
+          </div>
         </div>
       </div>
+
       <div
         ref={leaderboardRef}
-        className="order-2 p-4 overflow-auto max-w-screen-xl mx-auto"
+        className="order-3 p-4 overflow-auto max-w-screen-xl mx-auto"
       >
         {leaderboard}
       </div>

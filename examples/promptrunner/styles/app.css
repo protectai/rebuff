@@ -50,6 +50,30 @@
   margin-top: 0.5rem;
 }
 
+.mt-9 {
+  margin-top: 2.25rem;
+}
+
+.ml-16 {
+  margin-left: 4rem;
+}
+
+.mr-5 {
+  margin-right: 1.25rem;
+}
+
+.mt-20 {
+  margin-top: 5rem;
+}
+
+.mt-32 {
+  margin-top: 8rem;
+}
+
+.mt-16 {
+  margin-top: 4rem;
+}
+
 .inline-block {
   display: inline-block;
 }
@@ -90,6 +114,14 @@
   width: 100vw;
 }
 
+.w-96 {
+  width: 24rem;
+}
+
+.w-64 {
+  width: 16rem;
+}
+
 .min-w-\[400px\] {
   min-width: 400px;
 }
@@ -116,6 +148,14 @@
 
 .max-w-screen-xl {
   max-width: 1280px;
+}
+
+.flex-1 {
+  flex: 1 1 0%;
+}
+
+.flex-none {
+  flex: none;
 }
 
 .flex-grow {
