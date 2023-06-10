@@ -23,7 +23,7 @@ export default async function handler(
   // if (!user) {
   //   return res
   //     .status(401)
-  //     .json({ error: "unauthorized", message: "unauthorized" });
+  //     .json({ error: "unauthorized", message: "Unauthorized" });
   // }
 
   // If POST, get the input prompt from request
