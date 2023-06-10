@@ -3,6 +3,7 @@ import { AppState } from "@/interfaces/game";
 import { cors, runMiddleware } from "@/lib/middleware";
 import { User } from "@supabase/supabase-js";
 import { getSupabaseUser } from "@/lib/supabase";
+import { getOrCreateProfile } from "@/lib/account-helpers";
 
 export default async function handler(
   req: NextApiRequest,
@@ -17,14 +18,23 @@ export default async function handler(
       .json({ error: "not_allowed", message: "Method not allowed" });
   }
 
-  // let user: User;
-  // user = await getSupabaseUser(req, res);
-  //
-  // if (!user) {
-  //   return res
-  //     .status(401)
-  //     .json({ error: "unauthorized", message: "Unauthorized" });
-  // }
+  // Check if X-Uid header is set
+  const uid = req.headers["x-uid"];
+  if (!uid || typeof uid !== "string") {
+    return res
+      .status(401)
+      .json({ error: "unauthorized", message: "X-Uid header is missing" });
+  }
+
+  let profile;
+  try {
+    profile = await getOrCreateProfile(uid);
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ error: "internal_error", message: "An internal error occurred" });
+  }
 
   // If POST, get the input prompt from request
   const { userInput } = req.body;
