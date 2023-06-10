@@ -14,7 +14,7 @@ import React, {
 } from "react";
 import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
 import fetch from "node-fetch";
-import { DetectApiSuccessResponse } from "@/lib/rebuff";
+import { v4 as uuidv4 } from "uuid";
 
 export const initState = {
   promptLoading: false,
@@ -58,7 +58,20 @@ export const AppProvider: FC<{ children: ReactNode }> = ({ children }) => {
     [session]
   );
 
+  function getLocalUserId(): string {
+    const uid = localStorage.getItem("uid");
+    if (!uid) {
+      const userId = uuidv4();
+      localStorage.setItem("uid", userId);
+      return userId;
+    }
+
+    return uid;
+  }
+
   useEffect(() => {
+    getLocalUserId();
+
     refreshGameState();
     refreshLeaderboardState();
     refreshPlayerEventsState();
@@ -67,7 +80,10 @@ export const AppProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const refreshAppState = async () => {
     // setAccountLoading(true);
     try {
-      const response = await fetch("/api/game");
+      const uid = getLocalUserId();
+      const response = await fetch("/api/game", {
+        headers: { "X-Uid": uid },
+      });
       const data = (await response.json()) as AppState;
       setAppState(data);
     } catch (error) {
@@ -81,11 +97,12 @@ export const AppProvider: FC<{ children: ReactNode }> = ({ children }) => {
     setPromptLoading(true);
     try {
       const body = JSON.stringify(prompt);
-
+      const uid = getLocalUserId();
       const response = await fetch("/api/game", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "X-Uid": uid,
         },
         body,
       });
