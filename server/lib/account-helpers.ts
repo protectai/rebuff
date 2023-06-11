@@ -4,35 +4,15 @@ import { supabaseAdminClient } from "@/lib/supabase";
 import { User } from "@supabase/supabase-js";
 import { PromptResponse } from "./playground";
 
-export const getUserAccountFromDb = async (user: any): Promise<AppState> => {
-  const { data, error } = await supabaseAdminClient
-    .from("accounts")
-    .select("user_apikey, credits_total_cents_10k")
-    .eq("id", user.id)
-    .single();
-
-  if (error && error?.code === "PGRST116") {
-    console.log("No account found for user, creating new account");
-    return await createNewAccountInDb(user);
-  }
-  if (error) {
-    console.error("Error getting account for user");
-    console.error(error);
-    throw error;
-  }
-  return {
-    apikey: data.user_apikey,
-    credits: data.credits_total_cents_10k,
-  } as AppState;
-};
-
 export const createNewAccountInDb = async (user: any): Promise<AppState> => {
   const { data, error } = await supabaseAdminClient
     .from("accounts")
     .insert({
       id: user.id,
+      // eslint-disable-next-line camelcase
       user_apikey: generateApiKey(),
       name: user.email,
+      // eslint-disable-next-line camelcase
       credits_total_cents_10k: 1000,
     })
     .select("*");
@@ -47,12 +27,35 @@ export const createNewAccountInDb = async (user: any): Promise<AppState> => {
   } as AppState;
 };
 
+export const getUserAccountFromDb = async (user: any): Promise<AppState> => {
+  const { data, error } = await supabaseAdminClient
+    .from("accounts")
+    .select("user_apikey, credits_total_cents_10k")
+    .eq("id", user.id)
+    .single();
+
+  if (error && error?.code === "PGRST116") {
+    console.log("No account found for user, creating new account");
+    return createNewAccountInDb(user);
+  }
+  if (error) {
+    console.error("Error getting account for user");
+    console.error(error);
+    throw error;
+  }
+  return {
+    apikey: data.user_apikey,
+    credits: data.credits_total_cents_10k,
+  } as AppState;
+};
+
 export const refreshUserApikeyInDb = async (
   user: any,
   apikey: string
 ): Promise<void> => {
-  const { data, error } = await supabaseAdminClient
+  const { error } = await supabaseAdminClient
     .from("accounts")
+    // eslint-disable-next-line camelcase
     .update({ user_apikey: apikey })
     .eq("id", user.id);
   if (error) {
@@ -70,6 +73,7 @@ export const getUserStats = async (user: any): Promise<AppState["stats"]> => {
   } as AppState["stats"];
   const { data, error } = await supabaseAdminClient.rpc(
     "get_attempt_aggregates",
+    // eslint-disable-next-line camelcase
     { user_id: user.id }
   );
   if (error) {
@@ -102,6 +106,7 @@ export const logAttempt = async (
   response: PromptResponse
 ): Promise<void> => {
   const { error } = await supabaseAdminClient.from("attempts").insert({
+    // eslint-disable-next-line camelcase
     user_id: user.id,
     request: request,
     response: response,

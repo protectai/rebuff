@@ -24,6 +24,22 @@ function runMiddleware(
   });
 }
 
+const refreshUserApikeyInDb = async (
+  user: any,
+  apikey: string
+): Promise<void> => {
+  const { error } = await supabaseAdminClient
+    .from("accounts")
+    // eslint-disable-next-line camelcase
+    .update({ user_apikey: apikey })
+    .eq("id", user.id);
+  if (error) {
+    console.error(`Error updating apikey for user ${user.id}`);
+    console.error(error);
+    throw new Error("Error updating apikey");
+  }
+};
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<any>
@@ -71,18 +87,3 @@ export default async function handler(
       .json({ error: "server_error", message: "something went wrong" });
   }
 }
-
-const refreshUserApikeyInDb = async (
-  user: any,
-  apikey: string
-): Promise<void> => {
-  const { data, error } = await supabaseAdminClient
-    .from("accounts")
-    .update({ user_apikey: apikey })
-    .eq("id", user.id);
-  if (error) {
-    console.error(`Error updating apikey for user ${user.id}`);
-    console.error(error);
-    throw new Error("Error updating apikey");
-  }
-};

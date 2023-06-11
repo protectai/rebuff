@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import * as Cors from "cors";
+import Cors from "cors";
 import { rebuff } from "@/lib/rebuff";
 import { ApiFailureResponse } from "@rebuff/sdk";
 import {

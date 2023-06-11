@@ -8,7 +8,7 @@ import PromptHistory from "@/components/PromptHistory";
 import { AppContext } from "@/components/AppContext";
 import { PromptInjectionStats } from "@/components/PromptInjectionStats";
 import LoginButtonWithInstructions from "@/components/LoginButtonWithInstructions";
-import { formatSQL, render_prompt_for_sql } from "@/lib/general-helpers";
+import { formatSQL, renderPromptForSQL } from "@/lib/general-helpers";
 import Section from "@/components/Section";
 import ApikeyDisplay from "@/components/ApikeyDisplay";
 import SequenceDiagram from "@/components/SequenceDiagram";
@@ -186,7 +186,7 @@ const Playground: FC = () => {
         </Section>
         <Section title="Prompt Template">
           <pre className="text-[0.9rem] leading-[1.4rem] overflow-auto whitespace-pre-wrap">
-            {render_prompt_for_sql("user_input")}
+            {renderPromptForSQL("user_input")}
           </pre>
         </Section>
         <Section id="add-to-app" title="Add Rebuff to your own app">

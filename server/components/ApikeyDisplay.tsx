@@ -1,7 +1,7 @@
 // components/ApiKeyDisplay.tsx
 import { Text } from "@mantine/core";
 import { IconEye, IconRefresh, IconX } from "@tabler/icons-react";
-import React, { useState, useRef, FC } from "react";
+import React, { useState, FC } from "react";
 
 interface ApikeyDisplayProps {
   apiKey: string;
@@ -19,7 +19,7 @@ const ApikeyDisplay: FC<ApikeyDisplayProps> = ({ apiKey, onRefresh }) => {
           setCopyMessage("Copied!");
           setTimeout(() => setCopyMessage(""), 2000);
         },
-        (err) => {
+        () => {
           setCopyMessage("Failed to copy!");
           setTimeout(() => setCopyMessage(""), 2000);
         }

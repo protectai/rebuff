@@ -1,10 +1,7 @@
 import Head from "next/head";
 import Navbar from "./Navbar";
-import React, { ReactNode, useContext } from "react";
+import React, { ReactNode } from "react";
 import SocialIcons from "./SocialIcons";
-import ApikeyDisplay from "@/components/ApikeyDisplay";
-import { useSession } from "@supabase/auth-helpers-react";
-import { AppContext } from "@/components/AppContext";
 
 interface Props {
   children: ReactNode;

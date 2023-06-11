@@ -1,6 +1,6 @@
 import { AppState, AppStateCtx, Attempt, PromptRequest } from "@/interfaces/ui";
 import { createContext, useState, FC, ReactNode, useEffect } from "react";
-import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
+import { useSession } from "@supabase/auth-helpers-react";
 import fetch from "node-fetch";
 import { PromptResponse } from "@/lib/playground";
 import { DetectResponse } from "@rebuff/sdk/src/interface";
@@ -27,6 +27,7 @@ export const AppContext = createContext<AppStateCtx>({
   attempts: [] as Attempt[],
   refreshAppState: async () => undefined,
   refreshApikey: async () => undefined,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   submitPrompt: async (prompt: PromptRequest) => undefined,
   setPromptLoading: () => null,
 });
@@ -38,15 +39,10 @@ export const AppProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [accountLoading, setAccountLoading] = useState<boolean>(false);
   const [attempts, setAttempts] = useState<Attempt[]>([] as Attempt[]);
   const session = useSession();
-  const supabase = useSupabaseClient();
-  useEffect(
-    function onChange() {
-      if (session) {
-        refreshAppState();
-      }
-    },
-    [session]
-  );
+
+  const setApikey = (apikey: string) => {
+    setAppState((prev) => ({ ...prev, apikey: apikey }));
+  };
   const refreshAppState = async () => {
     setAccountLoading(true);
     try {
@@ -58,6 +54,17 @@ export const AppProvider: FC<{ children: ReactNode }> = ({ children }) => {
     } finally {
       setAccountLoading(false);
     }
+  };
+  useEffect(
+    function onChange() {
+      if (session) {
+        refreshAppState();
+      }
+    },
+    [session]
+  );
+  const setStats = (stats: AppState["stats"]) => {
+    setAppState((prev) => ({ ...prev, stats: stats }));
   };
   const refreshStats = async () => {
     setAccountLoading(true);
@@ -123,7 +130,9 @@ export const AppProvider: FC<{ children: ReactNode }> = ({ children }) => {
         } as DetectResponse,
         output = "",
         breach = false,
+        // eslint-disable-next-line camelcase, @typescript-eslint/naming-convention, @typescript-eslint/no-unused-vars
         canary_word = "",
+        // eslint-disable-next-line camelcase, @typescript-eslint/naming-convention
         canary_word_leaked,
       } = data;
 
@@ -135,7 +144,9 @@ export const AppProvider: FC<{ children: ReactNode }> = ({ children }) => {
           breach,
           detection,
           output: output || "",
-          canary_word,
+          // eslint-disable-next-line camelcase, @typescript-eslint/naming-convention
+          canary_word: "",
+          // eslint-disable-next-line camelcase, @typescript-eslint/naming-convention
           canary_word_leaked,
         },
         ...prev,
@@ -160,7 +171,9 @@ export const AppProvider: FC<{ children: ReactNode }> = ({ children }) => {
             injectionDetected: false,
           },
           output: "",
+          // eslint-disable-next-line camelcase, @typescript-eslint/naming-convention
           canary_word: "",
+          // eslint-disable-next-line camelcase, @typescript-eslint/naming-convention
           canary_word_leaked: false,
         },
         ...prev,
@@ -171,17 +184,9 @@ export const AppProvider: FC<{ children: ReactNode }> = ({ children }) => {
     }
   };
 
-  const setApikey = (apikey: string) => {
-    setAppState((prev) => ({ ...prev, apikey: apikey }));
-  };
-
-  const setCredits = (credits: number) => {
-    setAppState((prev) => ({ ...prev, credits: credits }));
-  };
-
-  const setStats = (stats: AppState["stats"]) => {
-    setAppState((prev) => ({ ...prev, stats: stats }));
-  };
+  // const setCredits = (credits: number) => {
+  //   setAppState((prev) => ({ ...prev, credits: credits }));
+  // };
 
   return (
     <AppContext.Provider

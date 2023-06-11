@@ -1,14 +1,14 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { Configuration, OpenAIApi } from "openai";
 import { User } from "@supabase/auth-helpers-react";
-import * as Cors from "cors";
+import Cors from "cors";
 import { getSupabaseUser } from "@/lib/supabase";
 import { getUserAccountFromDb, logAttempt } from "@/lib/account-helpers";
 import RebuffApi from "@rebuff/sdk/src/api";
 import { PromptResponse } from "@/lib/playground";
 import {
   getEnvironmentVariable,
-  render_prompt_for_sql,
+  renderPromptForSQL,
   tryUntilDeadline,
 } from "@/lib/general-helpers";
 
@@ -44,11 +44,11 @@ function runMiddleware(
 async function callOpenAiToGetSQLQuery(
   inputText: string
 ): Promise<{ completion: string; error: Error | null }> {
-  const rendered_prompt = await render_prompt_for_sql(inputText);
+  const renderedPrompt = await renderPromptForSQL(inputText);
 
   const completion = await openai.createChatCompletion({
     model: "gpt-3.5-turbo",
-    messages: [{ role: "user", content: rendered_prompt }],
+    messages: [{ role: "user", content: renderedPrompt }],
   });
 
   if (completion.data.choices[0].message === undefined) {
@@ -64,7 +64,7 @@ async function callOpenAiToGetSQLQuery(
   return { completion: proposedSQLQuery, error: null };
 }
 
-const check_sql_breach = (query: string) => {
+const checkSqlBreach = (query: string) => {
   const lowerCaseQuery = query.toLowerCase();
 
   // Check for INSERT, UPDATE, or DELETE queries
@@ -88,6 +88,99 @@ const check_sql_breach = (query: string) => {
 
   return false;
 };
+
+async function getResponse(
+  apikey: string,
+  userInput: string,
+  runHeuristicCheck: boolean,
+  runVectorCheck: boolean,
+  runLanguageModelCheck: boolean,
+  maxHeuristicScore: number,
+  maxModelScore: number,
+  maxVectorScore: number
+): Promise<PromptResponse> {
+  if (
+    !(
+      typeof userInput === "string" &&
+      typeof runHeuristicCheck === "boolean" &&
+      typeof runVectorCheck === "boolean" &&
+      typeof runLanguageModelCheck === "boolean" &&
+      typeof maxHeuristicScore === "number" &&
+      typeof maxModelScore === "number" &&
+      typeof maxVectorScore === "number"
+    )
+  ) {
+    throw new Error("Invalid payload");
+  }
+  // get baseURL of server
+  const rebuffApiUrl = getEnvironmentVariable("REBUFF_API") || undefined;
+  // use rebuff to check if this is a prompt injection
+  const rebuff = new RebuffApi({ apiKey: apikey, apiUrl: rebuffApiUrl });
+  const detection = await rebuff.detectInjection({
+    userInput,
+    maxHeuristicScore,
+    maxVectorScore,
+    maxModelScore,
+    runHeuristicCheck,
+    runVectorCheck,
+    runLanguageModelCheck,
+  });
+
+  if (detection.injectionDetected) {
+    //if it is a prompt injection, return the metrics and don't proceed
+    return {
+      detection,
+      breach: false,
+      output: "Prompt injection detected",
+      // eslint-disable-next-line camelcase
+      canary_word: "",
+      // eslint-disable-next-line camelcase
+      canary_word_leaked: false,
+    };
+  }
+  // if it is not a prompt injection, add a canary word to the prompt before we send it to the LLM
+  const [promptWithCanary, canaryWord] = rebuff.addCanaryWord(userInput);
+  const LLMResponse = await tryUntilDeadline(
+    5000,
+    callOpenAiToGetSQLQuery(promptWithCanary),
+    (response: any) =>
+      typeof response.completion === "string" && response.completion.length > 0
+  );
+  if (!LLMResponse.completion) {
+    console.error("No response from LLM");
+    if (LLMResponse.error) {
+      console.error(LLMResponse.error);
+    }
+    throw new Error("No response from LLM");
+  }
+  // check if the canary word is in the response
+  const canaryWordLeaked = rebuff.isCanaryWordLeaked(
+    userInput,
+    LLMResponse.completion,
+    canaryWord
+  );
+  const sqlBreach = checkSqlBreach(LLMResponse.completion);
+
+  //if we detected a breach, log it so we block further attempts that are similar
+  if (sqlBreach) {
+    console.log(`SQL breach detected!`);
+    await rebuff.logLeakage(userInput, {
+      completion: LLMResponse.completion,
+      // eslint-disable-next-line camelcase
+      canary_word: canaryWord,
+    });
+  }
+  return {
+    detection,
+    breach: canaryWordLeaked || sqlBreach,
+    output: LLMResponse.completion,
+    // eslint-disable-next-line camelcase
+    canary_word: canaryWord,
+    // eslint-disable-next-line camelcase
+    canary_word_leaked: canaryWordLeaked,
+  };
+}
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Response | ErrorResponse>
@@ -155,91 +248,4 @@ export default async function handler(
       .status(500)
       .json({ error: "server_error", message: "something went wrong" });
   }
-}
-
-async function getResponse(
-  apikey: string,
-  userInput: string,
-  runHeuristicCheck: boolean,
-  runVectorCheck: boolean,
-  runLanguageModelCheck: boolean,
-  maxHeuristicScore: number,
-  maxModelScore: number,
-  maxVectorScore: number
-): Promise<PromptResponse> {
-  if (
-    !(
-      typeof userInput === "string" &&
-      typeof runHeuristicCheck === "boolean" &&
-      typeof runVectorCheck === "boolean" &&
-      typeof runLanguageModelCheck === "boolean" &&
-      typeof maxHeuristicScore === "number" &&
-      typeof maxModelScore === "number" &&
-      typeof maxVectorScore === "number"
-    )
-  ) {
-    throw new Error("Invalid payload");
-  }
-  // get baseURL of server
-  const rebuffApiUrl = getEnvironmentVariable("REBUFF_API") || undefined;
-  // use rebuff to check if this is a prompt injection
-  const rebuff = new RebuffApi({ apiKey: apikey, apiUrl: rebuffApiUrl });
-  const detection = await rebuff.detectInjection({
-    userInput,
-    maxHeuristicScore,
-    maxVectorScore,
-    maxModelScore,
-    runHeuristicCheck,
-    runVectorCheck,
-    runLanguageModelCheck,
-  });
-
-  if (detection.injectionDetected) {
-    //if it is a prompt injection, return the metrics and don't proceed
-    return {
-      detection,
-      breach: false,
-      output: "Prompt injection detected",
-      canary_word: "",
-      canary_word_leaked: false,
-    };
-  }
-  // if it is not a prompt injection, add a canary word to the prompt before we send it to the LLM
-  const [prompt_with_canary, canary_word] = rebuff.addCanaryWord(userInput);
-  const llm_response = await tryUntilDeadline(
-    5000,
-    callOpenAiToGetSQLQuery(prompt_with_canary),
-    (response: any) =>
-      typeof response.completion === "string" && response.completion.length > 0
-  );
-  if (!llm_response.completion) {
-    console.error("No response from LLM");
-    if (llm_response.error) {
-      console.error(llm_response.error);
-    }
-    throw new Error("No response from LLM");
-  }
-  // check if the canary word is in the response
-  const canary_word_leaked = rebuff.isCanaryWordLeaked(
-    userInput,
-    llm_response.completion,
-    canary_word
-  );
-  const sql_breach = check_sql_breach(llm_response.completion);
-
-  //if we detected a breach, log it so we block further attempts that are similar
-  if (sql_breach) {
-    console.log(`SQL breach detected!`);
-    await rebuff.logLeakage(userInput, {
-      completion: llm_response.completion,
-      canary_word,
-    });
-  }
-  return {
-    detection,
-    breach: canary_word_leaked || sql_breach,
-    output: llm_response.completion,
-    canary_word,
-    canary_word_leaked,
-  };
 }

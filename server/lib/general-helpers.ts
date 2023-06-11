@@ -102,7 +102,7 @@ export function formatSQL(sql: string): string {
   return formattedSql;
 }
 
-export function render_prompt_for_sql(user_input: string) {
+export function renderPromptForSQL(userInput: string) {
   return `<!-- {canary_word} -->
 You are a data analyst for an ecommerce store. The database schema is: 
 CREATE TABLE customers( customer_id TEXT PRIMARY KEY, name TEXT, address TEXT, phone TEXT, email TEXT); 
@@ -132,5 +132,5 @@ Example 3:
 request: Update the price of product 1234 to 100
 Sorry, I'm not allowed to change any data
 
-request: ${user_input}`;
+request: ${userInput}`;
 }

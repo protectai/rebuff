@@ -25,6 +25,7 @@ async function deductCredits(
   billingRate: number
 ): Promise<{ success: boolean; message: string }> {
   let { data, error } = await supabaseAdminClient.rpc("deduct_rate", {
+    // eslint-disable-next-line camelcase
     input_api_key: apiKey,
     rate: billingRate,
   });
@@ -80,7 +81,7 @@ export async function checkApiKeyAndReduceBalance(
     }
   }
 
-  return await deductCredits(apiKey, billingRate);
+  return deductCredits(apiKey, billingRate);
 }
 
 export async function checkApiKey(
@@ -103,6 +104,7 @@ export async function checkApiKey(
     };
   }
 
+  // eslint-disable-next-line camelcase
   return { success: true, message: "API key accepted", account_id: data[0].id };
 }
 

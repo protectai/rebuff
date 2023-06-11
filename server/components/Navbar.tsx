@@ -1,5 +1,5 @@
 import { FC, useContext, useState } from "react";
-import { Group, Image, Loader, Text, Title } from "@mantine/core";
+import { Loader, Text, Title } from "@mantine/core";
 import { IconLogout, IconMenu2, IconX } from "@tabler/icons-react";
 import Link from "next/link";
 import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";

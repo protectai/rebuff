@@ -54,5 +54,10 @@
       }
     ]
   },
-  "ignorePatterns": ["dist/", "tailwind.config.js", "postcss.config.js"]
+  "ignorePatterns": [
+    "dist/",
+    "tailwind.config.js",
+    "postcss.config.js",
+    "next.config.js"
+  ]
 }
