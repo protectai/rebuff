@@ -1,9 +1,5 @@
 /*@tailwind base;*/
 
-.visible {
-  visibility: visible;
-}
-
 .static {
   position: static;
 }
@@ -42,6 +38,10 @@
   margin-bottom: 1rem;
 }
 
+.mb-16 {
+  margin-bottom: 4rem;
+}
+
 .mb-8 {
   margin-bottom: 2rem;
 }
@@ -60,10 +60,6 @@
 
 .mt-9 {
   margin-top: 2.25rem;
-}
-
-.mb-16 {
-  margin-bottom: 4rem;
 }
 
 .inline-block {
@@ -114,8 +110,8 @@
   width: 100vw;
 }
 
-.min-w-\[40em\] {
-  min-width: 40em;
+.min-w-\[60em\] {
+  min-width: 60em;
 }
 
 .max-w-\[36em\] {
@@ -181,11 +177,6 @@
 .border-gray-300 {
   --tw-border-opacity: 1;
   border-color: rgb(209 213 219 / var(--tw-border-opacity));
-}
-
-.bg-gray-200 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(229 231 235 / var(--tw-bg-opacity));
 }
 
 .fill-current {

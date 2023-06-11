@@ -17,7 +17,6 @@ const Game: FC = () => {
     submitPrompt,
     submitPassword,
     promptLoading,
-    firstLoad,
     promptRequested,
     appState,
   } = useContext(AppContext);
@@ -109,9 +108,9 @@ const Game: FC = () => {
   }
 
   const leaderboard = (
-    <div>
-      <h3>Leaderboard</h3>
-      <Table withBorder withColumnBorders className="min-w-[40em]">
+    <div className="mb-16">
+      <h1>Leaderboard</h1>
+      <Table withBorder withColumnBorders className="min-w-[60em]">
         <thead>
           <tr>
             <th>Rank</th>
@@ -173,7 +172,10 @@ const Game: FC = () => {
           <span className={"font-bold"}>
             {appState.gameState.character.name}
           </span>
-          : {appState.gameState.character.response}
+          :{" "}
+          {appState.gameState.character.response == ""
+            ? "I'll never reveal my password to you!"
+            : appState.gameState.character.response}
         </span>
       </section>
     </>
@@ -235,6 +237,11 @@ const Game: FC = () => {
       </div>
 
       <div
+        hidden={
+          !appState.leaderboardState ||
+          !appState.leaderboardState.entries ||
+          appState.leaderboardState.entries.length == 0
+        }
         ref={leaderboardRef}
         className="order-3 p-4 overflow-auto max-w-screen-xl mx-auto"
       >
