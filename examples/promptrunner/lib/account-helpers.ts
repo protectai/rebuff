@@ -83,6 +83,28 @@ export async function incrementUserAttempts(uid: string) {
   if (insertError) throw insertError;
 }
 
+export async function incrementLevel(uid: string) {
+  // TODO: use atomic increment (like RPC)
+
+  let { data: profile, error } = await supabaseAdminClient
+    .from("profiles")
+    .select("level")
+    .eq("id", uid);
+
+  if (error) throw error;
+
+  if (!profile || profile.length > 1 || profile.length == 0) {
+    throw new Error("Multiple or no profiles found for user");
+  }
+
+  const { error: insertError } = await supabaseAdminClient
+    .from("profiles")
+    .update({ level: profile[0].level + 1 })
+    .eq("id", uid);
+
+  if (insertError) throw insertError;
+}
+
 export async function getOrCreateProfile(uid: string) {
   let { data: profile, error } = await supabaseAdminClient
     .from("profiles")
