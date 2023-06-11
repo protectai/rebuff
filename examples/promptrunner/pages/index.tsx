@@ -20,6 +20,7 @@ const Game: FC = () => {
     promptLoading,
     promptRequested,
     appState,
+    levelGained,
   } = useContext(AppContext);
 
   const form = useForm({
@@ -43,10 +44,10 @@ const Game: FC = () => {
   };
 
   useEffect(() => {
-    if (promptRequested) {
+    if (levelGained) {
       launchConfetti();
     }
-  }, [promptRequested]);
+  }, [levelGained]);
 
   const leaderboardRef = useRef<HTMLDivElement>(null);
 
@@ -128,18 +129,6 @@ const Game: FC = () => {
       </Table>
     </div>
   );
-
-  // const eventLog = (
-  //   <Table>
-  //     <thead>
-  //       <tr>
-  //         <th>Event</th>
-  //         <th>Timestamp</th>
-  //       </tr>
-  //     </thead>
-  //     <tbody>{/* Fill this with event log data */}</tbody>
-  //   </Table>
-  // );
 
   const passwordFormComponent = (
     <form
