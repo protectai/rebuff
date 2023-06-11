@@ -41,7 +41,6 @@ export const initState = {
 export const AppContext = createContext<AppStateCtx>({
   appState: initState,
   promptLoading: false,
-  firstLoad: false,
   promptRequested: false,
   refreshAppState: async () => undefined,
   submitPrompt: async (prompt: PromptRequest) => undefined,
@@ -53,11 +52,7 @@ export const AppContext = createContext<AppStateCtx>({
 export const AppProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [appState, setAppState] = useState<AppState>(initState);
   const [promptLoading, setPromptLoading] = useState<boolean>(false);
-  const [firstLoad, setFirstLoad] = useState<boolean>(true);
   const [promptRequested, setPromptRequested] = useState<boolean>(false);
-  const [attempts, setAttempts] = useState<Attempt[]>([] as Attempt[]);
-  const session = useSession();
-  const supabase = useSupabaseClient();
 
   useEffect(() => {
     refreshAppState();
@@ -90,7 +85,6 @@ export const AppProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
       setAppState(data);
     } catch (error) {
-      setFirstLoad(false);
       console.error(error);
     }
   };
