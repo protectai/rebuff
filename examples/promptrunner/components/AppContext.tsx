@@ -2,6 +2,7 @@ import {
   AppState,
   AppStateCtx,
   Attempt,
+  LeaderboardEntry,
   PromptRequest,
   PromptResponse,
 } from "@/interfaces/game";
@@ -11,6 +12,7 @@ import React, {
   FC,
   ReactNode,
   useEffect,
+  useRef,
 } from "react";
 import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
 import fetch from "node-fetch";
@@ -29,20 +31,7 @@ export const initState = {
     },
   },
   leaderboardState: {
-    entries: [
-      {
-        name: "John Doe",
-        level: 2,
-        date: "12/12/2023",
-        attempts: 11,
-      },
-      {
-        name: "Jane Doe",
-        level: 4,
-        date: "12/11/2023",
-        attempts: 12,
-      },
-    ],
+    entries: [] as LeaderboardEntry[],
   },
   playersEventState: {},
 };
@@ -64,15 +53,6 @@ export const AppProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const session = useSession();
   const supabase = useSupabaseClient();
 
-  useEffect(
-    function onChange() {
-      if (session) {
-        refreshAppState();
-      }
-    },
-    [session]
-  );
-
   function getLocalUserId(): string {
     const uid = localStorage.getItem("uid");
     if (!uid) {
@@ -84,27 +64,24 @@ export const AppProvider: FC<{ children: ReactNode }> = ({ children }) => {
     return uid;
   }
 
-  useEffect(() => {
-    getLocalUserId();
-
-    refreshGameState();
-    refreshLeaderboardState();
-    refreshPlayerEventsState();
-  }, []);
-
   const refreshAppState = async () => {
-    // setAccountLoading(true);
+    // log to console that we are refreshing at current timestamp
+    console.log("refreshing app state at", new Date().toLocaleTimeString());
     try {
       const uid = getLocalUserId();
       const response = await fetch("/api/game", {
         headers: { "X-Uid": uid },
       });
       const data = (await response.json()) as AppState;
+
+      if (!data.gameState.character.response) {
+        data.gameState.character.response =
+          appState.gameState.character.response;
+      }
+
       setAppState(data);
     } catch (error) {
       console.error(error);
-    } finally {
-      // setAccountLoading(false);
     }
   };
 
@@ -129,21 +106,6 @@ export const AppProvider: FC<{ children: ReactNode }> = ({ children }) => {
     } finally {
       setPromptLoading(false);
     }
-  };
-
-  const refreshGameState = async () => {
-    // ...
-    // Fetch gameState from server and update local state with setGameState
-  };
-
-  const refreshLeaderboardState = async () => {
-    // ...
-    // Fetch leaderboardState from server and update local state with setLeaderboardState
-  };
-
-  const refreshPlayerEventsState = async () => {
-    // ...
-    // Fetch playerEventsState from server and update local state with setPlayerEventsState
   };
 
   return (

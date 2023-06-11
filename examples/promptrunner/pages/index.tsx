@@ -71,14 +71,21 @@ const Game: FC = () => {
   };
 
   const leaderBoardEntry = appState.leaderboardState.entries.map(
-    (element, index) => (
-      <tr key={element.name}>
-        <td>{index + 1}</td>
-        <td>{element.name}</td>
-        <td>{element.level}</td>
-        <td>{element.attempts}</td>
-      </tr>
-    )
+    (element, index) => {
+      const date = new Date(element.date);
+      const readableDate =
+        date.toLocaleDateString() + " " + date.toLocaleTimeString();
+
+      return (
+        <tr key={element.name}>
+          <td>{index + 1}</td>
+          <td>{element.name}</td>
+          <td>{element.level}</td>
+          <td>{element.attempts}</td>
+          <td>{readableDate}</td>
+        </tr>
+      );
+    }
   );
 
   const leaderboard = (
@@ -91,6 +98,7 @@ const Game: FC = () => {
             <th>Name</th>
             <th>Level</th>
             <th>Attempts</th>
+            <th>Last Attempt</th>
           </tr>
         </thead>
         <tbody>{leaderBoardEntry}</tbody>
@@ -192,7 +200,7 @@ const Game: FC = () => {
         ref={leaderboardRef}
         className="order-3 p-4 overflow-auto max-w-screen-xl mx-auto"
       >
-        {leaderboard}
+        {appState.leaderboardState.entries.length > 0 ? leaderboard : null}
       </div>
       {/*<div className="order-3 p-4 bg-gray-200 overflow-auto">{eventLog}</div>*/}
     </div>
