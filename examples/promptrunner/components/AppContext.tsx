@@ -22,11 +22,12 @@ export const initState = {
   promptLoading: false,
   attempts: [] as Attempt[],
   gameState: {
+    username: "",
     level: 1,
     attempts: 0,
     character: {
       name: "Chad",
-      image: "tech_bro_2.png",
+      image: "tech_bro.png",
       response: "I'm not telling you my password!",
     },
   },
@@ -40,8 +41,10 @@ export const initState = {
 export const AppContext = createContext<AppStateCtx>({
   appState: initState,
   promptLoading: false,
+  promptRequested: false,
   refreshAppState: async () => undefined,
   submitPrompt: async (prompt: PromptRequest) => undefined,
+  submitPassword: async (password: string) => undefined,
   setPromptLoading: () => null,
 });
 
@@ -49,6 +52,7 @@ export const AppContext = createContext<AppStateCtx>({
 export const AppProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [appState, setAppState] = useState<AppState>(initState);
   const [promptLoading, setPromptLoading] = useState<boolean>(false);
+  const [promptRequested, setPromptRequested] = useState<boolean>(false);
   const [attempts, setAttempts] = useState<Attempt[]>([] as Attempt[]);
   const session = useSession();
   const supabase = useSupabaseClient();
@@ -66,7 +70,6 @@ export const AppProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
   const refreshAppState = async () => {
     // log to console that we are refreshing at current timestamp
-    console.log("refreshing app state at", new Date().toLocaleTimeString());
     try {
       const uid = getLocalUserId();
       const response = await fetch("/api/game", {
@@ -87,6 +90,7 @@ export const AppProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
   const submitPrompt = async (prompt: PromptRequest) => {
     setPromptLoading(true);
+    setPromptRequested(true);
     try {
       const body = JSON.stringify(prompt);
       const uid = getLocalUserId();
@@ -108,13 +112,45 @@ export const AppProvider: FC<{ children: ReactNode }> = ({ children }) => {
     }
   };
 
+  const submitPassword = async (password: string) => {
+    try {
+      try {
+        const uid = getLocalUserId();
+        const response = await fetch("/api/password", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Uid": uid,
+          },
+          body: JSON.stringify({ password }),
+        });
+
+        if (response.status === 200) {
+          window.location.reload();
+        }
+        if (response.status === 400) {
+          window.alert("Incorrect password!");
+        }
+      } catch (error) {
+        console.error(error);
+        window.alert("An error occurred submitting your password!");
+      }
+    } catch (error: any) {
+      console.error(error);
+    } finally {
+      setPromptLoading(false);
+    }
+  };
+
   return (
     <AppContext.Provider
       value={{
         appState,
         promptLoading: promptLoading,
+        promptRequested: promptRequested,
         refreshAppState,
         submitPrompt,
+        submitPassword,
         setPromptLoading: setPromptLoading,
       }}
     >

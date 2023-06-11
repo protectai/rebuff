@@ -97,14 +97,15 @@ export default async function handler(
 
   // Fetch or compute data for gameState
   const gameState = {
-    level: 1,
-    attempts: 0,
+    username: profile.name,
+    level: profile.level,
+    attempts: profile.attempts,
     character: {
       name: gameChar.name,
       image: gameChar.imageUrl,
       response: charResponse,
     },
-  };
+  } as AppState["gameState"];
 
   // Fetch or compute data for leaderboardState
   const entries = await getLeaderboardEntries();

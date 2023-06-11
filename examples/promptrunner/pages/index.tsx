@@ -1,14 +1,19 @@
 import { FC, FormEvent, useContext, useEffect, useRef } from "react";
 import { useForm } from "@mantine/form";
+import confetti from "canvas-confetti";
 
 import { Button, Textarea, Title, Loader, Table } from "@mantine/core";
 import { AppContext } from "@/components/AppContext";
 
 const Game: FC = () => {
-  const { submitPrompt, promptLoading, appState, refreshAppState } =
-    useContext(AppContext);
-
-  let showPassword = false;
+  const {
+    submitPrompt,
+    submitPassword,
+    promptLoading,
+    promptRequested,
+    appState,
+    refreshAppState,
+  } = useContext(AppContext);
 
   const form = useForm({
     initialValues: {
@@ -21,6 +26,20 @@ const Game: FC = () => {
       password: "",
     },
   });
+
+  const launchConfetti = () => {
+    confetti({
+      particleCount: 150,
+      spread: 70,
+      origin: { y: 0.6 },
+    });
+  };
+
+  useEffect(() => {
+    if (promptRequested) {
+      launchConfetti();
+    }
+  }, [promptRequested]);
 
   const leaderboardRef = useRef<HTMLDivElement>(null);
 
@@ -35,7 +54,6 @@ const Game: FC = () => {
   }, []);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    showPassword = true;
     e.preventDefault();
     try {
       await submitPrompt({
@@ -50,43 +68,38 @@ const Game: FC = () => {
   const handlePasswordSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const response = await fetch("/api/password", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ password: passwordForm.values.password }),
-      });
-
-      if (response.status === 200) {
-        await refreshAppState();
-      }
-      if (response.status === 400) {
-        window.alert("Incorrect password!");
-      }
+      await submitPassword(passwordForm.values.password);
     } catch (error) {
       console.error(error);
-      window.alert("An error occurred submitting your password!");
+      window.alert("We're sorry, an error occurred submitting your password!");
     }
   };
-
-  const leaderBoardEntry = appState.leaderboardState.entries.map(
-    (element, index) => {
-      const date = new Date(element.date);
-      const readableDate =
-        date.toLocaleDateString() + " " + date.toLocaleTimeString();
-
-      return (
-        <tr key={element.name}>
-          <td>{index + 1}</td>
-          <td>{element.name}</td>
-          <td>{element.level}</td>
-          <td>{element.attempts}</td>
-          <td>{readableDate}</td>
-        </tr>
-      );
-    }
-  );
+  let leaderBoardEntry;
+  if (appState.leaderboardState.entries !== undefined) {
+    leaderBoardEntry = appState.leaderboardState.entries.map(
+      (element, index) => {
+        const date = new Date(element.date);
+        const readableDate =
+          date.toLocaleDateString() + " " + date.toLocaleTimeString();
+        const isUser = element.name == appState.gameState.username;
+        let name = element.name;
+        if (isUser) {
+          name = name + " (you)";
+        }
+        return (
+          <tr className={isUser ? "font-bold" : ""} key={element.name}>
+            <td>{index + 1}</td>
+            <td>{name}</td>
+            <td>{element.level}</td>
+            <td>{element.attempts}</td>
+            <td>{readableDate}</td>
+          </tr>
+        );
+      }
+    );
+  } else {
+    leaderBoardEntry = <tr></tr>;
+  }
 
   const leaderboard = (
     <div>
@@ -191,7 +204,7 @@ const Game: FC = () => {
         <div className="flex flex-col items-center w-full justify-center">
           {game}
           <div className="mt-16">
-            {showPassword ? passwordFormComponent : null}
+            {promptRequested ? passwordFormComponent : null}
           </div>
         </div>
       </div>
@@ -200,7 +213,7 @@ const Game: FC = () => {
         ref={leaderboardRef}
         className="order-3 p-4 overflow-auto max-w-screen-xl mx-auto"
       >
-        {appState.leaderboardState.entries.length > 0 ? leaderboard : null}
+        {appState.leaderboardState?.entries?.length > 0 ? leaderboard : null}
       </div>
       {/*<div className="order-3 p-4 bg-gray-200 overflow-auto">{eventLog}</div>*/}
     </div>

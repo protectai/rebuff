@@ -10,12 +10,15 @@ export interface AppState {
 export interface AppStateCtx {
   appState: AppState;
   promptLoading: boolean;
+  promptRequested: boolean;
   refreshAppState: () => Promise<void>;
   submitPrompt: (prompt: PromptRequest) => Promise<void>;
+  submitPassword: (password: string) => Promise<void>;
   setPromptLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export interface GameState {
+  username: string;
   level: number;
   attempts: number;
   character: Character;

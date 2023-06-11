@@ -3,7 +3,11 @@ import { AppState } from "@/interfaces/game";
 import { cors, runMiddleware } from "@/lib/middleware";
 import { User } from "@supabase/supabase-js";
 import { getSupabaseUser } from "@/lib/supabase";
-import { getOrCreateProfile, getProfile } from "@/lib/account-helpers";
+import {
+  getOrCreateProfile,
+  getProfile,
+  incrementLevel,
+} from "@/lib/account-helpers";
 import { openai } from "@/lib/openai";
 import { character_prompt } from "@/lib/templates";
 import { GameCharacters } from "@/lib/characters";
@@ -46,7 +50,7 @@ export default async function handler(
 
   // Check if password is correct
   if (password == gameChar.password) {
-    // Increment level in database
+    await incrementLevel(uid);
     // return 200
     return res.status(200).json({ message: "Correct password!" });
   } else {
