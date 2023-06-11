@@ -1,8 +1,15 @@
-import { FC, FormEvent, useContext, useEffect, useRef } from "react";
+import React, { FC, FormEvent, useContext, useEffect, useRef } from "react";
 import { useForm } from "@mantine/form";
 import confetti from "canvas-confetti";
 
-import { Button, Textarea, Title, Loader, Table } from "@mantine/core";
+import {
+  Button,
+  Textarea,
+  Title,
+  Loader,
+  Table,
+  Skeleton,
+} from "@mantine/core";
 import { AppContext } from "@/components/AppContext";
 
 const Game: FC = () => {
@@ -10,9 +17,9 @@ const Game: FC = () => {
     submitPrompt,
     submitPassword,
     promptLoading,
+    firstLoad,
     promptRequested,
     appState,
-    refreshAppState,
   } = useContext(AppContext);
 
   const form = useForm({
@@ -151,8 +158,10 @@ const Game: FC = () => {
     </form>
   );
 
-  const game = (
-    <div className="w-full md:max-w-4xl text-center">
+  const isLoading = appState.gameState.level > 0;
+
+  const gameCharacter = (
+    <>
       <Title order={1}>Level {appState.gameState.level}</Title>
       <img
         src={appState.gameState.character.image}
@@ -167,6 +176,22 @@ const Game: FC = () => {
           : {appState.gameState.character.response}
         </span>
       </section>
+    </>
+  );
+
+  const game = (
+    <div className="w-full md:max-w-4xl text-center">
+      {!isLoading ? (
+        <Skeleton
+          className="mx-auto mt-16 mb-16"
+          height={500}
+          mt={6}
+          width="400px"
+          radius="sm"
+        />
+      ) : (
+        gameCharacter
+      )}
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-6">
         <div className="relative">
@@ -215,7 +240,6 @@ const Game: FC = () => {
       >
         {appState.leaderboardState?.entries?.length > 0 ? leaderboard : null}
       </div>
-      {/*<div className="order-3 p-4 bg-gray-200 overflow-auto">{eventLog}</div>*/}
     </div>
   );
 };
