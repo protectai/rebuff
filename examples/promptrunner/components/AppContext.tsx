@@ -43,6 +43,7 @@ export const AppContext = createContext<AppStateCtx>({
   appState: initState,
   promptLoading: false,
   promptRequested: false,
+  levelGained: false,
   refreshAppState: async () => undefined,
   submitPrompt: async (prompt: PromptRequest) => undefined,
   submitPassword: async (password: string) => undefined,
@@ -54,6 +55,7 @@ export const AppProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [appState, setAppState] = useState<AppState>(initState);
   const [promptLoading, setPromptLoading] = useState<boolean>(false);
   const [promptRequested, setPromptRequested] = useState<boolean>(false);
+  const [levelGained, setLevelGained] = useState<boolean>(false);
 
   useEffect(() => {
     refreshAppState();
@@ -128,7 +130,11 @@ export const AppProvider: FC<{ children: ReactNode }> = ({ children }) => {
         });
 
         if (response.status === 200) {
-          window.location.reload();
+          setLevelGained(true);
+          setTimeout(() => {
+            setLevelGained(false);
+            refreshAppState();
+          }, 1000);
         }
         if (response.status === 400) {
           window.alert("Incorrect password!");
@@ -150,6 +156,7 @@ export const AppProvider: FC<{ children: ReactNode }> = ({ children }) => {
         appState,
         promptLoading: promptLoading,
         promptRequested: promptRequested,
+        levelGained: levelGained,
         refreshAppState,
         submitPrompt,
         submitPassword,

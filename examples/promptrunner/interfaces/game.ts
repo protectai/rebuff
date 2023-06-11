@@ -11,6 +11,7 @@ export interface AppStateCtx {
   appState: AppState;
   promptLoading: boolean;
   promptRequested: boolean;
+  levelGained: boolean;
   refreshAppState: () => Promise<void>;
   submitPrompt: (prompt: PromptRequest) => Promise<void>;
   submitPassword: (password: string) => Promise<void>;
