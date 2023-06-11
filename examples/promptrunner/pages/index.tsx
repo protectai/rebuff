@@ -9,6 +9,7 @@ import {
   Loader,
   Table,
   Skeleton,
+  Highlight,
 } from "@mantine/core";
 import { AppContext } from "@/components/AppContext";
 
@@ -81,7 +82,10 @@ const Game: FC = () => {
     }
   };
   let leaderBoardEntry;
-  if (appState.leaderboardState.entries !== undefined) {
+  if (
+    appState.leaderboardState &&
+    appState.leaderboardState.entries !== undefined
+  ) {
     leaderBoardEntry = appState.leaderboardState.entries.map(
       (element, index) => {
         const date = new Date(element.date);
@@ -173,9 +177,16 @@ const Game: FC = () => {
             {appState.gameState.character.name}
           </span>
           :{" "}
-          {appState.gameState.character.response == ""
-            ? "I'll never reveal my password to you!"
-            : appState.gameState.character.response}
+          {appState.gameState.character.response == "" ? (
+            "I'll never reveal my password to you!"
+          ) : (
+            <Highlight
+              highlightColor="green"
+              highlight={appState.gameState.character.password}
+            >
+              {appState.gameState.character.response}
+            </Highlight>
+          )}
         </span>
       </section>
     </>

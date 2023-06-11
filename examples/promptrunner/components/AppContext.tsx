@@ -29,6 +29,7 @@ export const initState = {
       name: "",
       image: "",
       response: "",
+      password: "",
     },
   },
   leaderboardState: {

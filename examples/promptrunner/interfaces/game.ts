@@ -28,6 +28,7 @@ interface Character {
   name: string;
   image: string;
   response: string;
+  password: string;
 }
 
 export interface LeaderboardState {
