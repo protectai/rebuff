@@ -7,21 +7,21 @@ from pydantic import BaseModel
 
 class DetectApiRequest(BaseModel):
     input_base64: str
-    runHeuristicCheck: bool
-    runVectorCheck: bool
-    runLanguageModelCheck: bool
-    maxHeuristicScore: float
-    maxModelScore: float
-    maxVectorScore: float
+    run_heuristic_check: bool
+    run_vector_check: bool
+    run_language_model_check: bool
+    max_heuristic_score: float
+    max_model_score: float
+    max_vector_score: float
 
 
 class DetectApiSuccessResponse(BaseModel):
-    heuristicScore: float
-    modelScore: float
-    vectorScore: Dict[str, float]
-    runHeuristicCheck: bool
-    runVectorCheck: bool
-    runLanguageModelCheck: bool
+    heuristic_score: float
+    model_score: float
+    vector_score: Dict[str, float]
+    run_heuristic_check: bool
+    run_vector_check: bool
+    run_language_model_check: bool
 
 
 class ApiFailureResponse(BaseModel):
@@ -30,12 +30,13 @@ class ApiFailureResponse(BaseModel):
 
 
 class Rebuff:
-    def __init__(
-        self, api_token: str, api_url: str = "https://playground.rebuff.ai"
-    ):
+    def __init__(self, api_token: str, api_url: str = "https://playground.rebuff.ai"):
         self.api_token = api_token
         self.api_url = api_url
-        self._headers = {
+
+    @property
+    def headers(self) -> Dict[str, str]:
+        return {
             "Authorization": f"Bearer {self.api_token}",
             "Content-Type": "application/json",
         }
@@ -68,35 +69,30 @@ class Rebuff:
         """
         request_data = DetectApiRequest(
             input_base64=encode_string(user_input),
-            runHeuristicCheck=check_heuristic,
-            runVectorCheck=check_vector,
-            runLanguageModelCheck=check_llm,
-            maxVectorScore=max_vector_score,
-            maxModelScore=max_model_score,
-            maxHeuristicScore=max_heuristic_score,
+            run_heuristic_check=check_heuristic,
+            run_vector_check=check_vector,
+            run_language_model_check=check_llm,
+            max_heuristic_score=max_heuristic_score,
+            max_vector_score=max_vector_score,
+            max_model_score=max_model_score,
         )
 
         response = requests.post(
             f"{self.api_url}/api/detect",
             json=request_data.dict(),
-            headers=self._headers,
+            headers=self.headers,
         )
-
         response.raise_for_status()
 
-        response_json = response.json()
-        success_response = DetectApiSuccessResponse.parse_obj(response_json)
+        success_response = DetectApiSuccessResponse.parse_obj(response.json())
 
-        if (
-            success_response.heuristicScore > max_heuristic_score
-            or success_response.modelScore > max_model_score
-            or success_response.vectorScore["topScore"] > max_vector_score
-        ):
-            # Injection detected
-            return success_response, True
-        else:
-            # No injection detected
-            return success_response, False
+        injection_detected = (
+            success_response.heuristic_score > max_heuristic_score
+            or success_response.model_score > max_model_score
+            or success_response.vector_score["top_score"] > max_vector_score
+        )
+
+        return success_response, injection_detected
 
     @staticmethod
     def generate_canary_word(length: int = 8) -> str:
@@ -130,15 +126,13 @@ class Rebuff:
         Returns:
             Tuple[Any, str]: A tuple containing the modified prompt with the canary word and the canary word itself.
         """
-
-        # Generate a canary word if not provided
         if canary_word is None:
             canary_word = self.generate_canary_word()
 
-        # Embed the canary word in the specified format
         canary_comment = canary_format.format(canary_word=canary_word)
+
         if isinstance(prompt, str):
-            prompt_with_canary: str = canary_comment + "\n" + prompt
+            prompt_with_canary = canary_comment + "\n" + prompt
             return prompt_with_canary, canary_word
 
         try:
@@ -151,8 +145,7 @@ class Rebuff:
             pass
 
         raise TypeError(
-            f"prompt_template must be a PromptTemplate or a str, "
-            f"but was {type(prompt)}"
+            f"prompt must be a PromptTemplate or a str, but was {type(prompt)}"
         )
 
     def is_canary_word_leaked(
@@ -197,10 +190,9 @@ class Rebuff:
             "canaryWord": canary_word,
         }
         response = requests.post(
-            f"{self.api_url}/api/log", json=data, headers=self._headers
+            f"{self.api_url}/api/log", json=data, headers=self.headers
         )
         response.raise_for_status()
-        return
 
 
 def encode_string(message: str) -> str:
