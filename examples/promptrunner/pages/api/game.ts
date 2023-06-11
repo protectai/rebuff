@@ -69,7 +69,6 @@ export default async function handler(
           model: "gpt-3.5-turbo",
           temperature: 0.5,
           top_p: 1,
-          max_tokens: 256,
           messages: [
             {
               role: "user",
@@ -117,6 +116,7 @@ export default async function handler(
       name: gameChar.name,
       image: gameChar.imageUrl,
       response: charResponse,
+      password: gameChar.password,
     },
   } as AppState["gameState"];
 
