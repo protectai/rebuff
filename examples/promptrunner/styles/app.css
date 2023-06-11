@@ -62,6 +62,10 @@
   margin-top: 2.25rem;
 }
 
+.mt-8 {
+  margin-top: 2rem;
+}
+
 .inline-block {
   display: inline-block;
 }

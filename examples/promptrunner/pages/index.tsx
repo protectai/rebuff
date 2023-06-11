@@ -10,8 +10,12 @@ import {
   Table,
   Skeleton,
   Highlight,
+  Notification,
+  Menu,
 } from "@mantine/core";
 import { AppContext } from "@/components/AppContext";
+import { IconCheck } from "@tabler/icons-react";
+import Divider = Menu.Divider;
 
 const Game: FC = () => {
   const {
@@ -21,6 +25,7 @@ const Game: FC = () => {
     promptRequested,
     appState,
     levelGained,
+    wrongPassword,
   } = useContext(AppContext);
 
   const form = useForm({
@@ -233,9 +238,20 @@ const Game: FC = () => {
           <div className="mt-16">
             {promptRequested ? passwordFormComponent : null}
           </div>
+
+          {!wrongPassword ? null : (
+            <Notification
+              icon={<IconCheck size="1.2rem" />}
+              withBorder
+              color="red"
+              withCloseButton={false}
+              className="mt-8"
+            >
+              Wrong password!
+            </Notification>
+          )}
         </div>
       </div>
-
       <div
         hidden={
           !appState.leaderboardState ||
