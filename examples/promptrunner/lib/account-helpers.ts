@@ -27,11 +27,10 @@ export async function getProfile(uid: string) {
   return profile[0];
 }
 
-export async function getLeaderboardEntries(uid: string) {
+export async function getLeaderboardEntries() {
   let { data: profiles, error } = await supabaseAdminClient
     .from("profiles")
-    .select("*")
-    .eq("id", uid);
+    .select("*");
 
   if (error) throw error;
   if (!profiles) {
@@ -44,7 +43,7 @@ export async function getLeaderboardEntries(uid: string) {
       name: profile.name,
       attempts: profile.attempts,
       level: profile.level,
-      date: profile.updated_at,
+      date: profile.last_updated,
     } as LeaderboardEntry;
   });
 
@@ -58,6 +57,30 @@ export async function getLeaderboardEntries(uid: string) {
   });
 
   return leaderboardEntries;
+}
+
+export async function incrementUserAttempts(uid: string) {
+  // TODO: use atomic increment (like RPC)
+
+  let { data: profile, error } = await supabaseAdminClient
+    .from("profiles")
+    .select("attempts")
+    .eq("id", uid);
+
+  if (error) throw error;
+
+  if (!profile || profile.length > 1 || profile.length == 0) {
+    throw new Error("Multiple or no profiles found for user");
+  }
+
+  const current_time = new Date();
+
+  const { error: insertError } = await supabaseAdminClient
+    .from("profiles")
+    .update({ attempts: profile[0].attempts + 1, last_updated: current_time })
+    .eq("id", uid);
+
+  if (insertError) throw insertError;
 }
 
 export async function getOrCreateProfile(uid: string) {

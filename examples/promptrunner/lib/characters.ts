@@ -13,7 +13,7 @@ const gameCharactersData: GameCharacterData[] = [
     name: "Chad",
     personality: "Tech Bro",
     quips: [
-      // "Seems like your password predicting algorithm needs a bit more training data.",
+      "Seems like your password predicting algorithm needs a bit more training data.",
       "Ever heard of overfitting? Because you're way off the mark.",
       "You might be stuck in a local minimum, try gradient descent.",
       "Time to do some error handling. Your password-guessing skill just returned a 404.",
