@@ -27,8 +27,6 @@ export default async function handler(
 
   // Check if X-Uid header is set
   const uid = req.headers["x-uid"];
-  // Log to console that a request from uid is being processed
-  console.log(`Request from uid: ${uid}`);
 
   if (!uid || typeof uid !== "string") {
     return res
@@ -92,12 +90,6 @@ export default async function handler(
       }
 
       charResponse = completion.data.choices[0].message.content;
-      // See if charResponse is precanned or a novel one
-      const precanned = gameChar.quips.includes(charResponse);
-      console.log(charResponse);
-      if (precanned) {
-        console.log("Precanned response used");
-      }
     } catch (error) {
       console.error(error);
       return res.status(500).json({

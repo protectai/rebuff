@@ -83,11 +83,6 @@ export const AppProvider: FC<{ children: ReactNode }> = ({ children }) => {
       });
       const data = (await response.json()) as AppState;
 
-      if (!data.gameState.character.response) {
-        data.gameState.character.response =
-          appState.gameState.character.response;
-      }
-
       setAppState(data);
     } catch (error) {
       console.error(error);
