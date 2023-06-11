@@ -1,5 +1,9 @@
 /*@tailwind base;*/
 
+.visible {
+  visibility: visible;
+}
+
 .static {
   position: static;
 }
@@ -58,12 +62,20 @@
   margin-top: 2.25rem;
 }
 
+.mb-16 {
+  margin-bottom: 4rem;
+}
+
 .inline-block {
   display: inline-block;
 }
 
 .flex {
   display: flex;
+}
+
+.hidden {
+  display: none;
 }
 
 .h-6 {

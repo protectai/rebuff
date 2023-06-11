@@ -10,6 +10,7 @@ export interface AppState {
 export interface AppStateCtx {
   appState: AppState;
   promptLoading: boolean;
+  firstLoad: boolean;
   promptRequested: boolean;
   refreshAppState: () => Promise<void>;
   submitPrompt: (prompt: PromptRequest) => Promise<void>;
