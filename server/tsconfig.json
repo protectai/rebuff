@@ -4,17 +4,12 @@
     "skipLibCheck": true,
     "incremental": true,
     "outDir": "dist",
-    "rootDir": "./",
     "baseUrl": ".",
     "composite": true,
     "resolveJsonModule": true,
     "paths": {
-      "@rebuff/sdk": [
-        "javascript-sdk/src/*"
-      ],
-      "@/*": [
-        "./*"
-      ]
+      "@rebuff/sdk/*": ["../javascript-sdk/src/*"],
+      "@/*": ["./*"]
     },
     "strict": false,
     "forceConsistentCasingInFileNames": true,
@@ -23,12 +18,10 @@
   "include": [
     "next-env.d.ts",
     "**/*.ts",
-    "**/*.tsx"
+    "**/*.tsx",
+    "../javascript-sdk/src/**/*.ts"
   ],
-  "exclude": [
-    "node_modules",
-    "dist"
-  ],
+  "exclude": ["node_modules", "dist"],
   "references": [
     {
       "path": "../javascript-sdk"

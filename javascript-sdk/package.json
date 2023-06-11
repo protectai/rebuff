@@ -17,5 +17,8 @@
   "bugs": {
     "url": "https://github.com/woop/rebuff/issues"
   },
-  "homepage": "https://github.com/woop/rebuff#readme"
+  "homepage": "https://github.com/woop/rebuff#readme",
+  "dependencies": {
+    "node-fetch": "^3.3.1"
+  }
 }
