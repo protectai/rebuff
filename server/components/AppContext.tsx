@@ -1,7 +1,6 @@
 import { AppState, AppStateCtx, Attempt, PromptRequest } from "@/interfaces/ui";
 import { createContext, useState, FC, ReactNode, useEffect } from "react";
 import { useSession } from "@supabase/auth-helpers-react";
-import fetch from "node-fetch";
 import { PromptResponse } from "@/lib/playground";
 import { DetectResponse } from "@rebuff/sdk/src/interface";
 
