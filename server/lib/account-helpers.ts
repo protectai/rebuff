@@ -19,6 +19,7 @@ export const createNewAccountInDb = async (user: any): Promise<AppState> => {
   if (error) {
     console.error(`Error creating account for user ${user.id}`);
     console.error(error);
+    // eslint-disable-next-line @typescript-eslint/no-throw-literal
     throw error;
   }
   return {
@@ -41,6 +42,7 @@ export const getUserAccountFromDb = async (user: any): Promise<AppState> => {
   if (error) {
     console.error("Error getting account for user");
     console.error(error);
+    // eslint-disable-next-line @typescript-eslint/no-throw-literal
     throw error;
   }
   return {
@@ -115,6 +117,7 @@ export const logAttempt = async (
   if (error) {
     console.error(`Error logging attempt for user ${user.id}`);
     console.error(error);
+    // eslint-disable-next-line @typescript-eslint/no-throw-literal
     throw error;
   }
 };

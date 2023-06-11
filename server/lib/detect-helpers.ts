@@ -4,11 +4,16 @@ import stringSimilarity from "string-similarity";
 import { supabaseAdminClient } from "@/lib/supabase";
 import { openai } from "@/lib/openai";
 import { getEnvironmentVariable, normalizeString } from "@/lib/general-helpers";
+type MiddlewareCallback = (result: any) => void;
 
 export function runMiddleware(
   req: NextApiRequest,
   res: NextApiResponse,
-  fn: Function
+  fn: (
+    req: NextApiRequest,
+    res: NextApiResponse,
+    callback: MiddlewareCallback
+  ) => void
 ): Promise<any> {
   return new Promise((resolve, reject) => {
     fn(req, res, (result: any) => {
@@ -24,7 +29,7 @@ async function deductCredits(
   apiKey: string,
   billingRate: number
 ): Promise<{ success: boolean; message: string }> {
-  let { data, error } = await supabaseAdminClient.rpc("deduct_rate", {
+  const { data, error } = await supabaseAdminClient.rpc("deduct_rate", {
     // eslint-disable-next-line camelcase
     input_api_key: apiKey,
     rate: billingRate,

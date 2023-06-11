@@ -8,6 +8,7 @@ import {
   refreshUserApikeyInDb,
 } from "@/lib/account-helpers";
 import { AppState } from "@/interfaces/ui";
+type MiddlewareCallback = (result: any) => void;
 
 const cors = Cors({
   methods: ["POST", "GET", "HEAD"],
@@ -16,7 +17,11 @@ const cors = Cors({
 function runMiddleware(
   req: NextApiRequest,
   res: NextApiResponse,
-  fn: Function
+  fn: (
+    req: NextApiRequest,
+    res: NextApiResponse,
+    callback: MiddlewareCallback
+  ) => void
 ) {
   return new Promise((resolve, reject) => {
     fn(req, res, (result: any) => {
@@ -74,7 +79,7 @@ export default async function handler(
             getUserAccountFromDb(user),
             getUserStats(user),
           ]);
-          let appState: AppState = {
+          const appState: AppState = {
             apikey: "",
             credits: 0,
             stats: {

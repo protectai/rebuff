@@ -22,6 +22,9 @@
         "map": [["@/*", "./*"]],
         "extensions": [".ts", ".tsx", ".js", ".jsx", ".json"]
       }
+    },
+    "next": {
+      "rootDir": "rebuff/server/"
     }
   },
   "overrides": [

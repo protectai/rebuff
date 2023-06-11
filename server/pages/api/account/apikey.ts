@@ -3,6 +3,7 @@ import Cors from "cors";
 import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
 import generateApiKey from "@/utils/apikeys";
 import { supabaseAdminClient } from "@/lib/supabase";
+type MiddlewareCallback = (result: any) => void;
 
 const cors = Cors({
   methods: ["POST", "GET", "HEAD"],
@@ -11,7 +12,11 @@ const cors = Cors({
 function runMiddleware(
   req: NextApiRequest,
   res: NextApiResponse,
-  fn: Function
+  fn: (
+    req: NextApiRequest,
+    res: NextApiResponse,
+    callback: MiddlewareCallback
+  ) => void
 ) {
   return new Promise((resolve, reject) => {
     fn(req, res, (result: any) => {

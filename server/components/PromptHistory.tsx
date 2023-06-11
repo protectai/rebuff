@@ -10,7 +10,7 @@ import { AppContext } from "./AppContext";
 import { Attempt } from "@/interfaces/ui";
 import { timeDifference } from "@/lib/general-helpers";
 import { Prism } from "@mantine/prism";
-function trimString(str: string, length: number = 15) {
+function trimString(str: string, length = 15) {
   if (str.length > length) {
     str = str.slice(0, length) + "...";
   }

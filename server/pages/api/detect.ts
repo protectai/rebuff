@@ -44,7 +44,7 @@ export default async function handler(
       } as ApiFailureResponse);
     }
 
-    let {
+    const {
       userInputBase64,
       runHeuristicCheck = true,
       runVectorCheck = true,

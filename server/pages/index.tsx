@@ -50,7 +50,7 @@ const Playground: FC = () => {
       return "Loading...";
     }
     if (lastAttempt) {
-      return lastAttempt.is_injection
+      return lastAttempt.detection.injectionDetected
         ? "prompt injection detected"
         : lastAttempt.output
         ? formatSQL(lastAttempt.output)
@@ -195,8 +195,8 @@ const Playground: FC = () => {
             <a className="py-4" href="https://docs.rebuff.ai" target="_blank">
               docs
             </a>{" "}
-            for a quick start guide and code samples. You'll need the apikey
-            below for authentication.
+            for a quick start guide and code samples. You&apos;ll need the
+            apikey below for authentication.
           </p>
           {session ? (
             <ApikeyDisplay
