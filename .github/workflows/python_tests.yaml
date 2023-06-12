@@ -20,7 +20,7 @@ jobs:
       run: make init
 
     - name: Run tests
-      working-directory: python
+      working-directory: python-sdk
       env:
         OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         BILLING_RATE_INT_10K: ${{ secrets.BILLING_RATE_INT_10K }}
