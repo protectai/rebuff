@@ -1,24 +1,30 @@
 {
+  "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "target": "es6",
-    "lib": ["dom", "dom.iterable", "esnext"],
-    "allowJs": true,
     "skipLibCheck": true,
-    "strict": true,
-    "forceConsistentCasingInFileNames": true,
-    "noEmit": true,
-    "esModuleInterop": true,
-    "module": "esnext",
-    "moduleResolution": "node",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "jsx": "preserve",
     "incremental": true,
+    "outDir": "dist",
     "baseUrl": ".",
+    "composite": true,
+    "resolveJsonModule": true,
     "paths": {
+      "@rebuff/sdk/*": ["../../javascript-sdk/src/*"],
       "@/*": ["./*"]
-    }
+    },
+    "strict": false,
+    "forceConsistentCasingInFileNames": true,
+    "esModuleInterop": true
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
-  "exclude": ["node_modules"]
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "../../javascript-sdk/src/**/*.ts"
+  ],
+  "exclude": ["node_modules", "dist"],
+  "references": [
+    {
+      "path": "../../javascript-sdk"
+    }
+  ]
 }

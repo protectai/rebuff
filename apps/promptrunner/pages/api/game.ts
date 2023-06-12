@@ -11,6 +11,8 @@ import {
 import { openai } from "@/lib/openai";
 import { character_prompt } from "@/lib/templates";
 import { GameCharacters } from "@/lib/characters";
+import { getEnvironmentVariable } from "@/lib/general-helpers";
+import RebuffSdk from "@rebuff/sdk/src/sdk";
 
 export default async function handler(
   req: NextApiRequest,
@@ -51,6 +53,18 @@ export default async function handler(
 
   if (req.method == "POST") {
     const { userInput } = req.body;
+
+    const rb = new RebuffSdk({
+      openai: {
+        apikey: getEnvironmentVariable("OPENAI_API_KEY"),
+        model: "gpt-3.5-turbo",
+      },
+      pinecone: {
+        environment: getEnvironmentVariable("PINECONE_ENVIRONMENT"),
+        apikey: getEnvironmentVariable("PINECONE_API_KEY"),
+        index: getEnvironmentVariable("PINECONE_INDEX_NAME"),
+      },
+    });
 
     await incrementUserAttempts(uid);
 
