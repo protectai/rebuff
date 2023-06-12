@@ -15,6 +15,7 @@ format:
 
 
 init: init-python-sdk init-server
+	npm install
 
 init-python-sdk:
 	cd python-sdk; pip install -e '.[dev]' -U
