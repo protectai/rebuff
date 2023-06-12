@@ -70,6 +70,7 @@ class Rebuff:
                 metrics and a boolean indicating if an injection was detected.
         """
         request_data = DetectApiRequest(
+            userInput=user_input,
             userInputBase64=encode_string(user_input),
             runHeuristicCheck=check_heuristic,
             runVectorCheck=check_vector,
