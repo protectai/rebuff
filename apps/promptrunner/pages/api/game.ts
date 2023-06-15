@@ -1,8 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { AppState } from "@/interfaces/game";
 import { cors, runMiddleware } from "@/lib/middleware";
-import { User } from "@supabase/supabase-js";
-import { getSupabaseUser, supabaseAdminClient } from "@/lib/supabase";
 import {
   getLeaderboardEntries,
   getOrCreateProfile,
