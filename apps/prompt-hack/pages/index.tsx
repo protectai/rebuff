@@ -156,35 +156,10 @@ const Game: FC = () => {
     </form>
   );
 
-  const isLoading = appState?.gameState?.level > 0 ?? true;
+  const isLoading =
+    (appState?.gameState?.level > 0 && appState?.gameState?.character?.image) ??
+    true;
   const level = appState?.gameState?.level ?? 0;
-  const gameCharacter = (
-    <>
-      <Title order={1}>Level {level}</Title>
-      <img
-        src={appState.gameState.character.image}
-        className="my-4 mx-auto h-[20em] character-image"
-      />
-      <section className="mt-2 mb-8">
-        <span className={`text-lg`}>
-          <span className={"font-bold"}>
-            {appState.gameState.character.name}
-          </span>
-          :{" "}
-          {appState.gameState.character.response == "" ? (
-            "I'll never reveal my password to you!"
-          ) : (
-            <Highlight
-              highlightColor="green"
-              highlight={appState.gameState.character.password}
-            >
-              {appState.gameState.character.response}
-            </Highlight>
-          )}
-        </span>
-      </section>
-    </>
-  );
 
   const game = (
     <div className="w-full md:max-w-4xl text-center">
@@ -198,7 +173,31 @@ const Game: FC = () => {
           radius="sm"
         />
       ) : (
-        gameCharacter
+        <>
+          <Title order={1}>Level {level}</Title>
+          <img
+            src={appState?.gameState?.character?.image}
+            className="my-4 mx-auto h-[20em] character-image"
+          />
+          <section className="mt-2 mb-8">
+            <span className={`text-lg`}>
+              <span className={"font-bold"}>
+                {appState.gameState.character.name}
+              </span>
+              :{" "}
+              {appState.gameState.character.response == "" ? (
+                "I'll never reveal my password to you!"
+              ) : (
+                <Highlight
+                  highlightColor="green"
+                  highlight={appState.gameState.character.password}
+                >
+                  {appState.gameState.character.response}
+                </Highlight>
+              )}
+            </span>
+          </section>
+        </>
       )}
 
       <form
