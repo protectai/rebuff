@@ -14,8 +14,6 @@ import React, {
   useEffect,
   useRef,
 } from "react";
-import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
-import fetch from "node-fetch";
 import { v4 as uuidv4 } from "uuid";
 
 export const initState = {

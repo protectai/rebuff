@@ -1,10 +1,15 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import Cors from "cors";
+type MiddlewareCallback = (result: any) => void;
 
 export function runMiddleware(
   req: NextApiRequest,
   res: NextApiResponse,
-  fn: Function
+  fn: (
+    req: NextApiRequest,
+    res: NextApiResponse,
+    callback: MiddlewareCallback
+  ) => void
 ) {
   return new Promise((resolve, reject) => {
     fn(req, res, (result: any) => {

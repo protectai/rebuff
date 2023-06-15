@@ -14,7 +14,7 @@ function generateAnimalName() {
 }
 
 export async function getProfile(uid: string) {
-  let { data: profile, error } = await supabaseAdminClient
+  const { data: profile, error } = await supabaseAdminClient
     .from("profiles")
     .select("*")
     .eq("id", uid);
@@ -28,7 +28,7 @@ export async function getProfile(uid: string) {
 }
 
 export async function getLeaderboardEntries() {
-  let { data: profiles, error } = await supabaseAdminClient
+  const { data: profiles, error } = await supabaseAdminClient
     .from("profiles")
     .select("*");
 
@@ -62,7 +62,7 @@ export async function getLeaderboardEntries() {
 export async function incrementUserAttempts(uid: string) {
   // TODO: use atomic increment (like RPC)
 
-  let { data: profile, error } = await supabaseAdminClient
+  const { data: profile, error } = await supabaseAdminClient
     .from("profiles")
     .select("attempts")
     .eq("id", uid);
@@ -86,7 +86,7 @@ export async function incrementUserAttempts(uid: string) {
 export async function incrementLevel(uid: string) {
   // TODO: use atomic increment (like RPC)
 
-  let { data: profile, error } = await supabaseAdminClient
+  const { data: profile, error } = await supabaseAdminClient
     .from("profiles")
     .select("level")
     .eq("id", uid);
@@ -106,7 +106,7 @@ export async function incrementLevel(uid: string) {
 }
 
 export async function getOrCreateProfile(uid: string) {
-  let { data: profile, error } = await supabaseAdminClient
+  const { data: profile, error } = await supabaseAdminClient
     .from("profiles")
     .select("*")
     .eq("id", uid);

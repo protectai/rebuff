@@ -206,7 +206,7 @@ export async function callOpenAiToDetectPI(
     }
 
     return {
-      completion: completion.data.choices[0].message.content,
+      completion: completion.data.choices[0].message.content || "",
       error: undefined,
     };
   } catch (error) {

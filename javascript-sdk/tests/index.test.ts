@@ -30,7 +30,8 @@ describe("Rebuff API tests", function () {
   describe("DetectRequest", () => {
     it("should have the correct properties", () => {
       const request: DetectRequest = {
-        inputBase64: "abc",
+        userInput: "abc",
+        userInputBase64: "abc",
         runHeuristicCheck: true,
         runVectorCheck: false,
         runLanguageModelCheck: true,
@@ -39,7 +40,7 @@ describe("Rebuff API tests", function () {
         maxVectorScore: 0.0,
       };
 
-      expect(request).to.have.property("input_base64");
+      expect(request).to.have.property("userInputBase64");
       expect(request).to.have.property("runHeuristicCheck");
       expect(request).to.have.property("runVectorCheck");
       expect(request).to.have.property("runLanguageModelCheck");

@@ -46,7 +46,7 @@ export const render_prompt_for_pi_detection = (user_input: string) => `
 
 function shuffleArray(quips: string[]) {
   for (let i = quips.length - 1; i > 0; i--) {
-    let j = Math.floor(Math.random() * (i + 1));
+    const j = Math.floor(Math.random() * (i + 1));
     [quips[i], quips[j]] = [quips[j], quips[i]];
   }
   return quips;

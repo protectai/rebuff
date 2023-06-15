@@ -17,7 +17,15 @@
   "bugs": {
     "url": "https://github.com/woop/rebuff/issues"
   },
+  "workspaces": [
+    "javascript-sdk",
+    "server",
+    "apps/*"
+  ],
   "dependencies": {
+    "canvas-confetti": "^1.6.0",
+    "random-names-generator": "^1.0.2",
+    "unique-names-generator": "^4.7.1",
     "@emotion/react": "^11.10.6",
     "@emotion/server": "^11.10.0",
     "@mantine/core": "^6.0.8",
@@ -50,6 +58,7 @@
     "uuid": "^9.0.0"
   },
   "devDependencies": {
+    "@types/canvas-confetti": "^1.6.0",
     "@types/chai": "^4.3.5",
     "@types/cors": "^2.8.12",
     "@types/mocha": "^10.0.1",
@@ -77,10 +86,5 @@
     "ts-loader": "^9.4.3",
     "ts-node": "^10.9.1",
     "typescript": "^5.0.4"
-  },
-  "workspaces": [
-    "javascript-sdk",
-    "server",
-    "apps/*"
-  ]
+  }
 }
