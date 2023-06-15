@@ -10,8 +10,39 @@ const Layout = ({ children }: Props) => {
   return (
     <>
       <Head>
-        <title>Prompt Runner</title>
-        <meta property="og:title" content="Rebuff Playground" key="title" />
+        <title>Prompt Hack</title>
+        <meta property="og:title" content="Prompt Hack" key="title" />
+        <meta name="msapplication-TileColor" content="#FFF" />
+        <meta name="theme-color" content="#FFF" />
+        <link
+          rel="apple-touch-icon"
+          sizes="180x180"
+          href="favicons/apple-touch-icon.png"
+        />
+        <link
+          rel="icon"
+          type="image/png"
+          href="favicons/favicon-32x32.png"
+          sizes="32x32"
+        />
+        <link
+          rel="icon"
+          type="image/png"
+          href="favicons/android-chrome-192x192.png"
+          sizes="192x192"
+        />
+        <link
+          rel="icon"
+          type="image/png"
+          href="favicons/android-chrome-512x512.png"
+          sizes="192x192"
+        />
+        <link
+          rel="icon"
+          type="image/png"
+          href="favicons/favicon-16x16.png"
+          sizes="16x16"
+        />
       </Head>
       <div className="min-h-screen p-4 flex flex-col justify-center items-center max-w-screen-xl mx-auto">
         <main className="flex-grow w-full">{children}</main>

@@ -12,6 +12,7 @@ import {
   Highlight,
   Notification,
   Menu,
+  Space,
 } from "@mantine/core";
 import { AppContext } from "@/components/AppContext";
 import { IconCheck } from "@tabler/icons-react";
@@ -155,14 +156,14 @@ const Game: FC = () => {
     </form>
   );
 
-  const isLoading = appState.gameState.level > 0;
-
+  const isLoading = appState?.gameState?.level > 0 ?? true;
+  const level = appState?.gameState?.level ?? 0;
   const gameCharacter = (
     <>
-      <Title order={1}>Level {appState.gameState.level}</Title>
+      <Title order={1}>Level {level}</Title>
       <img
         src={appState.gameState.character.image}
-        className="my-4 mx-auto h-[40em]  character-image"
+        className="my-4 mx-auto h-[20em] character-image"
       />
       <section className="mt-2 mb-8">
         <span className={`text-lg`}>
@@ -187,6 +188,7 @@ const Game: FC = () => {
 
   const game = (
     <div className="w-full md:max-w-4xl text-center">
+      <h4 className="text-gray-600 m-0 pb-2">Prompt Hack</h4>
       {!isLoading ? (
         <Skeleton
           className="mx-auto mt-16 mb-16"

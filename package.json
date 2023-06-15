@@ -11,7 +11,9 @@
   },
   "scripts": {
     "build": "npm run --workspaces build",
-    "lint": "npm run --workspaces lint"
+    "lint": "npm run --workspaces lint",
+    "dev:server": "npm run dev --workspace=server",
+    "dev:prompthack": "npm run dev --workspace=apps/prompt-hack"
   },
   "version": "0.0.5",
   "bugs": {

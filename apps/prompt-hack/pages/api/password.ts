@@ -1,15 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { AppState } from "@/interfaces/game";
 import { cors, runMiddleware } from "@/lib/middleware";
-import { User } from "@supabase/supabase-js";
-import { getSupabaseUser } from "@/lib/supabase";
-import {
-  getOrCreateProfile,
-  getProfile,
-  incrementLevel,
-} from "@/lib/account-helpers";
-import { openai } from "@/lib/openai";
-import { character_prompt } from "@/lib/templates";
+import { getProfile, incrementLevel } from "@/lib/account-helpers";
 import { GameCharacters } from "@/lib/characters";
 
 export default async function handler(
