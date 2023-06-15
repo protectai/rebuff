@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { AppState } from "@/interfaces/game";
 import { cors, runMiddleware } from "@/lib/middleware";
 import { User } from "@supabase/supabase-js";
-import { getSupabaseUser } from "@/lib/supabase";
+import { getSupabaseUser, supabaseAdminClient } from "@/lib/supabase";
 import {
   getLeaderboardEntries,
   getOrCreateProfile,
@@ -65,8 +65,6 @@ export default async function handler(
         index: getEnvironmentVariable("PINECONE_INDEX_NAME"),
       },
     });
-
-    const detectionOutput = await rb.detectInjection({ userInput: userInput });
 
     await incrementUserAttempts(uid);
 
