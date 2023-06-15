@@ -93,7 +93,7 @@ export const AppProvider: FC<{ children: ReactNode }> = ({ children }) => {
     try {
       const body = JSON.stringify(prompt);
       const uid = getLocalUserId();
-      const response = await fetch("/api/game", {
+      let response = await fetch("/api/game", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -101,6 +101,24 @@ export const AppProvider: FC<{ children: ReactNode }> = ({ children }) => {
         },
         body,
       });
+
+      // if response is bad (like 500, etc)
+      if (response.status >= 300) {
+        response = await fetch("/api/game", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Uid": uid,
+          },
+          body,
+        });
+
+        if (response.status >= 300) {
+          alert(
+            "An error occurred submitting your prompt, please refresh your page!"
+          );
+        }
+      }
 
       const appState = (await response.json()) as AppState;
       setAppState(appState);
