@@ -6,6 +6,10 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc",
+    "format": "prettier --write .",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "lint:debug": "eslint src/sdk.ts --debug",
     "test": "mocha --require ts-node/register tests/**/*.test.ts"
   },
   "repository": {
