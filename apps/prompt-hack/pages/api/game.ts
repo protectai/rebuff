@@ -12,6 +12,8 @@ import { GameCharacters } from "@/lib/characters";
 import { getEnvironmentVariable } from "@/lib/general-helpers";
 import RebuffSdk from "@rebuff/sdk/src/sdk";
 
+import { supabaseAdminClient } from "@/lib/supabase";
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -52,6 +54,25 @@ export default async function handler(
   if (req.method == "POST") {
     const { userInput } = req.body;
 
+    // Generate a vector using OpenAI
+    const embeddingResponse = await openai.createEmbedding({
+      model: "text-embedding-ada-002",
+      input: userInput,
+    });
+
+    const [{ embedding }] = embeddingResponse.data.data;
+
+    // Detect similarity with previous attacks
+    const { data: documents } = await supabaseAdminClient.rpc(
+      "match_documents",
+      {
+        query_embedding: embedding,
+        match_threshold: 0.5 + gameChar.level * 0.1,
+        match_count: 1,
+      }
+    );
+
+    // Detect PI
     const rb = new RebuffSdk({
       openai: {
         apikey: getEnvironmentVariable("OPENAI_API_KEY"),
@@ -64,6 +85,13 @@ export default async function handler(
       },
     });
 
+    let piDetected = false;
+    const detectionOutput = await rb.detectInjection({ userInput: userInput });
+
+    if (documents.length > 0 || detectionOutput.injectionDetected) {
+      piDetected = true;
+    }
+
     await incrementUserAttempts(uid);
 
     // Make request to OpenAI API
@@ -74,6 +102,7 @@ export default async function handler(
         userInput,
         gameChar.quips
       );
+
       const completion = await openai.createChatCompletion(
         {
           model: "gpt-3.5-turbo",
@@ -102,6 +131,18 @@ export default async function handler(
       }
 
       charResponse = completion.data.choices[0].message.content;
+
+      // See if password is in response and if so store embedding in Supabase
+      const passwordDetected = charResponse.includes(gameChar.password);
+      if (passwordDetected) {
+        // Store the vector in Postgres
+        const { data, error } = await supabaseAdminClient
+          .from("attempts")
+          .insert({
+            user_input: userInput,
+            embedding: embedding,
+          });
+      }
     } catch (error) {
       console.error(error);
       return res.status(500).json({
