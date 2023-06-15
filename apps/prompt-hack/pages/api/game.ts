@@ -99,7 +99,8 @@ export default async function handler(
         gameChar.personality,
         gameChar.password,
         userInput,
-        gameChar.quips
+        gameChar.quips,
+        profile.level
       );
 
       const completion = await openai.createChatCompletion(
