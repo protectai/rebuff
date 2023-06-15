@@ -85,7 +85,6 @@ export default async function handler(
     );
 
     let piDetected = false;
-    const detectionOutput = await rb.detectInjection({ userInput: userInput });
 
     if (documents.length > 0) {
       piDetected = true;
