@@ -162,8 +162,7 @@ const Game: FC = () => {
       <Title order={1}>Level {appState.gameState.level}</Title>
       <img
         src={appState.gameState.character.image}
-        alt="Description of image"
-        className="my-4 mx-auto h-[40em]"
+        className="my-4 mx-auto h-[40em]  character-image"
       />
       <section className="mt-2 mb-8">
         <span className={`text-lg`}>
@@ -200,7 +199,10 @@ const Game: FC = () => {
         gameCharacter
       )}
 
-      <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+      <form
+        onSubmit={handleSubmit}
+        className="flex flex-col gap-6 max-w-md mx-auto"
+      >
         <div className="relative">
           <Textarea
             className="mx-auto max-w-[36em] p-2 resize-none border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-black focus:border-black sm:text-sm"
@@ -224,10 +226,11 @@ const Game: FC = () => {
       <div className="order-1 p-4 overflow-auto h-screen">
         <Button
           onClick={scrollToLeaderboard}
-          variant="filled"
+          variant="outline"
           color="dark"
           radius="md"
-          size="md"
+          size="sm"
+          className="fixed top-4 right-4  leaderboard-button"
         >
           Leaderboard
         </Button>

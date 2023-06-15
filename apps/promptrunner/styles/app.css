@@ -4,6 +4,10 @@
   position: static;
 }
 
+.fixed {
+  position: fixed;
+}
+
 .absolute {
   position: absolute;
 }
@@ -18,6 +22,10 @@
 
 .right-4 {
   right: 1rem;
+}
+
+.top-4 {
+  top: 1rem;
 }
 
 .order-1 {
@@ -110,16 +118,16 @@
   width: 100%;
 }
 
-.w-screen {
-  width: 100vw;
-}
-
 .min-w-\[60em\] {
   min-width: 60em;
 }
 
 .max-w-\[36em\] {
   max-width: 36em;
+}
+
+.max-w-md {
+  max-width: 28rem;
 }
 
 .max-w-screen-xl {
@@ -243,6 +251,10 @@
   box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
 
+.outline {
+  outline-style: solid;
+}
+
 /* Write your own custom component styles here */
 
 .btn-black {
@@ -317,6 +329,16 @@ h1 {
 :root {
   --fonts-buttonFontFamily: -apple-system, BlinkMacSystemFont, "Segoe UI",
     Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji";
+}
+
+@media only screen and (max-width: 600px) {
+  .character-image {
+    height: 20em;
+  }
+
+  .leaderboard-button {
+    display: none;
+  }
 }
 
 .hover\:fill-current:hover {

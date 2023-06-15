@@ -33,3 +33,15 @@ h1 {
   --fonts-buttonFontFamily: -apple-system, BlinkMacSystemFont, "Segoe UI",
     Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji";
 }
+
+@media only screen and (max-width: 600px) {
+  .character-image {
+    height: 20em;
+  }
+}
+
+@media only screen and (max-width: 600px) {
+  .leaderboard-button {
+    display: none;
+  }
+}

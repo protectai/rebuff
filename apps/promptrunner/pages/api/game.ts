@@ -66,6 +66,8 @@ export default async function handler(
       },
     });
 
+    const detectionOutput = await rb.detectInjection({ userInput: userInput });
+
     await incrementUserAttempts(uid);
 
     // Make request to OpenAI API
