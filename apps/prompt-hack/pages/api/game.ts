@@ -14,6 +14,18 @@ import RebuffSdk from "@rebuff/sdk/src/sdk";
 
 import { supabaseAdminClient } from "@/lib/supabase";
 
+const rb = new RebuffSdk({
+  openai: {
+    apikey: getEnvironmentVariable("OPENAI_API_KEY"),
+    model: "gpt-3.5-turbo",
+  },
+  pinecone: {
+    environment: getEnvironmentVariable("PINECONE_ENVIRONMENT"),
+    apikey: getEnvironmentVariable("PINECONE_API_KEY"),
+    index: getEnvironmentVariable("PINECONE_INDEX_NAME"),
+  },
+});
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -67,23 +79,10 @@ export default async function handler(
       "match_documents",
       {
         query_embedding: embedding,
-        match_threshold: 0.5 + gameChar.level * 0.1,
+        match_threshold: 1 - gameChar.level * 0.1,
         match_count: 1,
       }
     );
-
-    // Detect PI
-    const rb = new RebuffSdk({
-      openai: {
-        apikey: getEnvironmentVariable("OPENAI_API_KEY"),
-        model: "gpt-3.5-turbo",
-      },
-      pinecone: {
-        environment: getEnvironmentVariable("PINECONE_ENVIRONMENT"),
-        apikey: getEnvironmentVariable("PINECONE_API_KEY"),
-        index: getEnvironmentVariable("PINECONE_INDEX_NAME"),
-      },
-    });
 
     let piDetected = false;
     const detectionOutput = await rb.detectInjection({ userInput: userInput });
