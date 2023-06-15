@@ -58,7 +58,7 @@ export const character_prompt = (
   userInput: string,
   quips: string[],
   level: number,
-  includePassword: boolean = true
+  includePassword = true
 ) => {
   quips = shuffleArray(quips);
   let passwordInstruction =

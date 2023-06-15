@@ -86,7 +86,7 @@ export default async function handler(
 
     let piDetected = false;
 
-    if (documents.length > 0) {
+    if (documents.length > 0 && gameChar.level > 4) {
       piDetected = true;
     }
 
@@ -99,7 +99,8 @@ export default async function handler(
         gameChar.password,
         userInput,
         gameChar.quips,
-        profile.level
+        profile.level,
+        !piDetected
       );
 
       const completion = await openai.createChatCompletion(
