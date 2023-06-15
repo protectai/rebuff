@@ -1,0 +1,44 @@
+{
+  "root": false,
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "project": ["./tsconfig.json"]
+  },
+  "env": {
+    "browser": true,
+    "es2021": true,
+    "node": true
+  },
+  "plugins": ["@typescript-eslint", "import"],
+  "extends": ["airbnb-typescript", "plugin:import/typescript", "prettier"],
+  "rules": {
+    "react/jsx-filename-extension": "off",
+    "import/no-extraneous-dependencies": [
+      "error",
+      {
+        "devDependencies": true,
+        "optionalDependencies": false,
+        "peerDependencies": false,
+        "packageDir": ["../", "./"]
+      }
+    ],
+    "@typescript-eslint/dot-notation": "error",
+    "camelcase": [
+      "error",
+      {
+        "properties": "always",
+        "ignoreDestructuring": false,
+        "ignoreImports": true
+      }
+    ]
+  },
+  "overrides": [
+    {
+      "files": ["**/*.test.ts"],
+      "env": {
+        "mocha": true
+      }
+    }
+  ],
+  "ignorePatterns": ["dist/", "node_modules/"]
+}

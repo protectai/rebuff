@@ -10,5 +10,9 @@
     "start": "next start",
     "lint": "next lint"
   },
-  "license": "Apache-2.0"
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@next/eslint-plugin-next": "^13.4.5",
+    "eslint-config-next": "^13.4.5"
+  }
 }
