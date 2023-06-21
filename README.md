@@ -52,12 +52,12 @@ Rebuff offers 4 layers of defense:
 - [x] Prompt Injection Detection
 - [x] Canary Word Leak Detection
 - [x] Attack Signature Learning
+- [x] JavaScript/TypeScript client
 - [ ] PII Leak Detection
 - [ ] Toxic or Offensive Language Detection
 - [ ] User Defined Detection Strategies
 - [ ] Multi tenancy
 - [ ] Local-only mode
-- [ ] JavaScript/TypeScript client
 
 ## Installation
 
