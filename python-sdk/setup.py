@@ -8,6 +8,7 @@ setup(
     extras_require={
         "dev": [
             "pytest",
+            "pytest-rerunfailures",
             "black>=23.0,<24",
             "flake8>=6.0,<7",
             "isort>=5.0,<6",

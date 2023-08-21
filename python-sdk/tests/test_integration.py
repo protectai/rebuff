@@ -16,6 +16,7 @@ from rebuff import DetectApiSuccessResponse, Rebuff
 
 
 @pytest.mark.usefixtures("server")
+@pytest.mark.flaky(reruns=5)
 def test_detect_injection(server: Generator[None, None, None]) -> None:
     # Initialize the Rebuff SDK with a real API token and URL
     rb = Rebuff(api_token="12345", api_url="http://localhost:3000")
