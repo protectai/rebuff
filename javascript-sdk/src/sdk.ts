@@ -7,8 +7,6 @@ import {
 import crypto from "crypto";
 import { SdkConfig } from "./config";
 import initPinecone from "./lib/vectordb";
-import { v4 as uuidv4 } from "uuid";
-import { PineconeClient } from "@pinecone-database/pinecone";
 import {
   callOpenAiToDetectPI,
   detectPiUsingVectorDatabase,
@@ -17,6 +15,8 @@ import {
 import getOpenAIInstance from "./lib/openai";
 import { renderPromptForPiDetection } from "./lib/prompts";
 import { OpenAIApi } from "openai";
+import { VectorStore } from "langchain/vectorstores/base";
+import { Document } from "langchain/document";
 
 function generateCanaryWord(length = 8): string {
   // Generate a secure random hexadecimal canary word
@@ -24,10 +24,7 @@ function generateCanaryWord(length = 8): string {
 }
 
 export default class RebuffSdk implements Rebuff {
-  private pinecone: {
-    conn?: PineconeClient;
-    index: string;
-  };
+  private vectorStore: VectorStore;
 
   private openai: {
     conn: OpenAIApi;
@@ -35,19 +32,17 @@ export default class RebuffSdk implements Rebuff {
   };
 
   constructor(config: SdkConfig) {
-    this.pinecone = { index: "" };
     this.openai = {
       conn: getOpenAIInstance(config.openai.apikey),
       model: config.openai.model || "gpt-3.5-turbo",
     };
     (async () => {
-      this.pinecone = {
-        conn: await initPinecone(
-          config.pinecone.environment,
-          config.pinecone.apikey
-        ),
-        index: config.pinecone.index,
-      };
+      this.vectorStore = await initPinecone(
+        config.pinecone.environment,
+        config.pinecone.apikey,
+        config.pinecone.index,
+        config.openai.apikey
+      );
     })();
   }
 
@@ -118,9 +113,7 @@ export default class RebuffSdk implements Rebuff {
       ? await detectPiUsingVectorDatabase(
           userInput,
           maxVectorScore,
-          await this.getPineconeConnection(),
-          this.pinecone.index,
-          this.openai.conn
+          await this.getVectorStore()
         )
       : { topScore: 0, countOverMaxVectorScore: 0 };
     const injectionDetected =
@@ -169,48 +162,27 @@ export default class RebuffSdk implements Rebuff {
     return false;
   }
 
-  // Calling functions immediately after constructor can cause issues if pinecone connection needs time
-  async getPineconeConnection(): Promise<PineconeClient> {
-    if (this.pinecone.conn) {
-      return this.pinecone.conn;
+  // Calling functions immediately after constructor can cause issues if vector store needs time
+  async getVectorStore(): Promise<VectorStore> {
+    if (this.vectorStore) {
+      return this.vectorStore;
     }
-    // Wait 1 second for pinecone connection to be initialized by constructor
+    // Wait 1 second for vector store to be initialized by constructor
     await new Promise((resolve) => setTimeout(resolve, 1000));
-    // If pinecone connection is still not initialized, throw an error
-    if (this.pinecone.conn) {
-      return this.pinecone.conn;
+    // If vector store is still not initialized, throw an error
+    if (this.vectorStore) {
+      return this.vectorStore;
     }
-    throw new RebuffError("Pinecone connection not initialized yet");
+    throw new RebuffError("Vector store not initialized yet");
   }
 
   async logLeakage(
     input: string,
     metaData: Record<string, string>
   ): Promise<void> {
-    const emb = await this.openai.conn.createEmbedding({
-      model: "text-embedding-ada-002",
-      input: input,
-    });
-
-    // Get Pinecone Index
-    const index = (await this.getPineconeConnection()).Index(
-      this.pinecone.index
-    );
-
-    // Insert embedding into index
-    await index.upsert({
-      upsertRequest: {
-        vectors: [
-          {
-            id: uuidv4(),
-            values: emb.data.data[0].embedding,
-            metadata: {
-              input: input,
-              ...metaData,
-            },
-          },
-        ],
-      },
-    });
+    await (await this.getVectorStore()).addDocuments([new Document({
+      metadata: metaData,
+      pageContent: input,
+    })]);
   }
 }
