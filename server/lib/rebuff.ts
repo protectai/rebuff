@@ -6,9 +6,14 @@ export const rebuff = new RebuffSdk({
     apikey: getEnvironmentVariable("OPENAI_API_KEY"),
     model: "gpt-3.5-turbo",
   },
+  vectorStore: getEnvironmentVariable("VECTOR_STORE"),
   pinecone: {
-    environment: getEnvironmentVariable("PINECONE_ENVIRONMENT"),
-    apikey: getEnvironmentVariable("PINECONE_API_KEY"),
-    index: getEnvironmentVariable("PINECONE_INDEX_NAME"),
+    environment: process.env["PINECONE_ENVIRONMENT"],
+    apikey: process.env["PINECONE_API_KEY"],
+    index: process.env["PINECONE_INDEX_NAME"],
+  },
+  supabase: {
+    serviceKey: process.env["SUPABASE_SERVICE_KEY"],
+    url: process.env["NEXT_PUBLIC_SUPABASE_URL"],
   },
 });

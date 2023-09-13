@@ -6,7 +6,7 @@ import {
 } from "./interface";
 import crypto from "crypto";
 import { SdkConfig } from "./lib/config";
-import initPinecone from "./lib/vectordb";
+import initVectorStore from "./lib/vectordb";
 import {
   callOpenAiToDetectPI,
   detectPiUsingVectorDatabase,
@@ -114,6 +114,14 @@ export default class RebuffSdk implements Rebuff {
       heuristicScore > maxHeuristicScore ||
       modelScore > maxModelScore ||
       vectorScore.topScore > maxVectorScore;
+
+    if (injectionDetected) {
+      await this.logLeakage(userInput, {
+        heuristicScore: heuristicScore.toString(),
+        modelScore: modelScore.toString(),
+        vectorScore: vectorScore.topScore.toString(),
+      });
+    }
 
     return {
       heuristicScore,

@@ -4,10 +4,15 @@ export interface ApiConfig {
 }
 
 export interface SdkConfig {
-  pinecone: {
+  vectorStore: string;
+  pinecone?: {
     apikey: string;
     environment: string;
     index: string;
+  };
+  supabase?: {
+    serviceKey: string;
+    url: string;
   };
   openai: {
     apikey: string;

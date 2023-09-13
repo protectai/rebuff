@@ -19,6 +19,7 @@ const rb = new RebuffSdk({
     apikey: getEnvironmentVariable("OPENAI_API_KEY"),
     model: "gpt-3.5-turbo",
   },
+  vectorStore: "pinecone",
   pinecone: {
     environment: getEnvironmentVariable("PINECONE_ENVIRONMENT"),
     apikey: getEnvironmentVariable("PINECONE_API_KEY"),

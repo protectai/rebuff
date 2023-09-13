@@ -41,7 +41,7 @@
     "@supabase/auth-helpers-nextjs": "^0.6.0",
     "@supabase/auth-helpers-react": "^0.3.1",
     "@supabase/auth-ui-react": "^0.2.8",
-    "@supabase/supabase-js": "^2.8.0",
+    "@supabase/supabase-js": "^2.33.2",
     "@tabler/icons-react": "^2.17.0",
     "@types/react": "18.0.28",
     "@types/react-dom": "18.0.11",
