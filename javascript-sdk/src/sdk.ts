@@ -5,7 +5,7 @@ import {
   RebuffError,
 } from "./interface";
 import crypto from "crypto";
-import { SdkConfig } from "./config";
+import { SdkConfig } from "./lib/config";
 import initPinecone from "./lib/vectordb";
 import {
   callOpenAiToDetectPI,

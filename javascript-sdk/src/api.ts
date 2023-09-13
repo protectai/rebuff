@@ -6,7 +6,7 @@ import {
 } from "./interface";
 import fetch from "node-fetch";
 import crypto from "crypto";
-import { ApiConfig } from "./config";
+import { ApiConfig } from "./lib/config";
 
 function encodeString(message: string): string {
   return Buffer.from(message, "utf-8").toString("hex");
