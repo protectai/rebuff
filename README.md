@@ -17,7 +17,7 @@
   Rebuff is designed to protect AI applications from prompt injection (PI) attacks through a [multi-layered defense](#features).
 
   [Playground](https://playground.rebuff.ai/) • 
-  [Discord](https://discord.gg/TKn7uEHK) •
+  [Discord](https://discord.gg/9g7KtUww) •
   [Features](#features) •
   [Installation](#installation) •
   [Getting started](#getting-started) •
@@ -168,7 +168,7 @@ We'd love for you to join our community and help improve Rebuff! Here's how you 
 
 1. Star the project to show your support!
 2. Contribute to the open source project by submitting issues, improvements, or adding new features.
-3. Join our [Discord server](https://discord.gg/TKn7uEHK). 
+3. Join our [Discord server](https://discord.gg/9g7KtUww). 
 
 ## Development
 
