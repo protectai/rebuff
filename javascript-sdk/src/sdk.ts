@@ -24,7 +24,8 @@ function generateCanaryWord(length = 8): string {
 }
 
 export default class RebuffSdk implements Rebuff {
-  private vectorStore: VectorStore;
+  private vectorStore: VectorStore | undefined;
+  private sdkConfig: SdkConfig;
 
   private openai: {
     conn: OpenAIApi;
@@ -32,18 +33,11 @@ export default class RebuffSdk implements Rebuff {
   };
 
   constructor(config: SdkConfig) {
+    this.sdkConfig = config;
     this.openai = {
       conn: getOpenAIInstance(config.openai.apikey),
       model: config.openai.model || "gpt-3.5-turbo",
     };
-    (async () => {
-      this.vectorStore = await initPinecone(
-        config.pinecone.environment,
-        config.pinecone.apikey,
-        config.pinecone.index,
-        config.openai.apikey
-      );
-    })();
   }
 
   async detectInjection({
@@ -162,18 +156,17 @@ export default class RebuffSdk implements Rebuff {
     return false;
   }
 
-  // Calling functions immediately after constructor can cause issues if vector store needs time
   async getVectorStore(): Promise<VectorStore> {
     if (this.vectorStore) {
       return this.vectorStore;
     }
-    // Wait 1 second for vector store to be initialized by constructor
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    // If vector store is still not initialized, throw an error
-    if (this.vectorStore) {
-      return this.vectorStore;
-    }
-    throw new RebuffError("Vector store not initialized yet");
+    this.vectorStore = await initPinecone(
+      this.sdkConfig.pinecone.environment,
+      this.sdkConfig.pinecone.apikey,
+      this.sdkConfig.pinecone.index,
+      this.sdkConfig.openai.apikey
+    );
+    return this.vectorStore
   }
 
   async logLeakage(
