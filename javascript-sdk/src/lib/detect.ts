@@ -1,51 +1,32 @@
 import stringSimilarity from "string-similarity";
 import { normalizeString } from "./prompts";
-import { PineconeClient } from "@pinecone-database/pinecone";
 import { OpenAIApi } from "openai";
 import { RebuffError } from "../interface";
+import { VectorStore } from "langchain/vectorstores/base";
 
 export async function detectPiUsingVectorDatabase(
   input: string,
   similarityThreshold: number,
-  pinecone: PineconeClient,
-  pineconeIndex: string,
-  openai: OpenAIApi
+  vectorStore: VectorStore
 ): Promise<{ topScore: number; countOverMaxVectorScore: number }> {
   try {
-    // Create embedding from input
-    const emb = await openai.createEmbedding({
-      model: "text-embedding-ada-002",
-      input: input,
-    });
-
-    // Get Pinecone Index
-    const index = pinecone.Index(pineconeIndex);
-
-    // Query similar embeddings
-    const queryResponse = await index.query({
-      queryRequest: {
-        vector: emb.data.data[0].embedding,
-        topK: 20,
-        includeValues: true,
-      },
-    });
+    const topK = 20;
+    const results = await vectorStore.similaritySearchWithScore(input, topK);
 
     let topScore = 0;
     let countOverMaxVectorScore = 0;
 
-    if (queryResponse.matches != undefined) {
-      for (const match of queryResponse.matches) {
-        if (match.score == undefined) {
-          continue;
-        }
+    for (const [_, score] of results) {
+      if (score == undefined) {
+        continue;
+      }
 
-        if (match.score > topScore) {
-          topScore = match.score;
-        }
+      if (score > topScore) {
+        topScore = score;
+      }
 
-        if (match.score >= similarityThreshold && match.score > topScore) {
-          countOverMaxVectorScore++;
-        }
+      if (score >= similarityThreshold && score > topScore) {
+        countOverMaxVectorScore++;
       }
     }
 

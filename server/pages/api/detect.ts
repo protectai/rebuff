@@ -66,6 +66,8 @@ export default async function handler(
       });
       return res.status(200).json(resp);
     } catch (error) {
+      console.error("Error in detecting injection:");
+      console.error(error);
       return res.status(400).json({
         error: "bad_request",
         message: error.message,
