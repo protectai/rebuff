@@ -196,13 +196,13 @@ export const AppProvider: FC<{ children: ReactNode }> = ({ children }) => {
     <AppContext.Provider
       value={{
         appState,
-        promptLoading: promptLoading,
+        promptLoading,
         accountLoading,
         attempts,
         refreshAppState,
         refreshApikey,
         submitPrompt,
-        setPromptLoading: setPromptLoading,
+        setPromptLoading,
       }}
     >
       {children}

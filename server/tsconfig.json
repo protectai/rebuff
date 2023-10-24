@@ -1,10 +1,18 @@
 {
-  "extends": "../tsconfig.json",
   "compilerOptions": {
+    "target": "es2015",
+    "rootDir": "./",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
     "skipLibCheck": true,
+    "noEmit": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "baseUrl": ".",
     "incremental": true,
     "outDir": "dist",
-    "baseUrl": ".",
     "composite": true,
     "resolveJsonModule": true,
     "paths": {
@@ -14,12 +22,7 @@
     "forceConsistentCasingInFileNames": true,
     "esModuleInterop": true
   },
-  "include": [
-    "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
-    "../javascript-sdk/src/**/*.ts"
-  ],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
   "exclude": ["node_modules", "dist"],
   "references": [
     {
