@@ -5,7 +5,7 @@ import {
   runMiddleware,
   checkApiKeyAndReduceBalance,
 } from "@/lib/detect-helpers";
-import { ApiFailureResponse } from "@/types/types";
+import { ApiFailureResponse } from "@types";
 
 const cors = Cors({
   methods: ["POST"],

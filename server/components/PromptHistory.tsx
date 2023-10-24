@@ -7,7 +7,7 @@ import {
   IconCircleCheck,
 } from "@tabler/icons-react";
 import { AppContext } from "./AppContext";
-import { Attempt } from "@/types/types";
+import { Attempt } from "@types";
 import { timeDifference } from "@/lib/general-helpers";
 import { Prism } from "@mantine/prism";
 function trimString(str: string, length = 15) {

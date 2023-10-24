@@ -5,7 +5,7 @@ import Cors from "cors";
 import { getSupabaseUser } from "@/lib/supabase";
 import { getUserAccountFromDb, logAttempt } from "@/lib/account-helpers";
 import { RebuffApi } from "rebuff";
-import { PromptResponse } from "@/types/types";
+import { PromptResponse } from "@types";
 import {
   getEnvironmentVariable,
   renderPromptForSQL,

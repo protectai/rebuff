@@ -16,17 +16,13 @@
     "composite": true,
     "resolveJsonModule": true,
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./*"],
+      "@types": ["./types/types"]
     },
     "strict": false,
     "forceConsistentCasingInFileNames": true,
     "esModuleInterop": true
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
-  "exclude": ["node_modules", "dist"],
-  "references": [
-    {
-      "path": "../javascript-sdk"
-    }
-  ]
+  "exclude": ["node_modules"]
 }

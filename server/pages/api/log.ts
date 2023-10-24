@@ -7,7 +7,7 @@ import {
   ApiFailureResponse,
   LogApiRequest,
   LogApiSuccessResponse,
-} from "@/types/types";
+} from "@types";
 
 const cors = Cors({
   methods: ["POST"],

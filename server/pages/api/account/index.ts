@@ -7,7 +7,7 @@ import {
   getUserStats,
   refreshUserApikeyInDb,
 } from "@/lib/account-helpers";
-import { AppState } from "@/types/types";
+import { AppState } from "@types";
 type MiddlewareCallback = (result: any) => void;
 
 const cors = Cors({

@@ -7,7 +7,7 @@ import {
   AppStateCtx,
   Attempt,
   PromptRequest,
-} from "@/types/types";
+} from "@types";
 
 const initState = {
   apikey: "",
