@@ -1,4 +1,4 @@
-import { DetectResponse } from "@rebuff/sdk/src/interface";
+import { DetectResponse } from "rebuff/src/interface";
 
 export interface PromptResponse {
   canary_word: string;

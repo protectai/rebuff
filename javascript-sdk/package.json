@@ -1,9 +1,8 @@
 {
-  "name": "@rebuff/sdk",
-  "version": "0.0.6",
+  "name": "rebuff",
+  "version": "0.0.3",
   "description": "Rebuff's Javascript client SDK for Node and the browser",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "src/index.ts",
   "scripts": {
     "build": "tsc",
     "format": "prettier --write .",
@@ -23,6 +22,18 @@
   },
   "homepage": "https://github.com/protectai/rebuff#readme",
   "dependencies": {
-    "node-fetch": "^3.3.1"
+    "@pinecone-database/pinecone": "^0.1.6",
+    "chai": "^4.3.7",
+    "crypto": "^1.0.1",
+    "langchain": "^0.0.146",
+    "node-fetch": "^3.3.1",
+    "openai": "^3.2.1",
+    "string-similarity": "^4.0.4"
+  },
+  "devDependencies": {
+    "@types/chai": "^4.3.9",
+    "@types/mocha": "^10.0.3",
+    "@types/string-similarity": "^4.0.1",
+    "mocha": "^10.2.0"
   }
 }

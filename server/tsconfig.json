@@ -8,7 +8,6 @@
     "composite": true,
     "resolveJsonModule": true,
     "paths": {
-      "@rebuff/sdk/*": ["../javascript-sdk/src/*"],
       "@/*": ["./*"]
     },
     "strict": false,
