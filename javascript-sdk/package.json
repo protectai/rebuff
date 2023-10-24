@@ -1,6 +1,6 @@
 {
   "name": "@rebuff/sdk",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Rebuff's Javascript client SDK for Node and the browser",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -14,14 +14,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/woop/rebuff.git"
+    "url": "git+https://github.com/protectai/rebuff.git"
   },
-  "author": "W Pienaar, S Anver",
+  "author": "Protect AI",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/woop/rebuff/issues"
+    "url": "https://github.com/protectai/rebuff/issues"
   },
-  "homepage": "https://github.com/woop/rebuff#readme",
+  "homepage": "https://github.com/protectai/rebuff#readme",
   "dependencies": {
     "node-fetch": "^3.3.1"
   }

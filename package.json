@@ -1,13 +1,13 @@
 {
-  "author": "W Pienaar, S Anver",
+  "author": "Protect AI",
   "description": "Rebuff prompt injection monorepo",
-  "homepage": "https://github.com/woop/rebuff#readme",
+  "homepage": "https://github.com/protectai/rebuff#readme",
   "license": "Apache-2.0",
   "name": "@rebuff/root",
   "private": true,
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/woop/rebuff.git"
+    "url": "git+https://github.com/protectai/rebuff.git"
   },
   "scripts": {
     "build": "npm run --workspaces build",
@@ -17,7 +17,7 @@
   },
   "version": "0.0.5",
   "bugs": {
-    "url": "https://github.com/woop/rebuff/issues"
+    "url": "https://github.com/protectai/rebuff/issues"
   },
   "workspaces": [
     "javascript-sdk",
