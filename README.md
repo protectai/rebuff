@@ -9,21 +9,22 @@
 
 <div align="center">
 
-  ## Rebuff.ai
-  
+## Rebuff.ai
+
   <img width="250" src="https://imgur.com/ishzqSK.png" alt="Rebuff Logo">
 
-  ### **Self-hardening prompt injection detector**
-  Rebuff is designed to protect AI applications from prompt injection (PI) attacks through a [multi-layered defense](#features).
+### **Self-hardening prompt injection detector**
 
-  [Playground](https://playground.rebuff.ai/) • 
-  [Discord](https://discord.gg/R3U2XVNKeE) •
-  [Features](#features) •
-  [Installation](#installation) •
-  [Getting started](#getting-started) •
-  [Self-hosting](#self-hosting) •
-  [Contributing](#contributing) •
-  [Docs](https://docs.rebuff.ai)
+Rebuff is designed to protect AI applications from prompt injection (PI) attacks through a [multi-layered defense](#features).
+
+[Playground](https://playground.rebuff.ai/) •
+[Discord](https://discord.gg/R3U2XVNKeE) •
+[Features](#features) •
+[Installation](#installation) •
+[Getting started](#getting-started) •
+[Self-hosting](#self-hosting) •
+[Contributing](#contributing) •
+[Docs](https://docs.rebuff.ai)
 
 </div>
 <div align="center">
@@ -32,15 +33,14 @@
 
 </div>
 
-
 ## Disclaimer
 
 Rebuff is still a prototype and **cannot provide 100% protection** against prompt injection attacks!
 
 ## Features
 
-
 Rebuff offers 4 layers of defense:
+
 - Heuristics: Filter out potentially malicious input before it reaches the LLM.
 - LLM-based detection: Use a dedicated LLM to analyze incoming prompts and identify potential attacks.
 - VectorDB: Store embeddings of previous attacks in a vector database to recognize and prevent similar attacks in the future.
@@ -66,6 +66,7 @@ pip install rebuff
 ## Getting started
 
 ### Detect prompt injection on user input
+
 ```python
 from rebuff import Rebuff
 
@@ -109,57 +110,58 @@ if is_leak_detected:
 
 ## Self-hosting
 
-To self-host Rebuff, you need to set up the necessary providers like Pinecone, 
+To self-host Rebuff Playground, you need to set up the necessary providers like Pinecone,
 Supabase, and OpenAI. Follow the links below to set up each provider:
 
 - [Pinecone](https://www.pinecone.io/)
 - [Supabase](https://supabase.io/)
 - [OpenAI](https://beta.openai.com/signup/)
 
-Once you have set up the providers, you'll need to stand up the relevant SQL and 
-vector databases on Supabase and Pinecone respectively. See the 
+Once you have set up the providers, you'll need to stand up the relevant SQL and
+vector databases on Supabase and Pinecone respectively. See the
 [server README](server/README.md) for more information.
 
-Now you can start the Rebuff server using Docker. First, build the Docker image:
+Now you can start the Rebuff server using npm.
 
 ```bash
-docker build -t rebuff .
+cd server
 ```
 
-Then, start the Docker container with the below command, 
-replacing the placeholders with your actual API keys, environment variables, and 
-desired server configurations.
+In the server directory create an `.env.local` file and add the following environment variables:
+
+```
+OPENAI_API_KEY=<your_openai_api_key>
+MASTER_API_KEY=12345
+BILLING_RATE_INT_10K=<your_billing_rate_int_10k>
+MASTER_CREDIT_AMOUNT=<your_master_credit_amount>
+NEXT_PUBLIC_SUPABASE_ANON_KEY=<your_next_public_supabase_anon_key>
+NEXT_PUBLIC_SUPABASE_URL=<your_next_public_supabase_url>
+PINECONE_API_KEY=<your_pinecone_api_key>
+PINECONE_ENVIRONMENT=<your_pinecone_environment>
+PINECONE_INDEX_NAME=<your_pinecone_index_name>
+SUPABASE_SERVICE_KEY=<your_supabase_service_key>
+REBUFF_API=http://localhost:3000
+```
+
+Install packages and run the server with the following:
 
 ```bash
-docker run -d -p 3000:3000 \
-  -e OPENAI_API_KEY=<your_openai_api_key> \
-  -e MASTER_API_KEY=12345 \
-  -e BILLING_RATE_INT_10K=<your_billing_rate_int_10k> \
-  -e MASTER_CREDIT_AMOUNT=<your_master_credit_amount> \
-  -e NEXT_PUBLIC_SUPABASE_ANON_KEY=<your_next_public_supabase_anon_key> \
-  -e NEXT_PUBLIC_SUPABASE_URL=<your_next_public_supabase_url> \
-  -e PINECONE_API_KEY=<your_pinecone_api_key> \
-  -e PINECONE_ENVIRONMENT=<your_pinecone_environment> \
-  -e PINECONE_INDEX_NAME=<your_pinecone_index_name> \
-  -e SUPABASE_SERVICE_KEY=<your_supabase_service_key> \
-  -e REBUFF_API=http://localhost:3000 \
-  --name rebuff rebuff
+npm install
+npm run dev
 ```
 
 Now, the Rebuff server should be running at `http://localhost:3000`.
 
-
 ### Server Configurations
 
-* `BILLING_RATE_INT_10K`: The amount of credits that should be deducted for
-every request. The value is an integer, and 10k refers to a single dollar amount.
-So if you set the value to 10000 then it will deduct 1 dollar per request. If you set
-it to 1 then it will deduct 0.1 cents per request.
-
+- `BILLING_RATE_INT_10K`: The amount of credits that should be deducted for
+  every request. The value is an integer, and 10k refers to a single dollar amount.
+  So if you set the value to 10000 then it will deduct 1 dollar per request. If you set
+  it to 1 then it will deduct 0.1 cents per request.
 
 ## How it works
-![Sequence Diagram](https://github.com/woop/rebuff/assets/6728866/3d90ebb3-d149-42e8-b991-a46c46d5a9e7)
 
+![Sequence Diagram](https://github.com/woop/rebuff/assets/6728866/3d90ebb3-d149-42e8-b991-a46c46d5a9e7)
 
 ## Contributing
 
@@ -167,7 +169,7 @@ We'd love for you to join our community and help improve Rebuff! Here's how you 
 
 1. Star the project to show your support!
 2. Contribute to the open source project by submitting issues, improvements, or adding new features.
-3. Join our [Discord server](https://discord.gg/R3U2XVNKeE). 
+3. Join our [Discord server](https://discord.gg/R3U2XVNKeE).
 
 ## Development
 
