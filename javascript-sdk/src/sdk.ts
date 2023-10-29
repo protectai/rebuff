@@ -6,7 +6,7 @@ import {
 } from "./interface";
 import crypto from "crypto";
 import { SdkConfig } from "./config";
-import initPinecone from "./lib/vectordb";
+import initVectorStore from "./lib/vectordb";
 import {
   callOpenAiToDetectPI,
   detectPiUsingVectorDatabase,
@@ -160,12 +160,7 @@ export default class RebuffSdk implements Rebuff {
     if (this.vectorStore) {
       return this.vectorStore;
     }
-    this.vectorStore = await initPinecone(
-      this.sdkConfig.pinecone.environment,
-      this.sdkConfig.pinecone.apikey,
-      this.sdkConfig.pinecone.index,
-      this.sdkConfig.openai.apikey
-    );
+    this.vectorStore = await initVectorStore(this.sdkConfig);
     return this.vectorStore
   }
 
