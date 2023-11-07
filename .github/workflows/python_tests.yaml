@@ -18,6 +18,12 @@ jobs:
     steps:
     - name: Check out code
       uses: actions/checkout@v2
+      with:
+        # Check out pull request's HEAD commit instead of the merge commit to
+        # work around an issue where wrong a commit is being checked out.
+        # For more details, see:
+        # https://github.com/actions/checkout/issues/299.
+        ref: ${{ github.event.pull_request.head.sha }}
 
     - name: Set up Python 3.10
       uses: actions/setup-python@v2
