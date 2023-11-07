@@ -2,31 +2,27 @@
 import { describe } from "mocha";
 import { expect } from "chai";
 import { DetectRequest, DetectResponse } from "../src/interface";
-import Rebuff from "../src/api";
-import { ChildProcessWithoutNullStreams } from "child_process";
-import { startServer, stopServer } from "./helpers";
+import RebuffSDK from "../src/sdk";
+import { getEnvironmentVariable } from "./helpers";
+
+// Initialize the Rebuff SDK with a real API token and URL
+const rb = new RebuffSDK({
+  openai: {
+    apikey: getEnvironmentVariable("OPENAI_API_KEY"),
+    model: "gpt-3.5-turbo",
+  },
+  pinecone: {
+    environment: getEnvironmentVariable("PINECONE_ENVIRONMENT"),
+    apikey: getEnvironmentVariable("PINECONE_API_KEY"),
+    index: getEnvironmentVariable("PINECONE_INDEX_NAME"),
+  },
+});
 
 // eslint-disable-next-line func-names
 describe("Rebuff API tests", function () {
   // Increase timeout to 10 seconds to allow time for server to start
   this.timeout(20000);
 
-  // Hold a reference to our rebuff API subprocess
-  let server: ChildProcessWithoutNullStreams | null = null;
-
-  // Start server before we run our test suite
-  before(async () => {
-    // Start the server
-    server = await startServer();
-  });
-
-  // Stop the server after all tests in the suite
-  after(async () => {
-    // Stop the server
-    if (server) {
-      await stopServer(server);
-    }
-  });
   describe("DetectRequest", () => {
     it("should have the correct properties", () => {
       const request: DetectRequest = {
@@ -79,9 +75,6 @@ describe("Rebuff API tests", function () {
 
   describe("is_injection_detected", () => {
     it("should detect SQL injection", async () => {
-      // Initialize the Rebuff SDK with a real API token and URL
-      const rb = new Rebuff({ apiKey: "12345", apiUrl: "http://localhost:3000" });
-
       // Test the isInjectionDetected method
       const userInput =
         "SELECT * FROM users WHERE username = 'admin' AND password = 'password'; DROP TABLE users; --'";
@@ -106,9 +99,6 @@ describe("Rebuff API tests", function () {
     });
 
     it("should not detect SQL injection", async () => {
-      // Initialize the Rebuff SDK with a real API token and URL
-      const rb = new Rebuff({ apiKey: "12345", apiUrl: "http://localhost:3000" });
-
       // Test the isInjectionDetected method
       const userInput =
         "SELECT * FROM users WHERE username = 'admin' AND password = 'password'";
@@ -134,7 +124,6 @@ describe("Rebuff API tests", function () {
 
   describe("add_canary_word", () => {
     it("should add a canary word to a prompt template", async () => {
-      const rb = new Rebuff({ apiKey: "12345", apiUrl: "http://localhost:3000" });
       // Test the addCanaryWord method
       const promptTemplate = "Tell me a joke about\n{user_input}";
       const [buffedPrompt, canaryWord] = await rb.addCanaryWord(promptTemplate);
@@ -145,8 +134,6 @@ describe("Rebuff API tests", function () {
 
   describe("is_canary_word_leaked", () => {
     it("should detect a canary word leak", async () => {
-      // Initialize the Rebuff SDK with a real API token and URL
-      const rb = new Rebuff({ apiKey: "12345", apiUrl: "http://localhost:3000" });
 
       // Test the isCanaryWordLeaked method
       const userInput =
@@ -165,9 +152,6 @@ describe("Rebuff API tests", function () {
     });
 
     it("should not detect a canary word leak", async () => {
-      // Initialize the Rebuff SDK with a real API token and URL
-      const rb = new Rebuff({ apiKey: "12345", apiUrl: "http://localhost:3000" });
-
       // Test the isCanaryWordLeaked method
       const userInput = "Tell me a joke about cats";
       const promptTemplate = "Tell me a joke about\n{user_input}";
@@ -186,9 +170,6 @@ describe("Rebuff API tests", function () {
 
   describe("detect_injection", () => {
     it("should detect SQL injection", async () => {
-      // Initialize the Rebuff SDK with a real API token and URL
-      const rb = new Rebuff({ apiKey: "12345", apiUrl: "http://localhost:3000" });
-
       // Test the detectInjection method
       const userInput =
         "SELECT * FROM users WHERE username = 'admin' AND password = 'password'; DROP TABLE users; --'";
@@ -219,8 +200,6 @@ describe("Rebuff API tests", function () {
     });
 
     it("should not detect SQL injection", async () => {
-      // Initialize the Rebuff SDK with a real API token and URL
-      const rb = new Rebuff({ apiKey: "12345", apiUrl: "http://localhost:3000" });
 
       // Test the detectInjection method
       const userInput =

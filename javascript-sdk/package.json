@@ -3,6 +3,7 @@
   "version": "0.0.4",
   "description": "Rebuff's Javascript client SDK for Node and the browser",
   "main": "src/index.ts",
+  "type": "module",
   "scripts": {
     "build": "tsc",
     "format": "prettier --write .",
