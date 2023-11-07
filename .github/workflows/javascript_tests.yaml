@@ -1,7 +1,7 @@
 # .github/workflows/javascript_tests.yml
 name: Javascript Tests
 
-on: [push, pull_request]
+on: [push]
 
 jobs:
   test:
