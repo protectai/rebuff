@@ -1,6 +1,6 @@
 {
   "name": "rebuff",
-  "version": "0.0.4",
+  "version": "0.1.0",
   "description": "Rebuff's Javascript client SDK for Node and the browser",
   "main": "src/index.ts",
   "type": "module",
