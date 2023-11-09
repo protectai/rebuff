@@ -29,7 +29,9 @@ Rebuff is designed to protect AI applications from prompt injection (PI) attacks
 </div>
 <div align="center">
 
-[![Python Tests](https://github.com/woop/rebuff/actions/workflows/python_tests.yaml/badge.svg)](https://github.com/woop/rebuff/actions/workflows/python_tests.yaml)
+[![JavaScript Tests](https://github.com/protectai/rebuff/actions/workflows/javascript_tests.yaml/badge.svg)](https://github.com/protectai/rebuff/actions/workflows/javascript_tests.yaml)
+[![Python Tests](https://github.com/protectai/rebuff/actions/workflows/python_tests.yaml/badge.svg)](https://github.com/protectai/rebuff/actions/workflows/python_tests.yaml)
+
 
 </div>
 
@@ -161,7 +163,7 @@ Now, the Rebuff server should be running at `http://localhost:3000`.
 
 ## How it works
 
-![Sequence Diagram](https://github.com/woop/rebuff/assets/6728866/3d90ebb3-d149-42e8-b991-a46c46d5a9e7)
+![Sequence Diagram](https://github.com/protectai/rebuff/assets/6728866/3d90ebb3-d149-42e8-b991-a46c46d5a9e7)
 
 ## Contributing
 
