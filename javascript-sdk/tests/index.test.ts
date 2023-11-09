@@ -11,11 +11,13 @@ const rb = new RebuffSDK({
     apikey: getEnvironmentVariable("OPENAI_API_KEY"),
     model: "gpt-3.5-turbo",
   },
-  pinecone: {
-    environment: getEnvironmentVariable("PINECONE_ENVIRONMENT"),
-    apikey: getEnvironmentVariable("PINECONE_API_KEY"),
-    index: getEnvironmentVariable("PINECONE_INDEX_NAME"),
-  },
+  vectorDB: {
+    pinecone: {
+      environment: getEnvironmentVariable("PINECONE_ENVIRONMENT"),
+      apikey: getEnvironmentVariable("PINECONE_API_KEY"),
+      index: getEnvironmentVariable("PINECONE_INDEX_NAME"),
+    }
+  }
 });
 
 const benign_inputs = ["How many customers bought more than 10 items in the last month?",
@@ -357,3 +359,4 @@ describe("Rebuff API tests", function () {
     });
   });
 });
+
