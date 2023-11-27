@@ -15,6 +15,9 @@ jobs:
   test:
     runs-on: ubuntu-latest
     if: contains(github.event.pull_request.labels.*.name, 'okay-to-test') || (github.event_name == 'push')
+    env:
+      CHROMA_URL: http://localhost:8000
+      CHROMA_COLLECTION_NAME: javascript_tests
 
     steps:
       # https://github.com/actions/checkout/issues/518
@@ -34,4 +37,8 @@ jobs:
           PINECONE_ENVIRONMENT: ${{ secrets.PINECONE_ENVIRONMENT }}
           PINECONE_INDEX_NAME: ${{ secrets.PINECONE_INDEX_NAME }}
         run: |
-          npm test
+          tests/setup-and-run-tests.sh
+      
+      - name: Dump docker logs
+        if: failure()
+        run: docker logs chroma
