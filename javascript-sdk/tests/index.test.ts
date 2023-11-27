@@ -19,6 +19,18 @@ const rb = new RebuffSDK({
     }
   }
 });
+const rb_chroma = new RebuffSDK({
+  openai: {
+    apikey: getEnvironmentVariable("OPENAI_API_KEY"),
+    model: "gpt-3.5-turbo",
+  },
+  vectorDB: {
+    chroma: {
+      url: getEnvironmentVariable("CHROMA_URL"),
+      collectionName: getEnvironmentVariable("CHROMA_COLLECTION_NAME"),
+    }
+  }
+});
 
 const benign_inputs = ["How many customers bought more than 10 items in the last month?",
   "What was the average order value last week?"]
@@ -249,7 +261,7 @@ describe("Rebuff API tests", function () {
     });
   });
 
-  describe("detect_injection_vector_store", () => {
+  describe("detect_injection_vector_store - pinecone", () => {
     prompt_injection_inputs.forEach(function (userInput) {
       it("should detect prompt injection", async () => {
         const maxHeuristicScore = 0.5;
@@ -289,6 +301,66 @@ describe("Rebuff API tests", function () {
         const runVectorCheck = true;
         const runLanguageModelCheck = true;
         const detectResponse = await rb.detectInjection(
+          {
+            userInput,
+            maxHeuristicScore,
+            maxVectorScore,
+            maxModelScore,
+            runHeuristicCheck,
+            runVectorCheck,
+            runLanguageModelCheck,
+          }
+        );
+
+        // Check if the 'vectorScore' attribute is present in the result object
+        expect(detectResponse).to.have.property("vectorScore");
+
+        // Ensure that the vector score is less than 0.9
+        expect(detectResponse.vectorScore.topScore).to.be.lessThan(0.9);
+      });
+    });
+  });
+
+  describe("detect_injection_vector_store - chroma", () => {
+    prompt_injection_inputs.forEach(function (userInput) {
+      it("should detect prompt injection", async () => {
+        const maxHeuristicScore = 0.5;
+        const maxVectorScore = 0.95;
+        const maxModelScore = 0.9;
+        const runHeuristicCheck = true;
+        const runVectorCheck = true;
+        const runLanguageModelCheck = false;
+        const detectResponse = await rb_chroma.detectInjection({
+          userInput,
+          maxHeuristicScore,
+          maxVectorScore,
+          maxModelScore,
+          runHeuristicCheck,
+          runVectorCheck,
+          runLanguageModelCheck,
+        }
+        );
+
+        expect(detectResponse.injectionDetected).to.be.true;
+
+        // Check if the 'vectorScore' attribute is present in the result object
+        expect(detectResponse).to.have.property("vectorScore");
+
+        // Ensure that the vector score is greater than 0.95
+        expect(detectResponse.vectorScore.topScore).to.be.greaterThan(0.95);
+      });
+    });
+
+
+    benign_inputs.forEach(function (userInput) {
+      it("should not detect prompt injection", async () => {
+        const maxHeuristicScore = 0.1;
+        const maxVectorScore = 0.9;
+        const maxModelScore = 0.1;
+        const runHeuristicCheck = true;
+        const runVectorCheck = true;
+        const runLanguageModelCheck = false;
+        const detectResponse = await rb_chroma.detectInjection(
           {
             userInput,
             maxHeuristicScore,
