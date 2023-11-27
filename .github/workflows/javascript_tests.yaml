@@ -37,7 +37,7 @@ jobs:
           PINECONE_ENVIRONMENT: ${{ secrets.PINECONE_ENVIRONMENT }}
           PINECONE_INDEX_NAME: ${{ secrets.PINECONE_INDEX_NAME }}
         run: |
-          npm test
+          tests/setup-and-run-tests.sh
       
       - name: Dump docker logs
         if: failure()
