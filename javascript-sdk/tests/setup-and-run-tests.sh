@@ -3,7 +3,7 @@
 set -e # Exit with nonzero exit code if anything fails
 set -x
 
-npm install -g ts-node
+npm install
 
 echo "Starting chroma server..."
 docker pull chromadb/chroma
