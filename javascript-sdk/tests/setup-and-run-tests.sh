@@ -3,8 +3,6 @@
 set -e # Exit with nonzero exit code if anything fails
 set -x
 
-npm install
-
 echo "Starting chroma server..."
 docker pull chromadb/chroma
 docker stop chroma || true
