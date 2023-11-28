@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 
 set -e # Exit with nonzero exit code if anything fails
+set -x
+
+npm install -g ts-node
 
 echo "Starting chroma server..."
-export CHROMA_URL=http://localhost:8000
-export CHROMA_COLLECTION_NAME=javascript_tests
 docker pull chromadb/chroma
 docker stop chroma || true
 docker rm chroma || true
