@@ -10,7 +10,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "lint:debug": "eslint src/sdk.ts --debug",
-    "test": "mocha --require ts-node/register tests/**/*.test.ts"
+    "test": "tests/setup-and-run-tests.sh"
   },
   "repository": {
     "type": "git",
