@@ -33,7 +33,8 @@ jobs:
           CHROMA_URL: http://localhost:8000
           CHROMA_COLLECTION_NAME: javascript_tests
         run: |
-          tests/setup-and-run-tests.sh
+          npm install
+          npm test
 
       - name: Dump docker logs
         if: failure()
