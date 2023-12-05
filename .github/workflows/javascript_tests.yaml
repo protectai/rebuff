@@ -1,0 +1,41 @@
+# .github/workflows/javascript_tests.yml
+name: JavaScript Tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request_target:
+    types:
+      - opened
+      - labeled
+
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    if: contains(github.event.pull_request.labels.*.name, 'okay-to-test') || (github.event_name == 'push')
+
+    steps:
+      # https://github.com/actions/checkout/issues/518
+      - name: Check out code
+        uses: actions/checkout@v3
+        with:
+          ref: "${{ github.event.pull_request.merge_commit_sha }}"
+
+      - name: Run tests
+        working-directory: javascript-sdk
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
+          PINECONE_ENVIRONMENT: ${{ secrets.PINECONE_ENVIRONMENT }}
+          PINECONE_INDEX_NAME: ${{ secrets.PINECONE_INDEX_NAME }}
+          CHROMA_URL: http://localhost:8000
+          CHROMA_COLLECTION_NAME: javascript_tests
+        run: |
+          npm install
+          npm test
+
+      - name: Dump docker logs
+        if: failure()
+        run: docker logs chroma

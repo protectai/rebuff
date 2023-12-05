@@ -1,4 +1,4 @@
-import RebuffSdk from "@rebuff/sdk/src/sdk";
+import { RebuffSdk } from "rebuff";
 import { getEnvironmentVariable } from "./general-helpers";
 
 export const rebuff = new RebuffSdk({

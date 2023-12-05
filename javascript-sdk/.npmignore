@@ -2,5 +2,6 @@
 .git
 .vscode
 node_modules
-src
 tsconfig.json
+tests
+.eslintrc.json

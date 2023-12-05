@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "es2015",
     "lib": ["dom", "dom.iterable", "esnext"],
-    "module": "UMD",
+    "module": "esnext",
     "strict": true,
     "forceConsistentCasingInFileNames": true,
     "outDir": "dist",
@@ -12,6 +12,9 @@
     "moduleResolution": "node",
     "baseUrl": ".",
     "composite": true
+  },
+  "ts-node": {
+    "esm": true
   },
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules", "dist/**/*"]

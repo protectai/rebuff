@@ -1,11 +1,11 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import Cors from "cors";
 import { rebuff } from "@/lib/rebuff";
-import { ApiFailureResponse } from "@rebuff/sdk";
 import {
   runMiddleware,
   checkApiKeyAndReduceBalance,
 } from "@/lib/detect-helpers";
+import { ApiFailureResponse } from "@types";
 
 const cors = Cors({
   methods: ["POST"],

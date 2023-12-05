@@ -1,8 +1,7 @@
-import { AppState } from "@/interfaces/ui";
 import generateApiKey from "@/utils/apikeys";
 import { supabaseAdminClient } from "@/lib/supabase";
 import { User } from "@supabase/supabase-js";
-import { PromptResponse } from "./playground";
+import { PromptResponse, AppState } from "@types";
 
 export const createNewAccountInDb = async (user: any): Promise<AppState> => {
   const { data, error } = await supabaseAdminClient

@@ -13,12 +13,13 @@ format:
 	cd python-sdk; isort rebuff/ tests/
 	cd python-sdk; black rebuff/ tests/
 
-
-init: init-python-sdk init-server
-	npm install
-
 init-python-sdk:
 	cd python-sdk; pip install -e '.[dev]' -U
+
+init: init-python-sdk init-server
+
+init-js-sdk:
+	cd javascript-sdk; npm install
 
 init-server:
 	cd server; npm install

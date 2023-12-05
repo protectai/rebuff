@@ -14,7 +14,7 @@ setup(
             "isort>=5.0,<6",
             "mypy>=1.0,<2",
             "langchain>=0.0.100",
-            "openai>=0.27.2"
+            "openai>=0.27.2,<1"
         ],
     },
     test_suite="tests",

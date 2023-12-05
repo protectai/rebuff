@@ -1,8 +1,13 @@
-import { AppState, AppStateCtx, Attempt, PromptRequest } from "@/interfaces/ui";
 import { createContext, useState, FC, ReactNode, useEffect } from "react";
 import { useSession } from "@supabase/auth-helpers-react";
-import { PromptResponse } from "@/lib/playground";
-import { DetectResponse } from "@rebuff/sdk/src/interface";
+import {
+  DetectResponse,
+  PromptResponse,
+  AppState,
+  AppStateCtx,
+  Attempt,
+  PromptRequest,
+} from "@types";
 
 const initState = {
   apikey: "",
@@ -191,13 +196,13 @@ export const AppProvider: FC<{ children: ReactNode }> = ({ children }) => {
     <AppContext.Provider
       value={{
         appState,
-        promptLoading: promptLoading,
+        promptLoading,
         accountLoading,
         attempts,
         refreshAppState,
         refreshApikey,
         submitPrompt,
-        setPromptLoading: setPromptLoading,
+        setPromptLoading,
       }}
     >
       {children}
