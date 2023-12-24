@@ -9,7 +9,6 @@ import crypto from "crypto";
 import { SdkConfig } from "./config";
 import initVectorStore from "./lib/vectordb";
 import getOpenAIInstance from "./lib/openai";
-import { OpenAIApi } from "openai";
 import { VectorStore } from "langchain/vectorstores/base";
 import { Document } from "langchain/document";
 import Strategy from "./lib/Strategy";
@@ -23,44 +22,36 @@ function generateCanaryWord(length = 8): string {
 }
 
 export default class RebuffSdk implements Rebuff {
-  private sdkConfig: SdkConfig;
-  private vectorStore: VectorStore | undefined;
-  private strategies: Record<string, Strategy> | undefined;
+  private vectorStore: VectorStore;
+  private strategies: Record<string, Strategy>;
   private defaultStrategy: string;
 
-  private openai: {
-    conn: OpenAIApi;
-    model: string;
-  };
-
-  constructor(config: SdkConfig) {
-    this.sdkConfig = config;
-    this.openai = {
-      conn: getOpenAIInstance(config.openai.apikey),
-      model: config.openai.model || "gpt-3.5-turbo",
-    };
+  private constructor(strategies: Record<string, Strategy>, vectorStore: VectorStore) {
+    this.vectorStore = vectorStore;
+    this.strategies = strategies;
     this.defaultStrategy = "standard";
   }
 
-  private async getStrategies(): Promise<Record<string, Strategy>> {
-    if (this.strategies) {
-      return this.strategies;
-    }
+  public static async init(config: SdkConfig): Promise<RebuffSdk> {
+    const vectorStore = await initVectorStore(config);
+    const openai = {
+      conn: getOpenAIInstance(config.openai.apikey),
+      model: config.openai.model || "gpt-3.5-turbo",
+    };
     const heuristicScoreThreshold = 0.75;
     const vectorScoreThreshold = 0.9;
     const openaiScoreThreshold = 0.9;
-    const strategies: Record<string, Strategy> = {
+    const strategies = {
       // For now, this is the only strategy.
       "standard": {
         tactics: [
           new Heuristic(heuristicScoreThreshold),
-          new Vector(vectorScoreThreshold, await this.getVectorStore()),
-          new OpenAI(openaiScoreThreshold, this.openai.model, this.openai.conn),
+          new Vector(vectorScoreThreshold, vectorStore),
+          new OpenAI(openaiScoreThreshold, openai.model, openai.conn),
         ]
       },
     };
-    this.strategies = strategies;
-    return this.strategies;
+    return new RebuffSdk(strategies, vectorStore);
   }
 
   async detectInjection({
@@ -78,10 +69,9 @@ export default class RebuffSdk implements Rebuff {
       throw new RebuffError("userInput is required");
     }
 
-    const strategies = await this.getStrategies();
     let injectionDetected = false;
     let tacticResults: TacticResult[] = [];
-    for (const tactic of strategies[this.defaultStrategy].tactics) {
+    for (const tactic of this.strategies[this.defaultStrategy].tactics) {
       const tacticOverride = tacticOverrides.find(t => t.name === tactic.name);
       if (tacticOverride && tacticOverride.run === false) {
         continue;
@@ -134,19 +124,11 @@ export default class RebuffSdk implements Rebuff {
     return false;
   }
 
-  async getVectorStore(): Promise<VectorStore> {
-    if (this.vectorStore) {
-      return this.vectorStore;
-    }
-    this.vectorStore = await initVectorStore(this.sdkConfig);
-    return this.vectorStore
-  }
-
   async logLeakage(
     input: string,
     metaData: Record<string, string>
   ): Promise<void> {
-    await (await this.getVectorStore()).addDocuments([new Document({
+    await this.vectorStore.addDocuments([new Document({
       metadata: metaData,
       pageContent: input,
     })]);

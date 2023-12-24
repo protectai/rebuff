@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import { describe } from "mocha";
 import { expect } from "chai";
-import { DetectRequest, DetectResponse, TacticName, TacticResult } from "../src/interface";
+import { DetectRequest, DetectResponse, TacticName } from "../src/interface";
 import RebuffSDK from "../src/sdk";
 import { getEnvironmentVariable } from "./helpers";
 
 // Initialize the Rebuff SDK with a real API token and URL
-const rb = new RebuffSDK({
+const rb = await RebuffSDK.init({
   openai: {
     apikey: getEnvironmentVariable("OPENAI_API_KEY"),
     model: "gpt-3.5-turbo",
@@ -19,7 +19,7 @@ const rb = new RebuffSDK({
     }
   }
 });
-const rb_chroma = new RebuffSDK({
+const rb_chroma = await RebuffSDK.init({
   openai: {
     apikey: getEnvironmentVariable("OPENAI_API_KEY"),
     model: "gpt-3.5-turbo",
