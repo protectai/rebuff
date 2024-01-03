@@ -54,8 +54,19 @@ def render_prompt_for_pi_detection(user_input: str) -> str:
 def call_openai_to_detect_pi(
     prompt_to_detect_pi_using_openai: str, model: str, api_key: str
 ) -> Dict:
-    openai.api_key = api_key
+    """
+    Using Open AI to detect prompt injection in the user input
 
+    Args:
+        prompt_to_detect_pi_using_openai (str): The user input which has been rendered in a format to generate a score for whether Open AI thinks the input has prompt injection or not.
+        model (str):
+        api_key (str):
+
+    Returns:
+        Dict (str, float): The likelihood score that Open AI assign to user input for containing prompt injection
+
+    """
+    openai.api_key = api_key
     try:
         completion = openai.ChatCompletion.create(
             model=model,
@@ -63,15 +74,13 @@ def call_openai_to_detect_pi(
         )
 
         if completion.choices[0].message is None:
-            return {"completion": "", "error": "server_error"}
+            raise Exception("server error")
 
         if len(completion.choices) == 0:
-            return {"completion": "", "error": "server_error"}
+            raise Exception("server error")
 
-        return {
-            "completion": completion.choices[0].message["content"] or "",
-            "error": None,
-        }
+        response = {"completion": completion.choices[0].message["content"]}
+        return response
 
     except Exception as error:
-        return {"completion": "", "error": f"server_error:{error}"}
+        raise Exception(error)

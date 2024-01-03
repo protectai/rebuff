@@ -7,7 +7,20 @@ import pinecone
 # https://api.python.langchain.com/en/latest/vectorstores/langchain.vectorstores.pinecone.Pinecone.html
 def detect_pi_using_vector_database(
     input: str, similarity_threshold: float, vector_store: Pinecone
-) -> Union[Dict[str, int], str]:
+) -> Dict:
+    """
+    Detects Prompt Injection using similarity search with vector database.
+
+    Args:
+        input (str): user input to be checked for prompt injection
+        similarity_threshold (float): The threshold for similarity between entries in vector database and the user input.
+        vector_store (Pinecone): Vector database of prompt injections
+
+    Returns:
+        Dict (str, Union[float, int]): top_score (float) that contains the highest score wrt similarity between vector database and the user input.
+                                        count_over_max_vector_score (int) holds the count for times the similarity score (between vector database and the user input)
+                                        came out more than the top_score and similarty_threshold.
+    """
     try:
         top_k = 20
         results = vector_store.similarity_search_with_score(input, top_k)
@@ -28,24 +41,30 @@ def detect_pi_using_vector_database(
         vector_score = {
             "top_score": top_score,
             "count_over_max_vector_score": count_over_max_vector_score,
-            "error": None,
         }
 
         return vector_score
 
     except Exception as error:
-        vector_score = {
-            "top_score": None,
-            "count_over_max_vector_score": None,
-            "error": error,
-        }
-
-        return vector_score
+        raise Exception(error)
 
 
 def init_pinecone(
     environment: str, api_key: str, index: str, openai_api_key: str
-) -> Union[Pinecone, str]:
+) -> Pinecone:
+    """
+    Initializes connection with the Pinecone vector database using existing (rebuff) index.
+
+    Args:
+        environment (str): Pinecone environment
+        api_key (str): Pinecone API key
+        index (str): Pinecone index name
+        openai_api_key: Open AI API key
+
+    Returns:
+        vector_store (Pinecone)
+
+    """
     if not environment:
         raise ValueError("Pinecone environment definition missing")
     if not api_key:
@@ -60,7 +79,7 @@ def init_pinecone(
 
         vector_store = Pinecone.from_existing_index(index, openai_embeddings)
 
-        return {"vector_store": vector_store, "error": None}
+        return vector_store
 
     except Exception as error:
-        return {"vector_store": None, "error": error}
+        raise Exception(error)

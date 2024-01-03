@@ -4,6 +4,15 @@ from typing import List
 
 
 def generate_injection_keywords() -> List[str]:
+    """
+    Generate all possible combinations of sentences based on a list of predefined verbs, adjectives, prepositions, and objects that can be used for prompt injection.
+
+    Args:
+        None
+
+    Returns:
+        List of sentences
+    """
     verbs = [
         "Ignore",
         "Disregard",
@@ -75,6 +84,16 @@ def generate_injection_keywords() -> List[str]:
 
 
 def normalize_string(input_string: str) -> str:
+    """
+    Normalized input string by converting to lower case, remove characters that are not letters, remove excession white space etc.
+
+    Args:
+        input_string (str): String to be normalized
+
+    Returns:
+        normalized_string (str)
+    """
+
     # Convert to lowercase
     result = input_string.lower()
 
@@ -91,7 +110,16 @@ def normalize_string(input_string: str) -> str:
 
 
 def get_input_substrings(normalized_input: str, keyword_length: int) -> List[str]:
-    # iterate over the input string and get substrings which have same length as as the keywords string
+    """
+    Iterate over the input string and get substrings which have same length as as the keywords string
+
+    Args:
+        normalized_input (str): Normalized input string
+        keyword_length (int): The number of words in the injection string
+
+    Returns:
+        List of input substrings that have the same length as the number of keywords in injection string
+    """
     words_in_input_string = normalized_input.split(" ")
     input_substrings = []
     number_of_substrings = len(words_in_input_string) - keyword_length + 1
