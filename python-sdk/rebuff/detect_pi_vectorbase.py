@@ -21,32 +21,29 @@ def detect_pi_using_vector_database(
                                         count_over_max_vector_score (int) holds the count for times the similarity score (between vector database and the user input)
                                         came out more than the top_score and similarty_threshold.
     """
-    try:
-        top_k = 20
-        results = vector_store.similarity_search_with_score(input, top_k)
 
-        top_score = 0
-        count_over_max_vector_score = 0
+    top_k = 20
+    results = vector_store.similarity_search_with_score(input, top_k)
 
-        for _, score in results:
-            if score is None:
-                continue
+    top_score = 0
+    count_over_max_vector_score = 0
 
-            if score > top_score:
-                top_score = score
+    for _, score in results:
+        if score is None:
+            continue
 
-            if score >= similarity_threshold and score > top_score:
-                count_over_max_vector_score += 1
+        if score > top_score:
+            top_score = score
 
-        vector_score = {
-            "top_score": top_score,
-            "count_over_max_vector_score": count_over_max_vector_score,
-        }
+        if score >= similarity_threshold and score > top_score:
+            count_over_max_vector_score += 1
 
-        return vector_score
+    vector_score = {
+        "top_score": top_score,
+        "count_over_max_vector_score": count_over_max_vector_score,
+    }
 
-    except Exception as error:
-        raise Exception(error)
+    return vector_score
 
 
 def init_pinecone(
@@ -59,7 +56,7 @@ def init_pinecone(
         environment (str): Pinecone environment
         api_key (str): Pinecone API key
         index (str): Pinecone index name
-        openai_api_key: Open AI API key
+        openai_api_key (str): Open AI API key
 
     Returns:
         vector_store (Pinecone)
@@ -70,16 +67,12 @@ def init_pinecone(
     if not api_key:
         raise ValueError("Pinecone apikey definition missing")
 
-    try:
-        pinecone.init(api_key=api_key, environment=environment)
+    pinecone.init(api_key=api_key, environment=environment)
 
-        openai_embeddings = OpenAIEmbeddings(
-            openai_api_key=openai_api_key, model="text-embedding-ada-002"
-        )
+    openai_embeddings = OpenAIEmbeddings(
+        openai_api_key=openai_api_key, model="text-embedding-ada-002"
+    )
 
-        vector_store = Pinecone.from_existing_index(index, openai_embeddings)
+    vector_store = Pinecone.from_existing_index(index, openai_embeddings)
 
-        return vector_store
-
-    except Exception as error:
-        raise Exception(error)
+    return vector_store

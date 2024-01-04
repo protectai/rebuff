@@ -67,20 +67,17 @@ def call_openai_to_detect_pi(
 
     """
     openai.api_key = api_key
-    try:
-        completion = openai.ChatCompletion.create(
-            model=model,
-            messages=[{"role": "user", "content": prompt_to_detect_pi_using_openai}],
-        )
 
-        if completion.choices[0].message is None:
-            raise Exception("server error")
+    completion = openai.ChatCompletion.create(
+        model=model,
+        messages=[{"role": "user", "content": prompt_to_detect_pi_using_openai}],
+    )
 
-        if len(completion.choices) == 0:
-            raise Exception("server error")
+    if completion.choices[0].message is None:
+        raise Exception("server error")
 
-        response = {"completion": completion.choices[0].message["content"]}
-        return response
+    if len(completion.choices) == 0:
+        raise Exception("server error")
 
-    except Exception as error:
-        raise Exception(error)
+    response = {"completion": completion.choices[0].message["content"]}
+    return response

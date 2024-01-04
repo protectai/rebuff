@@ -4,7 +4,7 @@ setup(
     name="rebuff",
     version="0.0.5",
     packages=find_packages(),
-    install_requires=["pydantic>=1", "requests<3,>=2"],
+    install_requires=["pydantic>=1", "requests<3,>=2", "langchain>=0.0.100"],
     extras_require={
         "dev": [
             "pytest",
