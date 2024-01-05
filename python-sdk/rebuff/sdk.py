@@ -36,6 +36,15 @@ class RebuffSdk:
         self.pinecone_index = pinecone_index
         self.vector_store = None
 
+    def initialize_pinecone(self) -> None:
+        self.vector_store = init_pinecone(
+            self.pinecone_environment,
+            self.pinecone_apikey,
+            self.pinecone_index,
+            self.openai_apikey,
+        )
+        self.vector_store._text_key = "input"  # Reference: https://github.com/langchain-ai/langchain/blob/a6ebffb69504576a805f3b9f09732ad344751b89/langchain/vectorstores/pinecone.py#L57
+
     def detect_injection(
         self,
         user_input: str,
@@ -73,14 +82,7 @@ class RebuffSdk:
             rebuff_heuristic_score = 0
 
         if check_vector:
-            self.vector_store = init_pinecone(
-                self.pinecone_environment,
-                self.pinecone_apikey,
-                self.pinecone_index,
-                self.openai_apikey,
-            )
-
-            self.vector_store._text_key = "input"  # Reference: https://github.com/langchain-ai/langchain/blob/a6ebffb69504576a805f3b9f09732ad344751b89/langchain/vectorstores/pinecone.py#L57
+            self.initialize_pinecone()
 
             vector_score = detect_pi_using_vector_database(
                 user_input, max_vector_score, self.vector_store
@@ -210,13 +212,7 @@ class RebuffSdk:
         """
 
         if self.vector_store is None:
-            self.vector_store = init_pinecone(
-                self.pinecone_environment,
-                self.pinecone_apikey,
-                self.pinecone_index,
-                self.openai_apikey,
-            )
-            self.vector_store._text_key = "input"  # Reference: https://github.com/langchain-ai/langchain/blob/a6ebffb69504576a805f3b9f09732ad344751b89/langchain/vectorstores/pinecone.py#L57
+            self.initialize_pinecone()
 
         self.vector_store.add_texts(
             [user_input],

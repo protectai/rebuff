@@ -149,7 +149,7 @@ export default class RebuffSdk implements Rebuff {
     // Check if the canary word appears in the completion
     if (completion.includes(canaryWord)) {
       if (logOutcome) {
-        this.logLeakage(userInput, { completion, canaryWord });
+        this.logLeakage(userInput, { completion, "canary_word": canaryWord });
       }
       return true;
     }
