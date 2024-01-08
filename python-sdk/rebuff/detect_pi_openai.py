@@ -1,4 +1,4 @@
-import openai
+from openai import OpenAI
 from typing import Dict
 
 
@@ -66,18 +66,18 @@ def call_openai_to_detect_pi(
         Dict (str, float): The likelihood score that Open AI assign to user input for containing prompt injection
 
     """
-    openai.api_key = api_key
+    client = OpenAI(api_key=api_key)
 
-    completion = openai.ChatCompletion.create(
+    completion = client.chat.completions.create(
         model=model,
         messages=[{"role": "user", "content": prompt_to_detect_pi_using_openai}],
     )
 
-    if completion.choices[0].message is None:
+    if completion.choices[0].message.content is None:
         raise Exception("server error")
 
     if len(completion.choices) == 0:
         raise Exception("server error")
 
-    response = {"completion": completion.choices[0].message["content"]}
+    response = {"completion": completion.choices[0].message.content}
     return response

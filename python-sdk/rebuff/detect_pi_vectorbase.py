@@ -1,6 +1,6 @@
 from typing import Dict, Union
 from langchain.vectorstores.pinecone import Pinecone
-from langchain.embeddings.openai import OpenAIEmbeddings
+from langchain_openai import OpenAIEmbeddings
 import pinecone
 
 
@@ -73,6 +73,8 @@ def init_pinecone(
         openai_api_key=openai_api_key, model="text-embedding-ada-002"
     )
 
-    vector_store = Pinecone.from_existing_index(index, openai_embeddings)
+    vector_store = Pinecone.from_existing_index(
+        index, openai_embeddings, text_key="input"
+    )
 
     return vector_store

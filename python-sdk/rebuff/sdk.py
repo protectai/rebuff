@@ -4,7 +4,7 @@ from detect_pi_heuristics import detect_prompt_injection_using_heuristic_on_inpu
 from detect_pi_vectorbase import init_pinecone, detect_pi_using_vector_database
 from detect_pi_openai import render_prompt_for_pi_detection, call_openai_to_detect_pi
 from pydantic import BaseModel
-import langchain
+from langchain_core.prompts import PromptTemplate
 
 
 class RebuffDetectionResponse(BaseModel):
@@ -23,11 +23,11 @@ class RebuffDetectionResponse(BaseModel):
 class RebuffSdk:
     def __init__(
         self,
-        openai_model: str,
         openai_apikey: str,
         pinecone_apikey: str,
         pinecone_environment: str,
         pinecone_index: str,
+        openai_model: str = "gpt-3.5-turbo",
     ) -> None:
         self.openai_model = openai_model
         self.openai_apikey = openai_apikey
@@ -43,7 +43,6 @@ class RebuffSdk:
             self.pinecone_index,
             self.openai_apikey,
         )
-        self.vector_store._text_key = "input"  # Reference: https://github.com/langchain-ai/langchain/blob/a6ebffb69504576a805f3b9f09732ad344751b89/langchain/vectorstores/pinecone.py#L57
 
     def detect_injection(
         self,
@@ -139,20 +138,20 @@ class RebuffSdk:
 
     def add_canary_word(
         self,
-        prompt: Union[str, langchain.prompts.PromptTemplate],
+        prompt: Union[str, PromptTemplate],
         canary_word: Optional[str] = None,
         canary_format: str = "<!-- {canary_word} -->",
-    ) -> Tuple[Union[str, langchain.prompts.PromptTemplate], str]:
+    ) -> Tuple[Union[str, PromptTemplate], str]:
         """
         Adds a canary word to the given prompt which we will use to detect leakage.
 
         Args:
-            prompt (Union[str, langchain.prompts.PromptTemplate]): The prompt to add the canary word to.
+            prompt (Union[str, PromptTemplate]): The prompt to add the canary word to.
             canary_word (Optional[str], optional): The canary word to add. If not provided, a random canary word will be generated. Defaults to None.
             canary_format (str, optional): The format in which the canary word should be added. Defaults to "<!-- {canary_word} -->".
 
         Returns:
-            Tuple[Union[str, langchain.prompts.PromptTemplate], str]: A tuple containing the modified prompt with the canary word and the canary word itself.
+            Tuple[Union[str, PromptTemplate], str]: A tuple containing the modified prompt with the canary word and the canary word itself.
         """
 
         # Generate a canary word if not provided
@@ -166,13 +165,13 @@ class RebuffSdk:
             prompt_with_canary: str = canary_comment + "\n" + prompt
             return prompt_with_canary, canary_word
 
-        elif isinstance(prompt, langchain.prompts.PromptTemplate):
+        elif isinstance(prompt, PromptTemplate):
             prompt.template = canary_comment + "\n" + prompt.template
             return prompt, canary_word
 
         else:
             raise TypeError(
-                f"prompt must be a langchain.prompts.PromptTemplate or a str, "
+                f"prompt must be a langchain_core.prompts.PromptTemplate or a str, "
                 f"but was {type(prompt)}"
             )
 
