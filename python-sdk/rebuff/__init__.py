@@ -5,9 +5,13 @@ from .rebuff import (
     Rebuff,
 )
 
+from .sdk import RebuffSdk, RebuffDetectionResponse
+
 __all__ = [
     "Rebuff",
     "DetectApiSuccessResponse",
     "ApiFailureResponse",
     "DetectApiRequest",
+    "RebuffSdk",
+    "RebuffDetectionResponse",
 ]
