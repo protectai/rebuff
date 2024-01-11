@@ -54,7 +54,7 @@ Rebuff offers 4 layers of defense:
 - [x] Canary Word Leak Detection
 - [x] Attack Signature Learning
 - [x] JavaScript/TypeScript SDK
-- [ ] Python SDK to have parity with TS SDK
+- [x] Python SDK to have parity with TS SDK
 - [ ] Local-only mode
 - [ ] User Defined Detection Strategies
 - [ ] Heuristics for adversarial suffixes
