@@ -20,8 +20,8 @@ def rebuff() -> RebuffSdk:
     openai_model = get_environment_variable("OPENAI_MODEL")
     openai_apikey = get_environment_variable("OPENAI_APIKEY")
     pinecone_apikey = get_environment_variable("PINECONE_APIKEY")
-    pinecone_environment = os.getenv("PINECONE_ENVIRONMENT")
-    pinecone_index = os.getenv("PINECONE_INDEX")
+    pinecone_environment = get_environment_variable("PINECONE_ENVIRONMENT")
+    pinecone_index = get_environment_variable("PINECONE_INDEX")
 
     rb = RebuffSdk(
         openai_apikey,
