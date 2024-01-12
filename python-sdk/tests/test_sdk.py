@@ -18,10 +18,10 @@ except NameError:
 @pytest.fixture()
 def rebuff() -> RebuffSdk:
     openai_model = get_environment_variable("OPENAI_MODEL")
-    openai_apikey = get_environment_variable("OPENAI_APIKEY")
-    pinecone_apikey = get_environment_variable("PINECONE_APIKEY")
+    openai_apikey = get_environment_variable("OPENAI_API_KEY")
+    pinecone_apikey = get_environment_variable("PINECONE_API_KEY")
     pinecone_environment = get_environment_variable("PINECONE_ENVIRONMENT")
-    pinecone_index = get_environment_variable("PINECONE_INDEX")
+    pinecone_index = get_environment_variable("PINECONE_INDEX_NAME")
 
     rb = RebuffSdk(
         openai_apikey,
@@ -54,26 +54,20 @@ def benign_inputs():
 def user_inputs(
     prompt_injection_inputs: List[str], benign_inputs: List[str]
 ) -> List[str]:
-    prompt_injection_inputs.extend(benign_inputs)
-    return prompt_injection_inputs
+    ui = prompt_injection_inputs + benign_inputs
+    return ui
 
 
 @pytest.fixture()
 def detect_injection_arguments() -> List[Union[float, bool]]:
-    max_heuristic_score = 0.5  # The max_heuristic_score here is lesser than the default max_heuristic_score in python-sdk/rebuff/sdk.py
-    max_vector_score = 0.90
-    max_model_score = 0.90
-    check_heuristic = False
-    check_vector = False
-    check_llm = False
-    detect_injection_arguments = [
-        max_heuristic_score,
-        max_vector_score,
-        max_model_score,
-        check_heuristic,
-        check_vector,
-        check_llm,
-    ]
+    detect_injection_arguments = {
+        "max_heuristic_score": 0.5,
+        "max_vector_score": 0.90,
+        "max_model_score": 0.90,
+        "check_heuristic": False,
+        "check_vector": False,
+        "check_llm": False,
+    }
     return detect_injection_arguments
 
 
@@ -128,7 +122,7 @@ def test_is_canary_word_leaked(
             leak_detected = rebuff.is_canary_word_leaked(
                 user_input, response_completion, canary_word, log_outcome
             )
-            assert leak_detected is True
+            assert leak_detected
 
         else:
             response_completion = f"Tell me a joke about\n{user_inputs}"
@@ -136,7 +130,7 @@ def test_is_canary_word_leaked(
             leak_detected = rebuff.is_canary_word_leaked(
                 user_input, response_completion, canary_word, log_outcome
             )
-            assert leak_detected is False
+            assert not leak_detected
 
 
 def test_detect_injection_heuristics(
@@ -145,38 +139,25 @@ def test_detect_injection_heuristics(
     benign_inputs: List[str],
     detect_injection_arguments: List[Union[float, bool]],
 ):
-    max_heuristic_score = detect_injection_arguments[0]
-    max_vector_score = detect_injection_arguments[1]
-    max_model_score = detect_injection_arguments[2]
-    check_heuristic = True
-    check_vector = detect_injection_arguments[4]
-    check_llm = detect_injection_arguments[5]
+    detect_injection_arguments["check_heuristic"] = True
 
     for prompt_injection in prompt_injection_inputs:
         rebuff_response = rebuff.detect_injection(
-            prompt_injection,
-            max_heuristic_score,
-            max_vector_score,
-            max_model_score,
-            check_heuristic,
-            check_vector,
-            check_llm,
+            prompt_injection, **detect_injection_arguments
         )
-        assert rebuff_response.heuristic_score > max_heuristic_score
-        assert rebuff_response.injection_detected is True
+        assert (
+            rebuff_response.heuristic_score
+            > detect_injection_arguments["max_heuristic_score"]
+        )
+        assert rebuff_response.injection_detected
 
     for input in benign_inputs:
-        rebuff_response = rebuff.detect_injection(
-            input,
-            max_heuristic_score,
-            max_vector_score,
-            max_model_score,
-            check_heuristic,
-            check_vector,
-            check_llm,
+        rebuff_response = rebuff.detect_injection(input, **detect_injection_arguments)
+        assert (
+            rebuff_response.heuristic_score
+            < detect_injection_arguments["max_heuristic_score"]
         )
-        assert rebuff_response.heuristic_score < max_heuristic_score
-        assert rebuff_response.injection_detected is False
+        assert not rebuff_response.injection_detected
 
 
 def test_detect_injection_vectorbase(
@@ -185,39 +166,26 @@ def test_detect_injection_vectorbase(
     benign_inputs: List[str],
     detect_injection_arguments: List[Union[float, bool]],
 ):
-    max_heuristic_score = detect_injection_arguments[0]
-    max_vector_score = detect_injection_arguments[1]
-    max_model_score = detect_injection_arguments[2]
-    check_heuristic = detect_injection_arguments[3]
-    check_vector = True
-    check_llm = detect_injection_arguments[5]
+    detect_injection_arguments["check_vector"] = True
 
     for prompt_injection in prompt_injection_inputs:
         rebuff_response = rebuff.detect_injection(
-            prompt_injection,
-            max_heuristic_score,
-            max_vector_score,
-            max_model_score,
-            check_heuristic,
-            check_vector,
-            check_llm,
+            prompt_injection, **detect_injection_arguments
         )
-        assert rebuff_response.vector_score > max_vector_score
-        assert rebuff_response.injection_detected is True
+        assert (
+            rebuff_response.vector_score
+            > detect_injection_arguments["max_vector_score"]
+        )
+        assert rebuff_response.injection_detected
 
     for input in benign_inputs:
-        rebuff_response = rebuff.detect_injection(
-            input,
-            max_heuristic_score,
-            max_vector_score,
-            max_model_score,
-            check_heuristic,
-            check_vector,
-            check_llm,
-        )
+        rebuff_response = rebuff.detect_injection(input, **detect_injection_arguments)
 
-        assert rebuff_response.vector_score < max_vector_score
-        assert rebuff_response.injection_detected is False
+        assert (
+            rebuff_response.vector_score
+            < detect_injection_arguments["max_vector_score"]
+        )
+        assert not rebuff_response.injection_detected
 
 
 def test_detect_injection_llm(
@@ -226,36 +194,21 @@ def test_detect_injection_llm(
     benign_inputs: List[str],
     detect_injection_arguments: List[Union[float, bool]],
 ):
-    max_heuristic_score = detect_injection_arguments[0]
-    max_vector_score = detect_injection_arguments[1]
-    max_model_score = detect_injection_arguments[2]
-    check_heuristic = detect_injection_arguments[3]
-    check_vector = detect_injection_arguments[4]
-    check_llm = True
+    detect_injection_arguments["check_llm"] = True
 
     for prompt_injection in prompt_injection_inputs:
         rebuff_response = rebuff.detect_injection(
-            prompt_injection,
-            max_heuristic_score,
-            max_vector_score,
-            max_model_score,
-            check_heuristic,
-            check_vector,
-            check_llm,
+            prompt_injection, **detect_injection_arguments
         )
-        assert rebuff_response.openai_score > max_model_score
-        assert rebuff_response.injection_detected is True
+        assert (
+            rebuff_response.openai_score > detect_injection_arguments["max_model_score"]
+        )
+        assert rebuff_response.injection_detected
 
     for input in benign_inputs:
-        rebuff_response = rebuff.detect_injection(
-            input,
-            max_heuristic_score,
-            max_vector_score,
-            max_model_score,
-            check_heuristic,
-            check_vector,
-            check_llm,
-        )
+        rebuff_response = rebuff.detect_injection(input, **detect_injection_arguments)
 
-        assert rebuff_response.openai_score < max_model_score
-        assert rebuff_response.injection_detected is False
+        assert (
+            rebuff_response.openai_score < detect_injection_arguments["max_model_score"]
+        )
+        assert not rebuff_response.injection_detected
