@@ -10,10 +10,10 @@ docker rm chroma || true
 docker run -d -p 8000:8000 --name chroma chromadb/chroma
 
 echo "Waiting for Chroma server to start..."
-npx ts-node tests/wait-for-chroma.ts
+node --loader ts-node/esm tests/wait-for-chroma.ts
 
 echo "Inserting Chroma test vectors..."
-npx ts-node tests/insert-chroma-vectors.ts
+node --loader ts-node/esm tests/insert-chroma-vectors.ts
 
 echo "Running tests..."
 npx mocha --require ts-node/register tests/**/*.test.ts
