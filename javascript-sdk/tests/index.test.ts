@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import { describe } from "mocha";
 import { expect } from "chai";
-import { DetectRequest, DetectResponse } from "../src/interface";
+import { DetectRequest, DetectResponse, TacticName, TacticResult } from "../src/interface";
 import RebuffSDK from "../src/sdk";
 import { getEnvironmentVariable } from "./helpers";
 
@@ -47,48 +47,62 @@ describe("Rebuff API tests", function () {
       const request: DetectRequest = {
         userInput: "abc",
         userInputBase64: "abc",
-        runHeuristicCheck: true,
-        runVectorCheck: false,
-        runLanguageModelCheck: true,
-        maxHeuristicScore: 0.5,
-        maxModelScore: 0.8,
-        maxVectorScore: 0.0,
+        tacticOverrides: [
+          { name: TacticName.Heuristic, threshold: 0.7 },
+          { name: TacticName.LanguageModel, run: false },
+        ],
       };
 
+      expect(request).to.have.property("userInput");
       expect(request).to.have.property("userInputBase64");
-      expect(request).to.have.property("runHeuristicCheck");
-      expect(request).to.have.property("runVectorCheck");
-      expect(request).to.have.property("runLanguageModelCheck");
-      expect(request).to.have.property("maxHeuristicScore");
-      expect(request).to.have.property("maxModelScore");
-      expect(request).to.have.property("maxVectorScore");
+      expect(request).to.have.property("tacticOverrides");
+      if (request.tacticOverrides) {
+        expect(request.tacticOverrides).to.be.an("array");
+        expect(request.tacticOverrides).to.have.lengthOf(2);
+        expect(request.tacticOverrides[0]).to.have.property("name");
+        expect(request.tacticOverrides[0]).to.have.property("threshold");
+        expect(request.tacticOverrides[1]).to.have.property("name");
+        expect(request.tacticOverrides[1]).to.have.property("run");
+      }
     });
   });
 
   describe("DetectResponse", () => {
     it("should have the correct properties", () => {
       const response: DetectResponse = {
-        heuristicScore: 0.5,
-        modelScore: 0.8,
-        vectorScore: { abc: 0.9 },
-        runHeuristicCheck: true,
-        runVectorCheck: false,
-        runLanguageModelCheck: true,
-        maxHeuristicScore: 0.5,
-        maxModelScore: 0.8,
-        maxVectorScore: 0.0,
         injectionDetected: false,
+        tacticResults: [
+          {
+            name: TacticName.Heuristic,
+            score: 0.5,
+            detected: false,
+            threshold: 0.9,
+            additionalFields: {},
+          },
+          {
+            name: TacticName.LanguageModel,
+            score: 0.8,
+            detected: false,
+            threshold: 0.9,
+            additionalFields: {},
+          }
+        ],
       };
 
-      expect(response).to.have.property("heuristicScore");
-      expect(response).to.have.property("modelScore");
-      expect(response).to.have.property("vectorScore");
-      expect(response).to.have.property("runHeuristicCheck");
-      expect(response).to.have.property("runVectorCheck");
-      expect(response).to.have.property("runLanguageModelCheck");
-      expect(response).to.have.property("maxHeuristicScore");
-      expect(response).to.have.property("maxModelScore");
-      expect(response).to.have.property("maxVectorScore");
+      expect(response).to.have.property("injectionDetected");
+      expect(response).to.have.property("tacticResults");
+      expect(response.tacticResults).to.be.an("array");
+      expect(response.tacticResults).to.have.lengthOf(2);
+      expect(response.tacticResults[0]).to.have.property("name");
+      expect(response.tacticResults[0]).to.have.property("score");
+      expect(response.tacticResults[0]).to.have.property("detected");
+      expect(response.tacticResults[0]).to.have.property("threshold");
+      expect(response.tacticResults[0]).to.have.property("additionalFields");
+      expect(response.tacticResults[1]).to.have.property("name");
+      expect(response.tacticResults[1]).to.have.property("score");
+      expect(response.tacticResults[1]).to.have.property("detected");
+      expect(response.tacticResults[1]).to.have.property("threshold");
+      expect(response.tacticResults[1]).to.have.property("additionalFields");
     });
   });
 
@@ -148,27 +162,28 @@ describe("Rebuff API tests", function () {
         const maxHeuristicScore = 0.5;
         const maxVectorScore = 0.95;
         const maxModelScore = 0.9;
-        const runHeuristicCheck = true;
-        const runVectorCheck = true;
-        const runLanguageModelCheck = true;
         const detectResponse = await rb.detectInjection({
           userInput,
-          maxHeuristicScore,
-          maxVectorScore,
-          maxModelScore,
-          runHeuristicCheck,
-          runVectorCheck,
-          runLanguageModelCheck,
-        }
-        );
+          tacticOverrides: [
+            { name: TacticName.Heuristic, threshold: maxHeuristicScore },
+            { name: TacticName.VectorDB, threshold: maxVectorScore },
+            { name: TacticName.LanguageModel, threshold: maxModelScore },
+          ],
+        });
 
         expect(detectResponse.injectionDetected).to.be.true;
 
-        // Check if the 'heuristicScore' attribute is present in the result object
-        expect(detectResponse).to.have.property("heuristicScore");
+        // Check that the one of the results has a name of heuristic
+        const heuristicResult = detectResponse.tacticResults.find(
+          result => result.name === TacticName.Heuristic
+        );
+        expect(heuristicResult).to.not.be.undefined;
 
         // Ensure that the heuristic score is greater than 0.5
-        expect(detectResponse.heuristicScore).to.be.greaterThan(0.50);
+        if (heuristicResult) {
+          expect(heuristicResult).to.have.property("score");
+          expect(heuristicResult.score).to.be.greaterThan(0.5);
+        }
       });
     });
 
@@ -178,26 +193,28 @@ describe("Rebuff API tests", function () {
         const maxHeuristicScore = 0.1;
         const maxVectorScore = 0.9;
         const maxModelScore = 0.1;
-        const runHeuristicCheck = true;
-        const runVectorCheck = true;
-        const runLanguageModelCheck = true;
         const detectResponse = await rb.detectInjection(
           {
             userInput,
-            maxHeuristicScore,
-            maxVectorScore,
-            maxModelScore,
-            runHeuristicCheck,
-            runVectorCheck,
-            runLanguageModelCheck,
+            tacticOverrides: [
+              { name: TacticName.Heuristic, threshold: maxHeuristicScore },
+              { name: TacticName.VectorDB, threshold: maxVectorScore },
+              { name: TacticName.LanguageModel, threshold: maxModelScore },
+            ],
           }
         );
 
-        // Check if the 'heuristicScore' attribute is present in the result object
-        expect(detectResponse).to.have.property("heuristicScore");
+        // Check that the one of the results has a name of heuristic
+        const heuristicResult = detectResponse.tacticResults.find(
+          result => result.name === TacticName.Heuristic
+        );
+        expect(heuristicResult).to.not.be.undefined;
 
         // Ensure that the heuristicScore is less than 0.1
-        expect(detectResponse.heuristicScore).to.be.lessThan(0.1);
+        if (heuristicResult) {
+          expect(heuristicResult).to.have.property("score");
+          expect(heuristicResult.score).to.be.lessThan(0.1);
+        }
       });
     });
   });
@@ -208,26 +225,28 @@ describe("Rebuff API tests", function () {
         const maxHeuristicScore = 0.5;
         const maxVectorScore = 0.95;
         const maxModelScore = 0.9;
-        const runHeuristicCheck = true;
-        const runVectorCheck = true;
-        const runLanguageModelCheck = true;
         const detectResponse = await rb.detectInjection({
           userInput,
-          maxHeuristicScore,
-          maxVectorScore,
-          maxModelScore,
-          runHeuristicCheck,
-          runVectorCheck,
-          runLanguageModelCheck,
+          tacticOverrides: [
+            { name: TacticName.Heuristic, threshold: maxHeuristicScore },
+            { name: TacticName.VectorDB, threshold: maxVectorScore },
+            { name: TacticName.LanguageModel, threshold: maxModelScore },
+          ],
         }
         );
         expect(detectResponse.injectionDetected).to.be.true;
 
-        // Check if the 'modelScore' attribute is present in the result object
-        expect(detectResponse).to.have.property("modelScore");
+        // Check that the one of the results has a name of LanguageModel
+        const modelResult = detectResponse.tacticResults.find(
+          result => result.name === TacticName.LanguageModel
+        );
+        expect(modelResult).to.not.be.undefined;
 
         // Ensure that the model score is greater than 0.9
-        expect(detectResponse.modelScore).to.be.greaterThan(0.9);
+        if (modelResult) {
+          expect(modelResult).to.have.property("score");
+          expect(modelResult.score).to.be.greaterThan(0.9);
+        }
       });
     });
 
@@ -237,26 +256,26 @@ describe("Rebuff API tests", function () {
         const maxHeuristicScore = 0.1;
         const maxVectorScore = 0.9;
         const maxModelScore = 0.1;
-        const runHeuristicCheck = true;
-        const runVectorCheck = true;
-        const runLanguageModelCheck = true;
-        const detectResponse = await rb.detectInjection(
-          {
-            userInput,
-            maxHeuristicScore,
-            maxVectorScore,
-            maxModelScore,
-            runHeuristicCheck,
-            runVectorCheck,
-            runLanguageModelCheck,
-          }
+        const detectResponse = await rb.detectInjection({
+          userInput,
+          tacticOverrides: [
+            { name: TacticName.Heuristic, threshold: maxHeuristicScore },
+            { name: TacticName.VectorDB, threshold: maxVectorScore },
+            { name: TacticName.LanguageModel, threshold: maxModelScore },
+          ],
+        });
+        
+        // Check that the one of the results has a name of LanguageModel
+        const modelResult = detectResponse.tacticResults.find(
+          result => result.name === TacticName.LanguageModel
         );
-
-        // Check if the 'modelScore' attribute is present in the result object
-        expect(detectResponse).to.have.property("modelScore");
+        expect(modelResult).to.not.be.undefined;
 
         // Ensure that the model score is less than 0.1
-        expect(detectResponse.heuristicScore).to.be.lessThan(0.1);
+        if (modelResult) {
+          expect(modelResult).to.have.property("score");
+          expect(modelResult.score).to.be.lessThan(0.1);
+        }
       });
     });
   });
@@ -267,27 +286,28 @@ describe("Rebuff API tests", function () {
         const maxHeuristicScore = 0.5;
         const maxVectorScore = 0.95;
         const maxModelScore = 0.9;
-        const runHeuristicCheck = true;
-        const runVectorCheck = true;
-        const runLanguageModelCheck = true;
         const detectResponse = await rb.detectInjection({
           userInput,
-          maxHeuristicScore,
-          maxVectorScore,
-          maxModelScore,
-          runHeuristicCheck,
-          runVectorCheck,
-          runLanguageModelCheck,
-        }
-        );
+          tacticOverrides: [
+            { name: TacticName.Heuristic, threshold: maxHeuristicScore },
+            { name: TacticName.VectorDB, threshold: maxVectorScore },
+            { name: TacticName.LanguageModel, threshold: maxModelScore },
+          ],
+        });
 
         expect(detectResponse.injectionDetected).to.be.true;
 
-        // Check if the 'vectorScore' attribute is present in the result object
-        expect(detectResponse).to.have.property("vectorScore");
+        // Check that the one of the results has a name of VectorDB
+        const vectorResult = detectResponse.tacticResults.find(
+          result => result.name === TacticName.VectorDB
+        );
+        expect(vectorResult).to.not.be.undefined;
 
-        // Ensure that the vector score is greater than 0.95
-        expect(detectResponse.vectorScore.topScore).to.be.greaterThan(0.95);
+        // Ensure that the model score is greater than 0.95
+        if (vectorResult) {
+          expect(vectorResult).to.have.property("score");
+          expect(vectorResult.score).to.be.greaterThan(0.95);
+        }
       });
     });
 
@@ -297,26 +317,28 @@ describe("Rebuff API tests", function () {
         const maxHeuristicScore = 0.1;
         const maxVectorScore = 0.9;
         const maxModelScore = 0.1;
-        const runHeuristicCheck = true;
-        const runVectorCheck = true;
-        const runLanguageModelCheck = true;
         const detectResponse = await rb.detectInjection(
           {
             userInput,
-            maxHeuristicScore,
-            maxVectorScore,
-            maxModelScore,
-            runHeuristicCheck,
-            runVectorCheck,
-            runLanguageModelCheck,
+            tacticOverrides: [
+              { name: TacticName.Heuristic, threshold: maxHeuristicScore },
+              { name: TacticName.VectorDB, threshold: maxVectorScore },
+              { name: TacticName.LanguageModel, threshold: maxModelScore },
+            ],
           }
         );
 
-        // Check if the 'vectorScore' attribute is present in the result object
-        expect(detectResponse).to.have.property("vectorScore");
+        // Check that the one of the results has a name of VectorDB
+        const vectorResult = detectResponse.tacticResults.find(
+          result => result.name === TacticName.VectorDB
+        );
+        expect(vectorResult).to.not.be.undefined;
 
-        // Ensure that the vector score is less than 0.9
-        expect(detectResponse.vectorScore.topScore).to.be.lessThan(0.9);
+        // Ensure that the model score is less than 0.9
+        if (vectorResult) {
+          expect(vectorResult).to.have.property("score");
+          expect(vectorResult.score).to.be.lessThan(0.9);
+        }
       });
     });
   });
@@ -326,28 +348,29 @@ describe("Rebuff API tests", function () {
       it("should detect prompt injection", async () => {
         const maxHeuristicScore = 0.5;
         const maxVectorScore = 0.95;
-        const maxModelScore = 0.9;
-        const runHeuristicCheck = true;
-        const runVectorCheck = true;
-        const runLanguageModelCheck = false;
         const detectResponse = await rb_chroma.detectInjection({
           userInput,
-          maxHeuristicScore,
-          maxVectorScore,
-          maxModelScore,
-          runHeuristicCheck,
-          runVectorCheck,
-          runLanguageModelCheck,
+          tacticOverrides: [
+            { name: TacticName.Heuristic, threshold: maxHeuristicScore },
+            { name: TacticName.VectorDB, threshold: maxVectorScore },
+            { name: TacticName.LanguageModel, run: false },
+          ],
         }
         );
 
         expect(detectResponse.injectionDetected).to.be.true;
 
-        // Check if the 'vectorScore' attribute is present in the result object
-        expect(detectResponse).to.have.property("vectorScore");
+        // Check that the one of the results has a name of VectorDB
+        const vectorResult = detectResponse.tacticResults.find(
+          result => result.name === TacticName.VectorDB
+        );
+        expect(vectorResult).to.not.be.undefined;
 
-        // Ensure that the vector score is greater than 0.95
-        expect(detectResponse.vectorScore.topScore).to.be.greaterThan(0.95);
+        // Ensure that the model score is greater than 0.95
+        if (vectorResult) {
+          expect(vectorResult).to.have.property("score");
+          expect(vectorResult.score).to.be.greaterThan(0.95);
+        }
       });
     });
 
@@ -356,27 +379,28 @@ describe("Rebuff API tests", function () {
       it("should not detect prompt injection", async () => {
         const maxHeuristicScore = 0.1;
         const maxVectorScore = 0.9;
-        const maxModelScore = 0.1;
-        const runHeuristicCheck = true;
-        const runVectorCheck = true;
-        const runLanguageModelCheck = false;
         const detectResponse = await rb_chroma.detectInjection(
           {
             userInput,
-            maxHeuristicScore,
-            maxVectorScore,
-            maxModelScore,
-            runHeuristicCheck,
-            runVectorCheck,
-            runLanguageModelCheck,
+            tacticOverrides: [
+              { name: TacticName.Heuristic, threshold: maxHeuristicScore },
+              { name: TacticName.VectorDB, threshold: maxVectorScore },
+              { name: TacticName.LanguageModel, run: false },
+            ],
           }
         );
 
-        // Check if the 'vectorScore' attribute is present in the result object
-        expect(detectResponse).to.have.property("vectorScore");
+        // Check that the one of the results has a name of VectorDB
+        const vectorResult = detectResponse.tacticResults.find(
+          result => result.name === TacticName.VectorDB
+        );
+        expect(vectorResult).to.not.be.undefined;
 
-        // Ensure that the vector score is less than 0.9
-        expect(detectResponse.vectorScore.topScore).to.be.lessThan(0.9);
+        // Ensure that the model score is less than 0.9
+        if (vectorResult) {
+          expect(vectorResult).to.have.property("score");
+          expect(vectorResult.score).to.be.lessThan(0.9);
+        }
       });
     });
   });
@@ -385,50 +409,38 @@ describe("Rebuff API tests", function () {
     prompt_injection_inputs.forEach(function (userInput) {
 
       it("should detect prompt injection", async () => {
-        // Test the isInjectionDetected method
         const maxHeuristicScore = 0.5;
         const maxVectorScore = 0.95;
         const maxModelScore = 0.9;
-        const runHeuristicCheck = true;
-        const runVectorCheck = true;
-        const runLanguageModelCheck = true;
-
-        const isInjectionDetected = await rb.detectInjection({
+        const detectResponse = await rb.detectInjection({
           userInput,
-          maxHeuristicScore,
-          maxVectorScore,
-          maxModelScore,
-          runHeuristicCheck,
-          runVectorCheck,
-          runLanguageModelCheck,
+          tacticOverrides: [
+            { name: TacticName.Heuristic, threshold: maxHeuristicScore },
+            { name: TacticName.VectorDB, threshold: maxVectorScore },
+            { name: TacticName.LanguageModel, threshold: maxModelScore },
+          ],
         });
 
-        expect(isInjectionDetected.injectionDetected).to.be.true;
+        expect(detectResponse.injectionDetected).to.be.true;
       });
 
     });
 
     benign_inputs.forEach(function (userInput) {
       it("should not detect prompt injection", async () => {
-        // Test the isInjectionDetected method
         const maxHeuristicScore = 0.1;
         const maxVectorScore = 0.9;
         const maxModelScore = 0.1;
-        const runHeuristicCheck = true;
-        const runVectorCheck = true;
-        const runLanguageModelCheck = true;
-        const isInjectionDetected = await rb.detectInjection({
+        const detectResponse = await rb.detectInjection({
           userInput,
-          maxHeuristicScore,
-          maxVectorScore,
-          maxModelScore,
-          runHeuristicCheck,
-          runVectorCheck,
-          runLanguageModelCheck,
+          tacticOverrides: [
+            { name: TacticName.Heuristic, threshold: maxHeuristicScore },
+            { name: TacticName.VectorDB, threshold: maxVectorScore },
+            { name: TacticName.LanguageModel, threshold: maxModelScore },
+          ],
         });
-        expect(isInjectionDetected.injectionDetected).to.be.false;
+        expect(detectResponse.injectionDetected).to.be.false;
       });
     });
   });
 });
-
