@@ -1,6 +1,6 @@
 import os
 import sys
-from typing import List, Union
+from typing import List, Union, Dict
 import pytest
 
 from sdk import RebuffSdk, RebuffDetectionResponse
@@ -17,7 +17,6 @@ except NameError:
 
 @pytest.fixture()
 def rebuff() -> RebuffSdk:
-    openai_model = get_environment_variable("OPENAI_MODEL")
     openai_apikey = get_environment_variable("OPENAI_API_KEY")
     pinecone_apikey = get_environment_variable("PINECONE_API_KEY")
     pinecone_environment = get_environment_variable("PINECONE_ENVIRONMENT")
@@ -28,7 +27,6 @@ def rebuff() -> RebuffSdk:
         pinecone_apikey,
         pinecone_environment,
         pinecone_index,
-        openai_model,
     )
     return rb
 
@@ -59,7 +57,7 @@ def user_inputs(
 
 
 @pytest.fixture()
-def detect_injection_arguments() -> List[Union[float, bool]]:
+def detect_injection_arguments() -> Dict:
     detect_injection_arguments = {
         "max_heuristic_score": 0.5,
         "max_vector_score": 0.90,
@@ -137,7 +135,7 @@ def test_detect_injection_heuristics(
     rebuff: RebuffSdk,
     prompt_injection_inputs: List[str],
     benign_inputs: List[str],
-    detect_injection_arguments: List[Union[float, bool]],
+    detect_injection_arguments: Dict,
 ):
     detect_injection_arguments["check_heuristic"] = True
 
@@ -164,7 +162,7 @@ def test_detect_injection_vectorbase(
     rebuff: RebuffSdk,
     prompt_injection_inputs: List[str],
     benign_inputs: List[str],
-    detect_injection_arguments: List[Union[float, bool]],
+    detect_injection_arguments: Dict,
 ):
     detect_injection_arguments["check_vector"] = True
 
@@ -192,7 +190,7 @@ def test_detect_injection_llm(
     rebuff: RebuffSdk,
     prompt_injection_inputs: List[str],
     benign_inputs: List[str],
-    detect_injection_arguments: List[Union[float, bool]],
+    detect_injection_arguments: Dict,
 ):
     detect_injection_arguments["check_llm"] = True
 
