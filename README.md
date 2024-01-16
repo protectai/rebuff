@@ -112,8 +112,9 @@ if is_leak_detected:
 
 ## Self-hosting
 
-To self-host Rebuff Playground, you need to set up the necessary providers like Pinecone,
-Supabase, and OpenAI. Follow the links below to set up each provider:
+To self-host Rebuff Playground, you need to set up the necessary providers like Supabase, OpenAI, and a vector
+database, either Pinecone or Chroma. Here we'll assume you're using Pinecone. Follow the links below to set up each
+provider:
 
 - [Pinecone](https://www.pinecone.io/)
 - [Supabase](https://supabase.io/)
