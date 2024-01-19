@@ -42,6 +42,7 @@ jobs:
           CHROMA_COLLECTION_NAME: javascript_tests
         run: |
           npm install
+          npm run build
           npm test
 
       - name: Dump docker logs
