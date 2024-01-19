@@ -15,13 +15,12 @@
 
 ### **Self-hardening prompt injection detector**
 
-Rebuff is designed to protect AI applications from prompt injection (PI) attacks through a [multi-layered defense](#features).
+Rebuff is designed to protect AI applications from prompt injection (PI) attacks through a [multi-layered defense](https://github.com/protectai/rebuff/blob/bd8916f5032e38bf2370ffd2aa8d55a9a7862708/README.md#features).
 
 [Playground](https://playground.rebuff.ai/) •
 [Discord](https://discord.gg/R3U2XVNKeE) •
 [Installation](#installation) •
 [Getting started](#getting-started) •
-[Self-hosting](#self-hosting) •
 [Docs](https://docs.rebuff.ai)
 
 </div>
