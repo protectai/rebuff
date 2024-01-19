@@ -63,9 +63,11 @@ const Playground: FC = () => {
     try {
       await submitPrompt({
         userInput: form.values.prompt,
-        runHeuristicCheck: form.values.heuristic,
-        runVectorCheck: form.values.vectordb,
-        runLanguageModelCheck: form.values.llm,
+        tacticOverrides: [
+          { name: "heuristic", run: form.values.heuristic },
+          { name: "language_model", run: form.values.llm },
+          { name: "vector_db", run: form.values.vectordb },
+        ],
       });
     } catch (error) {
       console.error(error);
