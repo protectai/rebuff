@@ -16,7 +16,7 @@ jobs:
       run:
         working-directory: ./python-sdk
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0 # Necessary to get tags
       - uses: actions/setup-python@v5
