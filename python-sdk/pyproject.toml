@@ -1,22 +1,46 @@
-[tool.black]
-line-length = 79
-target-version = ['py38']
-include = '\.pyi?$'
-exclude = '''
-(
-  /(
-      \.eggs         # exclude a few common directories in the
-    | \.git          # root of the project
-    | \.hg
-    | \.mypy_cache
-    | \.tox
-    | \.venv
-    | _build
-    | buck-out
-    | build
-    | dist
-    | pb2.py
-    | \.pyi
-  )/
-)
-'''
+[tool.poetry]
+name = "rebuff"
+version = "0.0.0"
+description = "Rebuff is designed to protect AI applications from prompt injection (PI) attacks through a multi-layered defense."
+authors = ["ProtectAI <community@protectai.com>"]
+readme = "README.md"
+license = "Apache License 2.0"
+exclude = ["tests/*", "Makefile"]
+
+[tool.poetry.dependencies]
+python = ">=3.8.1,<3.13"
+pydantic = "^2.5.3"
+requests = "^2.31.0"
+openai = "^1.8.0"
+pinecone-client = "^3.0.0"
+langchain = "^0.1.1"
+langchain-openai = "^0.0.3"
+tiktoken = "^0.5.2"
+
+[tool.poetry.group.dev.dependencies]
+black = "^23.12.1"
+mypy = "^1.8.0"
+dunamai = "^1.19.0"
+pytest = "^7.4.4"
+pytest-rerunfailures = "^13.0"
+types-requests = "^2.31.0.20240106"
+bandit = { version = "^1.7.6", extras = ["toml"] }
+
+[tool.poetry.group.prod.dependencies]
+dunamai = "^1.19.0"
+
+[tool.poetry.group.test.dependencies]
+pytest = "^7.4.4"
+pytest-rerunfailures = "^13.0"
+mypy = "^1.8.0"
+types-requests = "^2.31.0.20240106"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry-dynamic-versioning]
+enable = true
+
+[tool.bandit]
+exclude_dirs = ["tests"]

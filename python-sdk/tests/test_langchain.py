@@ -37,9 +37,7 @@ def test_canary_not_detected(server: Generator[None, None, None]) -> None:
     completion = chain.run(user_input)
 
     # Check for canary word leakage using Rebuff
-    assert (
-        rb.is_canary_word_leaked(user_input, completion, canary_word) is False
-    )
+    assert rb.is_canary_word_leaked(user_input, completion, canary_word) is False
 
 
 @pytest.mark.usefixtures("server")
@@ -70,6 +68,4 @@ def test_canary_word_detected(server: Generator[None, None, None]) -> None:
     completion = chain.run(user_input)
 
     # Check for canary word leakage using Rebuff
-    assert (
-        rb.is_canary_word_leaked(user_input, completion, canary_word) is True
-    )
+    assert rb.is_canary_word_leaked(user_input, completion, canary_word) is True
