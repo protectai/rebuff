@@ -14,7 +14,7 @@ format:
 	cd python-sdk; black rebuff/ tests/
 
 init-python-sdk:
-	cd python-sdk; pip install -e '.[dev]' -U
+	cd python-sdk; make install-dev
 
 init: init-python-sdk init-server
 

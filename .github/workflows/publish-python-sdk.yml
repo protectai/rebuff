@@ -22,7 +22,7 @@ jobs:
           fetch-depth: 0 # Necessary to get tags
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.8"
+          python-version: "3.11"
       - uses: snok/install-poetry@v1
         with:
           virtualenvs-create: true
