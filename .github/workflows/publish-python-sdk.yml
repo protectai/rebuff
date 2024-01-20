@@ -14,7 +14,6 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
-      id-token: write
 
     steps:
       - name: Checkout
@@ -43,4 +42,5 @@ jobs:
           poetry build
       - name: Publish Package to PYPI
         run: |
+          poetry config pypi-token.pypi ${{ secrets.REBUFF_PYPI_API_TOKEN }}
           poetry publish
