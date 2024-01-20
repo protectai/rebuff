@@ -24,7 +24,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: "${{ github.event.pull_request.merge_commit_sha }}"
-
       - name: Set up Python 3.11
         uses: actions/setup-python@v5
         with:
