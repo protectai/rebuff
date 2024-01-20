@@ -82,7 +82,7 @@ rb = RebuffSdk(
     openai_model # openai_model is optional, defaults to "gpt-3.5-turbo"
 )
 
-result = rebuff.detect_injection(user_input)
+result = rb.detect_injection(user_input)
 
 if result.injection_detected:
     print("Possible injection detected. Take corrective action.")
