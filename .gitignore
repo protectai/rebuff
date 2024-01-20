@@ -17,3 +17,4 @@ python-sdk/build/
 python-sdk/.pytest_cache/
 .vscode
 server/.env.local
+.mypy_cache

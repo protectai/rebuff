@@ -1,0 +1,49 @@
+name: Build Python SDK
+
+on:
+  push:
+    branches: main
+  pull_request:
+    branches: "*"
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./python-sdk
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Necessary to get tags
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - uses: snok/install-poetry@v1
+        with:
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+          installer-parallel: true
+      - name: Load cached venv
+        id: cached-poetry-dependencies
+        uses: actions/cache@v4
+        with:
+          path: .venv
+          key: venv-prod-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
+      - uses: mtkennerly/dunamai-action@v1
+        with:
+          env-var: NBD_VERSION
+          args: --style pep440 --format "{base}.dev{distance}+{commit}"
+      - name: Install Dependencies
+        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+        run: |
+          make install-prod
+      - name: Build Package
+        run: |
+          make build-prod
+      - name: PYPI Publish Dry Run
+        run: |
+          poetry publish --dry-run

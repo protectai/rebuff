@@ -1,3 +1,5 @@
+from rebuff._version import __version__
+
 from .rebuff import (
     ApiFailureResponse,
     DetectApiRequest,
@@ -6,12 +8,3 @@ from .rebuff import (
 )
 
 from .sdk import RebuffSdk, RebuffDetectionResponse
-
-__all__ = [
-    "Rebuff",
-    "DetectApiSuccessResponse",
-    "ApiFailureResponse",
-    "DetectApiRequest",
-    "RebuffSdk",
-    "RebuffDetectionResponse",
-]
