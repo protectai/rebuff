@@ -1,23 +1,24 @@
----
-description: Self-hardening prompt injection detector
----
+# Rebuff AI Documentation
 
-# Rebuff AI
+Welcome to the Rebuff AI documentation! Rebuff AI is a self-hardening prompt injection detector designed to protect AI applications from prompt injection (PI) attacks through a multi-stage defense.
 
 <figure><img src=".gitbook/assets/mascot.png" alt="" width="150"><figcaption></figcaption></figure>
 
-{% hint style="danger" %}
-Rebuff is still in an alpha state!
-{% endhint %}
+## Important Notice
 
-Rebuff is a **self-hardening prompt injection detector**.
-
-It is designed to protect AI applications from prompt injection (PI) attacks through a multi-stage defense.
-
-* [Homepage](https://rebuff.ai/)
-* [GitHub](https://github.com/woop/rebuff)
-* [Playground](https://playground.rebuff.ai/)
+> **⚠️ Rebuff AI is currently in an alpha state! Please use it with caution and be aware that it may have limitations and potential bugs.**
 
 
+## Useful Links
 
-<table data-view="cards"><thead><tr><th></th><th></th><th></th><th data-hidden data-card-target data-type="content-ref"></th></tr></thead><tbody><tr><td></td><td>Quickstart (Python)</td><td></td><td><a href="quickstart.md">quickstart.md</a></td></tr><tr><td></td><td>Self-hosting</td><td></td><td><a href="self-hosting.md">self-hosting.md</a></td></tr><tr><td></td><td>How it works</td><td></td><td><a href="how-it-works.md">how-it-works.md</a></td></tr></tbody></table>
+- [Homepage](https://rebuff.ai/): Visit the official Rebuff AI homepage to learn more about the project.
+- [GitHub](https://github.com/woop/rebuff): Access the Rebuff AI GitHub repository for the latest source code, issue tracking, and contributions.
+- [Playground](https://playground.rebuff.ai/): Try out the Rebuff AI Playground to experiment with the detector and see it in action.
+
+## Table of Contents
+
+- [Quickstart Guide (Python)](quickstart.md): Get started quickly with Rebuff AI using Python and learn the basics.
+- [Self-Hosting](self-hosting.md): Learn how to self-host Rebuff AI in your own infrastructure.
+- [How It Works](how-it-works.md): Understand the inner workings of Rebuff AI and its multi-stage defense mechanism.
+
+We hope this documentation helps you get started with Rebuff AI and protect your AI applications effectively. If you have any questions or encounter any issues, please refer to the [GitHub repository](https://github.com/woop/rebuff) for support and assistance.
