@@ -1,7 +1,7 @@
 .PHONY: test lint format
 
 test:
-	cd python-sdk; make-install-dev; make test
+	cd python-sdk; make install-dev; make test
 
 init-python-sdk:
 	cd python-sdk; make install-dev

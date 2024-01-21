@@ -31,20 +31,10 @@ jobs:
           virtualenvs-create: true
           virtualenvs-in-project: true
           installer-parallel: true
-      - name: Load cached venv
-        id: cached-poetry-dependencies
-        uses: actions/cache@v4
-        with:
-          path: .venv
-          key: venv-dev-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
       - name: Install server dependencies
-        # The python tests spin up a server instance if it's not already running.
+        # Spin up a server instance for testing against
         run: |
           make init-server
-      - name: Install Dependencies
-        run: |
-          make install-dev
-
       - name: Run tests
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
