@@ -14,8 +14,6 @@ jobs:
   test:
     runs-on: ubuntu-latest
     defaults:
-      run:
-        working-directory: ./python-sdk
     if: contains(github.event.pull_request.labels.*.name, 'okay-to-test') || (github.event_name == 'push')
 
     steps:
@@ -39,14 +37,14 @@ jobs:
         with:
           path: .venv
           key: venv-dev-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
-      - name: Install Dependencies
-        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
-        run: |
-          make install-dev
       - name: Install server dependencies
         # The python tests spin up a server instance if it's not already running.
         run: |
           make init-server
+      - name: Install Dependencies
+        run: |
+          make install-dev
+
       - name: Run tests
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
