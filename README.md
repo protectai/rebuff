@@ -188,11 +188,3 @@ To set up the development environment, run:
 ```bash
 make init
 ```
-
-To run tests, linting, and formatting, use the following commands:
-
-```bash
-make test
-make lint
-make format
-```
