@@ -43,6 +43,10 @@ jobs:
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
         run: |
           make install-dev
+      - name: Install server dependencies
+        # The python tests spin up a server instance if it's not already running.
+        run: |
+          make init-server
       - name: Run tests
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
