@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import Cors from "cors";
 import { rebuff } from "@/lib/rebuff";
+import { TacticOverride } from "rebuff";
 import {
   runMiddleware,
   checkApiKeyAndReduceBalance,
@@ -46,23 +47,13 @@ export default async function handler(
 
     const {
       userInputBase64,
-      runHeuristicCheck = true,
-      runVectorCheck = true,
-      runLanguageModelCheck = true,
-      maxHeuristicScore = null,
-      maxModelScore = null,
-      maxVectorScore = null,
+      tacticOverrides = [] as TacticOverride[],
     } = req.body;
     try {
       const resp = await rebuff.detectInjection({
         userInput: "",
         userInputBase64,
-        runHeuristicCheck,
-        runVectorCheck,
-        runLanguageModelCheck,
-        maxHeuristicScore,
-        maxModelScore,
-        maxVectorScore,
+        tacticOverrides,
       });
       return res.status(200).json(resp);
     } catch (error) {

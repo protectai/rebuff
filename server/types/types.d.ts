@@ -22,16 +22,16 @@ export interface PromptResponse {
 }
 
 export interface DetectResponse {
-  heuristicScore: number;
-  modelScore: number;
-  vectorScore: Record<string, number>;
-  runHeuristicCheck: boolean;
-  runVectorCheck: boolean;
-  runLanguageModelCheck: boolean;
-  maxHeuristicScore: number;
-  maxVectorScore: number;
-  maxModelScore: number;
+  tacticResults: TacticResult[];
   injectionDetected: boolean;
+}
+
+export interface TacticResult {
+  name: string;
+  score: number;
+  detected: boolean;
+  threshold: number;
+  additionalFields: Record<string, any>;
 }
 
 interface PlaygroundStats {
@@ -61,9 +61,13 @@ export interface AppStateCtx {
 
 export interface PromptRequest {
   userInput: string;
-  runHeuristicCheck: boolean;
-  runVectorCheck: boolean;
-  runLanguageModelCheck: boolean;
+  tacticOverrides: TacticOverride[];
+}
+
+export interface TacticOverride {
+  name: string;
+  threshold?: number;
+  run?: boolean;
 }
 
 export interface Attempt extends PromptResponse {

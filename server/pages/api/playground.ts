@@ -4,7 +4,7 @@ import { User } from "@supabase/auth-helpers-react";
 import Cors from "cors";
 import { getSupabaseUser } from "@/lib/supabase";
 import { getUserAccountFromDb, logAttempt } from "@/lib/account-helpers";
-import { RebuffApi } from "rebuff";
+import { RebuffApi, TacticOverride } from "rebuff";
 import { PromptResponse } from "@types";
 import {
   getEnvironmentVariable,
@@ -97,22 +97,19 @@ const checkSqlBreach = (query: string) => {
 async function getResponse(
   apikey: string,
   userInput: string,
-  runHeuristicCheck: boolean,
-  runVectorCheck: boolean,
-  runLanguageModelCheck: boolean,
-  maxHeuristicScore: number,
-  maxModelScore: number,
-  maxVectorScore: number
+  tacticOverrides: TacticOverride[],
 ): Promise<PromptResponse> {
   if (
     !(
       typeof userInput === "string" &&
-      typeof runHeuristicCheck === "boolean" &&
-      typeof runVectorCheck === "boolean" &&
-      typeof runLanguageModelCheck === "boolean" &&
-      typeof maxHeuristicScore === "number" &&
-      typeof maxModelScore === "number" &&
-      typeof maxVectorScore === "number"
+      Array.isArray(tacticOverrides) &&
+      tacticOverrides.every(t => {
+        return (
+          typeof t.name === "string"
+          && (typeof t.threshold === "number" || t.threshold === undefined)
+          && (typeof t.run === "boolean" || t.run === undefined)
+        );
+      })
     )
   ) {
     throw new Error("Invalid payload");
@@ -123,12 +120,7 @@ async function getResponse(
   const rebuff = new RebuffApi({ apiKey: apikey, apiUrl: rebuffApiUrl });
   const detection = await rebuff.detectInjection({
     userInput,
-    maxHeuristicScore,
-    maxVectorScore,
-    maxModelScore,
-    runHeuristicCheck,
-    runVectorCheck,
-    runLanguageModelCheck,
+    tacticOverrides,
   });
 
   if (detection.injectionDetected) {
@@ -212,35 +204,20 @@ export default async function handler(
     // check payload
     const {
       userInput,
-      runHeuristicCheck = true,
-      runVectorCheck = true,
-      runLanguageModelCheck = true,
-      maxHeuristicScore = 0.75,
-      maxModelScore = 0.9,
-      maxVectorScore = 0.9,
+      tacticOverrides = [],
     } = req.body;
     const { apikey } = await getUserAccountFromDb(user);
     const response = await getResponse(
       apikey,
       userInput,
-      runHeuristicCheck,
-      runVectorCheck,
-      runLanguageModelCheck,
-      maxHeuristicScore,
-      maxModelScore,
-      maxVectorScore
+      tacticOverrides,
     );
     logAttempt(
       user,
       {
         apikey,
         userInput,
-        runHeuristicCheck,
-        runVectorCheck,
-        runLanguageModelCheck,
-        maxHeuristicScore,
-        maxModelScore,
-        maxVectorScore,
+        tacticOverrides,
       },
       response
     );
