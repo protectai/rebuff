@@ -1,7 +1,8 @@
-from typing import Dict, Union
+from typing import Dict
+
+import pinecone
 from langchain.vectorstores.pinecone import Pinecone
 from langchain_openai import OpenAIEmbeddings
-import pinecone
 
 
 # https://api.python.langchain.com/en/latest/vectorstores/langchain.vectorstores.pinecone.Pinecone.html

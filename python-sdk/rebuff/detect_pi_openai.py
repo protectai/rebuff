@@ -1,5 +1,6 @@
-from openai import OpenAI
 from typing import Dict
+
+from openai import OpenAI
 
 
 def render_prompt_for_pi_detection(user_input: str) -> str:

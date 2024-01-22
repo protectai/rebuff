@@ -18,5 +18,17 @@ In order to use the Rebuff server, you'll first need to:
 * The needed relational database tables can be found in [sql_setup/tables](sql_setup/tables)
 * The needed relational database functions can be found in [sql_setup/functions](sql_setup/functions)
 
-### Pinecone (Vector DB)
-* The pinecone index that you create must be of dimension 1536
+### Vector DB
+
+The vector DB can be either Pinecone or Chroma.
+
+#### Pinecone
+* The pinecone index that you create must be of dimension 1536.
+
+#### Chroma
+* To set up Chroma, follow the [deployment instructions](https://docs.trychroma.com/deployment).
+* When you start the Rebuff server, you will need to set the following environment variables:
+  * `CHROMA_URL`: The HTTP URL of the Chroma server (e.g. http://localhost:8000)
+  * `CHROMA_COLLECTION_NAME`: The collection to use. This will be created if it does not exist.
+  * `VECTOR_DB`: Set this to `chroma`.
+* At the current time, authentication to the Chroma server is not supported, so make sure the server is adequately secured.

@@ -1,0 +1,46 @@
+name: Build and Publish Python SDK to PYPI
+
+on:
+  push:
+    tags:
+      - v*
+
+jobs:
+  publish-rebuff:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./python-sdk
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Necessary to get tags
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - uses: snok/install-poetry@v1
+        with:
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+          installer-parallel: true
+      - name: Get Release Version
+        uses: mtkennerly/dunamai-action@v1
+        with:
+          env-var: REBUFF_VERSION
+          args: --style semver --format "{base}"
+      - name: Set Package Version
+        run: |
+          echo "__version__ = '$REBUFF_VERSION'" > rebuff/_version.py
+          poetry version $REBUFF_VERSION
+      - name: Build Package
+        run: |
+          poetry build
+      - name: Publish Package to PYPI
+        run: |
+          poetry config pypi-token.pypi ${{ secrets.REBUFF_PYPI_API_TOKEN }}
+          poetry publish

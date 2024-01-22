@@ -1,0 +1,50 @@
+# .github/workflows/python_tests.yml
+name: Python Tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request_target:
+    types:
+      - opened
+      - labeled
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    if: contains(github.event.pull_request.labels.*.name, 'okay-to-test') || (github.event_name == 'push')
+
+    steps:
+      # https://github.com/actions/checkout/issues/518
+      - name: Check out code
+        uses: actions/checkout@v4
+        with:
+          ref: "${{ github.event.pull_request.merge_commit_sha }}"
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - uses: snok/install-poetry@v1
+        with:
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+          installer-parallel: true
+      - name: Install server dependencies
+        # Spin up a server instance for testing against
+        run: |
+          make init-server
+      - name: Run tests
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          BILLING_RATE_INT_10K: ${{ secrets.BILLING_RATE_INT_10K }}
+          MASTER_API_KEY: ${{ secrets.MASTER_API_KEY }}
+          MASTER_CREDIT_AMOUNT: ${{ secrets.MASTER_CREDIT_AMOUNT }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
+          PINECONE_ENVIRONMENT: ${{ secrets.PINECONE_ENVIRONMENT }}
+          PINECONE_INDEX_NAME: ${{ secrets.PINECONE_INDEX_NAME }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: |
+          make test
