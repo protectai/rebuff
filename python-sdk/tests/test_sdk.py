@@ -19,13 +19,11 @@ except NameError:
 def rebuff() -> RebuffSdk:
     openai_apikey = get_environment_variable("OPENAI_API_KEY")
     pinecone_apikey = get_environment_variable("PINECONE_API_KEY")
-    pinecone_environment = get_environment_variable("PINECONE_ENVIRONMENT")
     pinecone_index = get_environment_variable("PINECONE_INDEX_NAME")
 
     rb = RebuffSdk(
         openai_apikey,
         pinecone_apikey,
-        pinecone_environment,
         pinecone_index,
     )
     return rb
