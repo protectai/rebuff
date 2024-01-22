@@ -27,20 +27,17 @@ class RebuffSdk:
         self,
         openai_apikey: str,
         pinecone_apikey: str,
-        pinecone_environment: str,
         pinecone_index: str,
         openai_model: str = "gpt-3.5-turbo",
     ) -> None:
         self.openai_model = openai_model
         self.openai_apikey = openai_apikey
         self.pinecone_apikey = pinecone_apikey
-        self.pinecone_environment = pinecone_environment
         self.pinecone_index = pinecone_index
         self.vector_store = None
 
     def initialize_pinecone(self) -> None:
         self.vector_store = init_pinecone(
-            self.pinecone_environment,
             self.pinecone_apikey,
             self.pinecone_index,
             self.openai_apikey,

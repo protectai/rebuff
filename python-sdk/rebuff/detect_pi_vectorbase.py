@@ -47,14 +47,11 @@ def detect_pi_using_vector_database(
     return vector_score
 
 
-def init_pinecone(
-    environment: str, api_key: str, index: str, openai_api_key: str
-) -> Pinecone:
+def init_pinecone(api_key: str, index: str, openai_api_key: str) -> Pinecone:
     """
     Initializes connection with the Pinecone vector database using existing (rebuff) index.
 
     Args:
-        environment (str): Pinecone environment
         api_key (str): Pinecone API key
         index (str): Pinecone index name
         openai_api_key (str): Open AI API key
@@ -63,12 +60,10 @@ def init_pinecone(
         vector_store (Pinecone)
 
     """
-    if not environment:
-        raise ValueError("Pinecone environment definition missing")
     if not api_key:
         raise ValueError("Pinecone apikey definition missing")
 
-    pinecone.init(api_key=api_key, environment=environment)
+    pinecone.Pinecone(api_key=api_key)
 
     openai_embeddings = OpenAIEmbeddings(
         openai_api_key=openai_api_key, model="text-embedding-ada-002"
