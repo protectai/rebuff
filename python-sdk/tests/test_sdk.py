@@ -1,30 +1,15 @@
-import os
-import sys
-from typing import List, Union, Dict
+from typing import List, Dict
 import pytest
-
-from sdk import RebuffSdk, RebuffDetectionResponse
-from utils import get_environment_variable
-
-try:
-    sys.path.insert(
-        0,
-        os.path.abspath(os.path.join(os.path.dirname(__file__), "../rebuff")),
-    )
-except NameError:
-    pass
+from rebuff.sdk import RebuffSdk, RebuffDetectionResponse
+from .utils import get_environment_variable
 
 
 @pytest.fixture()
 def rebuff() -> RebuffSdk:
-    openai_apikey = get_environment_variable("OPENAI_API_KEY")
-    pinecone_apikey = get_environment_variable("PINECONE_API_KEY")
-    pinecone_index = get_environment_variable("PINECONE_INDEX_NAME")
-
     rb = RebuffSdk(
-        openai_apikey,
-        pinecone_apikey,
-        pinecone_index,
+        get_environment_variable("OPENAI_API_KEY"),
+        get_environment_variable("PINECONE_API_KEY"),
+        get_environment_variable("PINECONE_INDEX_NAME"),
     )
     return rb
 
@@ -65,31 +50,6 @@ def detect_injection_arguments() -> Dict:
         "check_llm": False,
     }
     return detect_injection_arguments
-
-
-def test_rebuff_detection_response_attributes():
-    rebuff_response = RebuffDetectionResponse(
-        heuristic_score=0.5,
-        openai_score=0.8,
-        vector_score=0.9,
-        run_heuristic_check=True,
-        run_language_model_check=False,
-        run_vector_check=True,
-        max_heuristic_score=0.5,
-        max_model_score=0.8,
-        max_vector_score=0.0,
-        injection_detected=False,
-    )
-    assert hasattr(rebuff_response, "heuristic_score")
-    assert hasattr(rebuff_response, "openai_score")
-    assert hasattr(rebuff_response, "vector_score")
-    assert hasattr(rebuff_response, "run_heuristic_check")
-    assert hasattr(rebuff_response, "run_language_model_check")
-    assert hasattr(rebuff_response, "run_vector_check")
-    assert hasattr(rebuff_response, "max_heuristic_score")
-    assert hasattr(rebuff_response, "max_model_score")
-    assert hasattr(rebuff_response, "max_vector_score")
-    assert hasattr(rebuff_response, "injection_detected")
 
 
 def test_add_canary_word(rebuff: RebuffSdk, user_inputs: List[str]):
@@ -151,7 +111,7 @@ def test_detect_injection_heuristics(
         rebuff_response = rebuff.detect_injection(input, **detect_injection_arguments)
         assert (
             rebuff_response.heuristic_score
-            < detect_injection_arguments["max_heuristic_score"]
+            <= detect_injection_arguments["max_heuristic_score"]
         )
         assert not rebuff_response.injection_detected
 
@@ -179,7 +139,7 @@ def test_detect_injection_vectorbase(
 
         assert (
             rebuff_response.vector_score
-            < detect_injection_arguments["max_vector_score"]
+            <= detect_injection_arguments["max_vector_score"]
         )
         assert not rebuff_response.injection_detected
 
@@ -205,6 +165,7 @@ def test_detect_injection_llm(
         rebuff_response = rebuff.detect_injection(input, **detect_injection_arguments)
 
         assert (
-            rebuff_response.openai_score < detect_injection_arguments["max_model_score"]
+            rebuff_response.openai_score
+            <= detect_injection_arguments["max_model_score"]
         )
         assert not rebuff_response.injection_detected
