@@ -6,7 +6,7 @@ from langchain.chains import LLMChain
 from langchain.llms import OpenAI
 from langchain.prompts import PromptTemplate
 
-from rebuff import Rebuff
+from rebuff.rebuff import Rebuff
 
 
 @pytest.mark.usefixtures("server")

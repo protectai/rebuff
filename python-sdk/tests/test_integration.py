@@ -1,18 +1,8 @@
-import os
-import sys
 from typing import Generator
 
 import pytest
 
-try:
-    sys.path.insert(
-        0,
-        os.path.abspath(os.path.join(os.path.dirname(__file__), "../rebuff")),
-    )
-except NameError:
-    pass
-
-from rebuff import DetectApiSuccessResponse, Rebuff
+from rebuff.rebuff import DetectApiSuccessResponse, Rebuff
 
 
 @pytest.mark.usefixtures("server")

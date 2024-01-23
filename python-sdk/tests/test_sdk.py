@@ -1,6 +1,6 @@
 from typing import List, Dict
 import pytest
-from rebuff.sdk import RebuffSdk, RebuffDetectionResponse
+from rebuff.sdk import RebuffSdk
 from .utils import get_environment_variable
 
 
