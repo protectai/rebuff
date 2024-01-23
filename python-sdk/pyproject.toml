@@ -1,6 +1,7 @@
 [tool.poetry]
 name = "rebuff"
 version = "0.0.0"
+packages = [{ include = "rebuff" }]
 description = "Rebuff is designed to protect AI applications from prompt injection (PI) attacks through a multi-layered defense."
 authors = ["ProtectAI <community@protectai.com>"]
 readme = "README.md"

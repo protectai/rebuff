@@ -5,13 +5,7 @@ from unittest.mock import Mock
 
 import requests
 
-try:
-    sys.path.insert(
-        0,
-        os.path.abspath(os.path.join(os.path.dirname(__file__), "../rebuff")),
-    )
-except NameError:
-    pass
+
 import subprocess
 import time
 

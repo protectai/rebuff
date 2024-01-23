@@ -4,9 +4,12 @@ from typing import Optional, Tuple, Union
 from langchain_core.prompts import PromptTemplate
 from pydantic import BaseModel
 
-from .detect_pi_heuristics import detect_prompt_injection_using_heuristic_on_input
-from .detect_pi_openai import call_openai_to_detect_pi, render_prompt_for_pi_detection
-from .detect_pi_vectorbase import detect_pi_using_vector_database, init_pinecone
+from rebuff.detect_pi_heuristics import detect_prompt_injection_using_heuristic_on_input
+from rebuff.detect_pi_openai import (
+    call_openai_to_detect_pi,
+    render_prompt_for_pi_detection,
+)
+from rebuff.detect_pi_vectorbase import detect_pi_using_vector_database, init_pinecone
 
 
 class RebuffDetectionResponse(BaseModel):
