@@ -14,6 +14,10 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    # We'll run if one of the following is met:
+    # 1. The 'okay-to-test' labeled has just been added to the PR.
+    # 2. A member or collaborator opens a PR or pushes new commits to it.
+    # 3. This is a push to the main branch.
     if: |
       (contains(github.event.pull_request.labels.*.name, 'okay-to-test') && github.event.action == 'labeled') ||
       contains(fromJson('["MEMBER", "COLLABORATOR"]'), github.event.pull_request.author_association) ||
