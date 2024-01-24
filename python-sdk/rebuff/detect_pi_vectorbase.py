@@ -63,14 +63,13 @@ def init_pinecone(api_key: str, index: str, openai_api_key: str) -> Pinecone:
     if not api_key:
         raise ValueError("Pinecone apikey definition missing")
 
-    pinecone.Pinecone(api_key=api_key)
+    pc = pinecone.Pinecone(api_key=api_key)
+    pc_index = pc.Index(index)
 
     openai_embeddings = OpenAIEmbeddings(
         openai_api_key=openai_api_key, model="text-embedding-ada-002"
     )
 
-    vector_store = Pinecone.from_existing_index(
-        index, openai_embeddings, text_key="input"
-    )
+    vector_store = Pinecone(pc_index, openai_embeddings, text_key="input")
 
     return vector_store
