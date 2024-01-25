@@ -45,6 +45,7 @@ export default async function handler(
     }
 
     const {
+      userInput,
       userInputBase64,
       runHeuristicCheck = true,
       runVectorCheck = true,
@@ -55,7 +56,7 @@ export default async function handler(
     } = req.body;
     try {
       const resp = await rebuff.detectInjection({
-        userInput: "",
+        userInput,
         userInputBase64,
         runHeuristicCheck,
         runVectorCheck,
