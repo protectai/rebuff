@@ -94,6 +94,9 @@ export default class RebuffSdk implements Rebuff {
       }
       const threshold = tacticOverride?.threshold ?? tactic.defaultThreshold;
       const execution = await tactic.execute(userInput, threshold);
+      if (isNaN(execution.score)) {
+        throw new RebuffError(`Tactic ${tactic.name} returned NaN`);
+      }
       const result = {
         name: tactic.name,
         score: execution.score,

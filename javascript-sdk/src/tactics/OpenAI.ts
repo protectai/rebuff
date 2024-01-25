@@ -29,8 +29,11 @@ export default class OpenAI implements Tactic {
         throw new Error("completion.data.choices[0].message is undefined");
       }
 
-      // FIXME: Handle when parseFloat returns NaN.
-      const score = parseFloat(completion.data.choices[0].message.content || "");
+      let score = parseFloat(completion.data.choices[0].message.content || "");
+      if (isNaN(score)) {
+        // If the model doesn't return a number, assume an attacker is manipulating the Rebuff prompt.
+        score = 1;
+      }
       return { score };
     } catch (error) {
       console.error("Error in callOpenAiToDetectPI:", error);

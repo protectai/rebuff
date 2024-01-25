@@ -99,7 +99,11 @@ class RebuffSdk:
                 rendered_input, self.openai_model, self.openai_apikey
             )
 
-            rebuff_model_score = float(model_response.get("completion", 0))
+            try:
+                rebuff_model_score = float(model_response.get("completion", 0))
+            except ValueError:
+                # If the model doesn't return a number, assume an attacker is manipulating the Rebuff prompt.
+                rebuff_model_score = 1
 
         else:
             rebuff_model_score = 0
