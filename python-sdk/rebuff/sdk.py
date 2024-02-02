@@ -9,7 +9,11 @@ from rebuff.detect_pi_openai import (
     call_openai_to_detect_pi,
     render_prompt_for_pi_detection,
 )
-from rebuff.detect_pi_vectorbase import detect_pi_using_vector_database, init_pinecone
+from rebuff.detect_pi_vectorbase import (
+    detect_pi_using_vector_database,
+    init_pinecone,
+    init_chroma,
+)
 
 
 class RebuffDetectionResponse(BaseModel):
@@ -29,22 +33,34 @@ class RebuffSdk:
     def __init__(
         self,
         openai_apikey: str,
-        pinecone_apikey: str,
-        pinecone_index: str,
-        openai_model: str = "gpt-3.5-turbo",
+        pinecone_apikey: Optional[str] = None,
+        pinecone_index: Optional[str] = None,
+        chroma_url: Optional[str] = "http://localhost:8000",
+        chroma_collection_name: Optional[str] = "rebuff",
+        openai_model: Optional[str] = "gpt-3.5-turbo",
     ) -> None:
-        self.openai_model = openai_model
         self.openai_apikey = openai_apikey
         self.pinecone_apikey = pinecone_apikey
         self.pinecone_index = pinecone_index
+        self.chroma_url = chroma_url
+        self.chroma_collection_name = chroma_collection_name
+        self.openai_model = openai_model
         self.vector_store = None
 
-    def initialize_pinecone(self) -> None:
-        self.vector_store = init_pinecone(
-            self.pinecone_apikey,
-            self.pinecone_index,
-            self.openai_apikey,
-        )
+    def initialize_vector_store(self) -> None:
+        if self.pinecone_apikey and self.pinecone_index:
+            self.vector_store = init_pinecone(
+                self.pinecone_apikey,
+                self.pinecone_index,
+                self.openai_apikey,
+            )
+
+        else:
+            self.vector_store = init_chroma(
+                self.chroma_url,
+                self.chroma_collection_name,
+                self.openai_apikey,
+            )
 
     def detect_injection(
         self,
@@ -83,7 +99,7 @@ class RebuffSdk:
             rebuff_heuristic_score = 0
 
         if check_vector:
-            self.initialize_pinecone()
+            self.initialize_vector_store()
 
             vector_score = detect_pi_using_vector_database(
                 user_input, max_vector_score, self.vector_store
@@ -213,7 +229,7 @@ class RebuffSdk:
         """
 
         if self.vector_store is None:
-            self.initialize_pinecone()
+            self.initialize_vector_store()
 
         self.vector_store.add_texts(
             [user_input],
