@@ -44,12 +44,7 @@ export default class RebuffApi implements Rebuff {
 
   async detectInjection({
     userInput = "",
-    maxHeuristicScore = 0.75,
-    maxVectorScore = 0.9,
-    maxModelScore = 0.9,
-    runHeuristicCheck = true,
-    runVectorCheck = true,
-    runLanguageModelCheck = true,
+    tacticOverrides = [],
   }: DetectRequest): Promise<DetectResponse> {
     if (userInput === null) {
       throw new RebuffError("userInput is required");
@@ -57,12 +52,7 @@ export default class RebuffApi implements Rebuff {
     const requestData: DetectRequest = {
       userInput: "",
       userInputBase64: encodeString(userInput),
-      runHeuristicCheck: runHeuristicCheck,
-      runVectorCheck: runVectorCheck,
-      runLanguageModelCheck: runLanguageModelCheck,
-      maxVectorScore,
-      maxModelScore,
-      maxHeuristicScore,
+      tacticOverrides,
     };
 
     const response = await fetch(`${this.apiUrl}/api/detect`, {
@@ -76,10 +66,6 @@ export default class RebuffApi implements Rebuff {
     if (!response.ok) {
       throw new RebuffError((responseData as any)?.message);
     }
-    responseData.injectionDetected =
-      responseData.heuristicScore > maxHeuristicScore ||
-      responseData.modelScore > maxModelScore ||
-      responseData.vectorScore.topScore > maxVectorScore;
     return responseData;
   }
 
