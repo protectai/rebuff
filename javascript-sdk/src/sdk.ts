@@ -9,7 +9,6 @@ import crypto from "crypto";
 import { SdkConfig } from "./config";
 import initVectorStore from "./lib/vectordb";
 import getOpenAIInstance from "./lib/openai";
-import { OpenAIApi } from "openai";
 import { VectorStore } from "langchain/vectorstores/base";
 import { Document } from "langchain/document";
 import Strategy from "./lib/Strategy";
@@ -28,38 +27,45 @@ export default class RebuffSdk implements Rebuff {
   private strategies: Record<string, Strategy> | undefined;
   private defaultStrategy: string;
 
-  private openai: {
-    conn: OpenAIApi;
-    model: string;
-  };
-
+  /**
+   * @deprecated Use `RebuffSdk.init` instead.
+   */
   constructor(config: SdkConfig) {
+    // We're keeping this constructor for backwards compatibility. In the future, we can make it private and
+    // simplify this class quite a bit.
+
     this.sdkConfig = config;
-    this.openai = {
-      conn: getOpenAIInstance(config.openai.apikey),
-      model: config.openai.model || "gpt-3.5-turbo",
-    };
     this.defaultStrategy = "standard";
+  }
+
+  public static async init(config: SdkConfig): Promise<RebuffSdk> {
+    const sdk = new RebuffSdk(config);
+    sdk.vectorStore = await initVectorStore(config);
+    sdk.strategies = await sdk.getStrategies();
+    return sdk;
   }
 
   private async getStrategies(): Promise<Record<string, Strategy>> {
     if (this.strategies) {
       return this.strategies;
     }
+    const openai = {
+      conn: getOpenAIInstance(this.sdkConfig.openai.apikey),
+      model: this.sdkConfig.openai.model || "gpt-3.5-turbo",
+    };
     const heuristicScoreThreshold = 0.75;
     const vectorScoreThreshold = 0.9;
     const openaiScoreThreshold = 0.9;
-    const strategies: Record<string, Strategy> = {
+    this.strategies = {
       // For now, this is the only strategy.
       "standard": {
         tactics: [
           new Heuristic(heuristicScoreThreshold),
           new Vector(vectorScoreThreshold, await this.getVectorStore()),
-          new OpenAI(openaiScoreThreshold, this.openai.model, this.openai.conn),
+          new OpenAI(openaiScoreThreshold, openai.model, openai.conn),
         ]
       },
     };
-    this.strategies = strategies;
     return this.strategies;
   }
 
