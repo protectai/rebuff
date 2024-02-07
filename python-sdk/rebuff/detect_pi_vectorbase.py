@@ -1,15 +1,26 @@
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Union, Optional
 
 import pinecone
 from langchain.vectorstores.pinecone import Pinecone
-import chromadb
 from langchain_community.vectorstores import Chroma
 from langchain_core.documents.base import Document
 from langchain_openai import OpenAIEmbeddings
 
+try:
+    import chromadb
+
+    chromadb_installed = True
+except ImportError:
+    print(
+        "To use Chromadb, please install rebuff with rebuff extras. 'pip install \"rebuff\[chromadb]\"'"
+    )
+    chromadb_installed = False
+
 
 def detect_pi_using_vector_database(
-    input: str, similarity_threshold: float, vector_store: Pinecone
+    input: str,
+    similarity_threshold: float,
+    vector_store: Union[Pinecone, Optional[Chroma]],
 ) -> Dict:
     """
     Detects Prompt Injection using similarity search with vector database.
@@ -17,7 +28,7 @@ def detect_pi_using_vector_database(
     Args:
         input (str): user input to be checked for prompt injection
         similarity_threshold (float): The threshold for similarity between entries in vector database and the user input.
-        vector_store (Pinecone): Vector database of prompt injections
+        vector_store (Pinecone or Chroma): Vector database of prompt injections
 
     Returns:
         Dict (str, Union[float, int]): top_score (float) that contains the highest score wrt similarity between vector database and the user input.
@@ -74,54 +85,57 @@ def init_pinecone(api_key: str, index: str, openai_api_key: str) -> Pinecone:
     return vector_store
 
 
-class ChromaCosineSimilarity(Chroma):
-    """
-    Our code expects a similarity score where similar vectors are close to 1, but Chroma returns a distance score
-    where similar vectors are close to 0.
-    """
+if chromadb_installed:
 
-    def similarity_search_with_score(
-        self, query: str, k: int, filter=None
-    ) -> List[Tuple[Document, float]]:
+    class ChromaCosineSimilarity(Chroma):
         """
-        Detects Prompt Injection using similarity search with Chroma database.
+        Our code expects a similarity score where similar vectors are close to 1, but Chroma returns a distance score
+        where similar vectors are close to 0.
+        """
+
+        def similarity_search_with_score(
+            self, query: str, k: int, filter=None
+        ) -> List[Tuple[Document, float]]:
+            """
+            Detects Prompt Injection using similarity search with Chroma database.
+
+            Args:
+                query (str): user input to be checked for prompt injection
+                k (int): The threshold for similarity between entries in vector database and the user input.
+
+            Returns:
+                List[Tuple[Document, float]]:  Documents with most similarity with the query and the correspoding similarity scores.
+            """
+
+            results = super().similarity_search_with_score(query, k, filter)
+            return [(document, 1 - score) for document, score in results]
+
+    def init_chroma(
+        url: str, collection_name: str, openai_api_key: str
+    ) -> ChromaCosineSimilarity:
+        """
+        Initializes Chroma vector database.
 
         Args:
-            query (str): user input to be checked for prompt injection
-            k (int): The threshold for similarity between entries in vector database and the user input.
-
+            url: str, Chroma URL
+            collection_name: str, Chroma collection name
+            openai_api_key (str): Open AI API key
         Returns:
-            List[Tuple[Document, float]]:  Documents with most similarity with the query and the correspoding similarity scores.
+            vector_store (ChromaCosineSimilarity)
+
         """
+        if not url:
+            raise ValueError("Chroma url definition missing")
+        if not collection_name:
+            raise ValueError("Chroma collection name definition missing")
 
-        results = super().similarity_search_with_score(query, k, filter)
-        return [(document, 1 - score) for document, score in results]
+        openai_embeddings = OpenAIEmbeddings(
+            openai_api_key=openai_api_key, model="text-embedding-ada-002"
+        )
 
-
-def init_chroma(url: str, collection_name: str, openai_api_key: str) -> Chroma:
-    """
-    Initializes Chroma vector database.
-
-    Args:
-        url: str, Chroma URL
-        collection_name: str, Chroma collection name
-        openai_api_key (str): Open AI API key
-    Returns:
-        vector_store (Chroma)
-
-    """
-    if not url:
-        raise ValueError("Chroma url definition missing")
-    if not collection_name:
-        raise ValueError("Chroma collection name definition missing")
-
-    openai_embeddings = OpenAIEmbeddings(
-        openai_api_key=openai_api_key, model="text-embedding-ada-002"
-    )
-
-    chroma_collection = ChromaCosineSimilarity(
-        client=chromadb.Client(),
-        collection_name=collection_name,
-        embedding_function=openai_embeddings,
-    )
-    return chroma_collection
+        chroma_collection = ChromaCosineSimilarity(
+            client=chromadb.Client(),
+            collection_name=collection_name,
+            embedding_function=openai_embeddings,
+        )
+        return chroma_collection

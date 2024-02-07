@@ -6,7 +6,11 @@ from .utils import get_environment_variable
 
 @pytest.fixture()
 def rebuff() -> RebuffSdk:
-    rb = RebuffSdk(get_environment_variable("OPENAI_API_KEY"))
+    rb = RebuffSdk(
+        get_environment_variable("OPENAI_API_KEY"),
+        get_environment_variable("PINECONE_API_KEY"),
+        get_environment_variable("PINECONE_INDEX_NAME"),
+    )
     return rb
 
 

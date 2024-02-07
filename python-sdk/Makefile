@@ -1,7 +1,7 @@
 VERSION ?= $(shell dunamai from git --style pep440 --format "{base}.dev{distance}+{commit}")
 
 install-dev:
-	poetry install --with dev
+	poetry install --with dev --extras "chromadb"
 
 install:
 	poetry install
