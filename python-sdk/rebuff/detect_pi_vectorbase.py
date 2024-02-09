@@ -12,7 +12,7 @@ try:
     chromadb_installed = True
 except ImportError:
     print(
-        "To use Chromadb, please install rebuff with rebuff extras. 'pip install \"rebuff\[chromadb]\"'"
+        "To use Chromadb, please install rebuff with rebuff extras. 'pip install \"rebuff[chromadb]\"'"
     )
     chromadb_installed = False
 
@@ -73,6 +73,7 @@ def init_pinecone(api_key: str, index: str, openai_api_key: str) -> Pinecone:
         vector_store (Pinecone)
 
     """
+
     pc = pinecone.Pinecone(api_key=api_key)
     pc_index = pc.Index(index)
 

@@ -12,7 +12,6 @@ from rebuff.detect_pi_openai import (
 from rebuff.detect_pi_vectorbase import (
     detect_pi_using_vector_database,
     init_pinecone,
-    chromadb_installed,
 )
 
 
@@ -33,8 +32,9 @@ class RebuffSdk:
     def __init__(
         self,
         openai_apikey: str,
-        pinecone_apikey: str,
-        pinecone_index: str,
+        pinecone_apikey: Optional[str] = "",
+        pinecone_index: Optional[str] = "",
+        use_chroma: bool = False,
         chroma_url: Optional[str] = "http://localhost:8000",
         chroma_collection_name: Optional[str] = "rebuff",
         openai_model: Optional[str] = "gpt-3.5-turbo",
@@ -42,13 +42,14 @@ class RebuffSdk:
         self.openai_apikey = openai_apikey
         self.pinecone_apikey = pinecone_apikey
         self.pinecone_index = pinecone_index
+        self.use_chroma = use_chroma
         self.chroma_url = chroma_url
         self.chroma_collection_name = chroma_collection_name
         self.openai_model = openai_model
         self.vector_store = None
 
     def initialize_vector_store(self) -> None:
-        if chromadb_installed:
+        if self.use_chroma:
             from rebuff.detect_pi_vectorbase import init_chroma
 
             self.vector_store = init_chroma(
