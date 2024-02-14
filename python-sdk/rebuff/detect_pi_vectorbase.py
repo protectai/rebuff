@@ -73,6 +73,11 @@ def init_pinecone(api_key: str, index: str, openai_api_key: str) -> Pinecone:
         vector_store (Pinecone)
 
     """
+    if not api_key:
+        raise ValueError("Pinecone apikey definition missing")
+
+    if not index:
+        raise ValueError("Pinecone index definition missing")
 
     pc = pinecone.Pinecone(api_key=api_key)
     pc_index = pc.Index(index)
@@ -125,10 +130,6 @@ if chromadb_installed:
             vector_store (ChromaCosineSimilarity)
 
         """
-        if not url:
-            raise ValueError("Chroma url definition missing")
-        if not collection_name:
-            raise ValueError("Chroma collection name definition missing")
 
         openai_embeddings = OpenAIEmbeddings(
             openai_api_key=openai_api_key, model="text-embedding-ada-002"

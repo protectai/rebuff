@@ -1,6 +1,6 @@
 import secrets
 from typing import Optional, Tuple, Union
-
+from enum import Enum
 from langchain_core.prompts import PromptTemplate
 from pydantic import BaseModel
 
@@ -13,6 +13,11 @@ from rebuff.detect_pi_vectorbase import (
     detect_pi_using_vector_database,
     init_pinecone,
 )
+
+
+class VectorDB(Enum):
+    PINECONE = 1
+    CHROMA = 2
 
 
 class RebuffDetectionResponse(BaseModel):
@@ -32,24 +37,39 @@ class RebuffSdk:
     def __init__(
         self,
         openai_apikey: str,
-        pinecone_apikey: Optional[str] = "",
-        pinecone_index: Optional[str] = "",
-        use_chroma: bool = False,
+        vector_db: VectorDB,
+        pinecone_apikey: Optional[str] = None,
+        pinecone_index: Optional[str] = None,
         chroma_url: Optional[str] = "http://localhost:8000",
         chroma_collection_name: Optional[str] = "rebuff",
         openai_model: Optional[str] = "gpt-3.5-turbo",
     ) -> None:
         self.openai_apikey = openai_apikey
-        self.pinecone_apikey = pinecone_apikey
-        self.pinecone_index = pinecone_index
-        self.use_chroma = use_chroma
-        self.chroma_url = chroma_url
-        self.chroma_collection_name = chroma_collection_name
+        self.vector_db = vector_db
+
+        if self.vector_db.name == "PINECONE":
+            self.pinecone_apikey = pinecone_apikey
+            self.pinecone_index = pinecone_index
+
+        elif self.vector_db.name == "CHROMA":
+            self.chroma_url = chroma_url
+            self.chroma_collection_name = chroma_collection_name
+
+        else:
+            raise ValueError(f"Invalid Vector DB provided: {vector_db}")
+
         self.openai_model = openai_model
         self.vector_store = None
 
     def initialize_vector_store(self) -> None:
-        if self.use_chroma:
+        if self.vector_db.name == "PINECONE":
+            self.vector_store = init_pinecone(
+                self.pinecone_apikey,
+                self.pinecone_index,
+                self.openai_apikey,
+            )
+
+        elif self.vector_db.name == "CHROMA":
             from rebuff.detect_pi_vectorbase import init_chroma
 
             self.vector_store = init_chroma(
@@ -59,11 +79,7 @@ class RebuffSdk:
             )
 
         else:
-            self.vector_store = init_pinecone(
-                self.pinecone_apikey,
-                self.pinecone_index,
-                self.openai_apikey,
-            )
+            raise ValueError(f"Invalide Vector DB provided: {self.vector_db}")
 
     def detect_injection(
         self,

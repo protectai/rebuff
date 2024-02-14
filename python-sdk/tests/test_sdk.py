@@ -1,13 +1,14 @@
 from typing import List, Dict
 import pytest
-from rebuff.sdk import RebuffSdk
+from rebuff.sdk import RebuffSdk, VectorDB
 from .utils import get_environment_variable
 
 
 @pytest.fixture()
-def rebuff() -> RebuffSdk:
+def rebuff(request) -> RebuffSdk:
     rb = RebuffSdk(
         get_environment_variable("OPENAI_API_KEY"),
+        request.param,
         get_environment_variable("PINECONE_API_KEY"),
         get_environment_variable("PINECONE_INDEX_NAME"),
     )
@@ -64,7 +65,13 @@ def detect_injection_arguments() -> Dict:
     return detect_injection_arguments
 
 
-def test_add_canary_word(rebuff: RebuffSdk, user_inputs: List[str]):
+@pytest.mark.parametrize(
+    "rebuff",
+    [VectorDB.PINECONE, VectorDB.CHROMA],
+    ids=["pinecone", "chroma"],
+    indirect=True,
+)
+def test_add_canary_word(user_inputs: List[str], rebuff):
     for user_input in user_inputs:
         prompt = f"Tell me a joke about\n{user_input}"
         buffed_prompt, canary_word = rebuff.add_canary_word(prompt)
@@ -72,9 +79,15 @@ def test_add_canary_word(rebuff: RebuffSdk, user_inputs: List[str]):
 
 
 @pytest.mark.parametrize(
+    "rebuff",
+    [VectorDB.PINECONE, VectorDB.CHROMA],
+    ids=["pinecone", "chroma"],
+    indirect=True,
+)
+@pytest.mark.parametrize(
     "canary_word_leaked",
     [True, False],
-    ids=["canary_word_leaked", "canary_word_not_leaked"],
+    ids=["canary_word_leaked", "canary_word_NOT_leaked"],
 )
 def test_is_canary_word_leaked(
     rebuff: RebuffSdk, user_inputs: List[str], canary_word_leaked: bool
@@ -101,6 +114,12 @@ def test_is_canary_word_leaked(
             assert not leak_detected
 
 
+@pytest.mark.parametrize(
+    "rebuff",
+    [VectorDB.PINECONE, VectorDB.CHROMA],
+    ids=["pinecone", "chroma"],
+    indirect=True,
+)
 def test_detect_injection_heuristics(
     rebuff: RebuffSdk,
     prompt_injection_inputs: List[str],
@@ -128,6 +147,12 @@ def test_detect_injection_heuristics(
         assert not rebuff_response.injection_detected
 
 
+@pytest.mark.parametrize(
+    "rebuff",
+    [VectorDB.PINECONE, VectorDB.CHROMA],
+    ids=["pinecone", "chroma"],
+    indirect=True,
+)
 def test_detect_injection_vectorbase(
     rebuff: RebuffSdk,
     add_documents_to_chroma,
@@ -157,6 +182,12 @@ def test_detect_injection_vectorbase(
         assert not rebuff_response.injection_detected
 
 
+@pytest.mark.parametrize(
+    "rebuff",
+    [VectorDB.PINECONE, VectorDB.CHROMA],
+    ids=["pinecone", "chroma"],
+    indirect=True,
+)
 def test_detect_injection_llm(
     rebuff: RebuffSdk,
     prompt_injection_inputs: List[str],
