@@ -45,7 +45,7 @@ pip install rebuff
 
 ### Detect prompt injection on user input
 
-For vector database, Rebuff supports Pinecone (default) and Chroma. To use Chroma, install Rebuff with extras: `pip install rebuff[chromadb]`
+For vector database, Rebuff supports Pinecone (default) and Chroma. 
 
 #### With Pinecone vector database
 

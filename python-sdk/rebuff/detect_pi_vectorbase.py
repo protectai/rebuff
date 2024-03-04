@@ -1,26 +1,14 @@
-from typing import Dict, List, Tuple, Union, Optional
-
+from typing import Any, Dict
 import pinecone
 from langchain.vectorstores.pinecone import Pinecone
-from langchain_community.vectorstores import Chroma
-from langchain_core.documents.base import Document
+from langchain_community.vectorstores import VectorStore
 from langchain_openai import OpenAIEmbeddings
-
-try:
-    import chromadb
-
-    chromadb_installed = True
-except ImportError:
-    print(
-        "To use Chromadb, please install rebuff with rebuff extras. 'pip install \"rebuff[chromadb]\"'"
-    )
-    chromadb_installed = False
 
 
 def detect_pi_using_vector_database(
     input: str,
     similarity_threshold: float,
-    vector_store: Union[Pinecone, Optional[Chroma]],
+    vector_store: VectorStore,
 ) -> Dict:
     """
     Detects Prompt Injection using similarity search with vector database.
@@ -91,53 +79,34 @@ def init_pinecone(api_key: str, index: str, openai_api_key: str) -> Pinecone:
     return vector_store
 
 
-if chromadb_installed:
+def init_chroma(collection_name: str, openai_api_key: str) -> Any:
+    """
+    Initializes Chroma vector database.
 
-    class ChromaCosineSimilarity(Chroma):
-        """
-        Our code expects a similarity score where similar vectors are close to 1, but Chroma returns a distance score
-        where similar vectors are close to 0.
-        """
+    Args:
+        collection_name: str, Chroma collection name
+        openai_api_key (str): Open AI API key
+    Returns:
+        vector_store (ChromaCosineSimilarity)
 
-        def similarity_search_with_score(
-            self, query: str, k: int, filter=None
-        ) -> List[Tuple[Document, float]]:
-            """
-            Detects Prompt Injection using similarity search with Chroma database.
+    """
 
-            Args:
-                query (str): user input to be checked for prompt injection
-                k (int): The threshold for similarity between entries in vector database and the user input.
+    try:
+        import chromadb
+        from rebuff.chroma_cosine_similarity import ChromaCosineSimilarity
 
-            Returns:
-                List[Tuple[Document, float]]:  Documents with most similarity with the query and the correspoding similarity scores.
-            """
-
-            results = super().similarity_search_with_score(query, k, filter)
-            return [(document, 1 - score) for document, score in results]
-
-    def init_chroma(
-        url: str, collection_name: str, openai_api_key: str
-    ) -> ChromaCosineSimilarity:
-        """
-        Initializes Chroma vector database.
-
-        Args:
-            url: str, Chroma URL
-            collection_name: str, Chroma collection name
-            openai_api_key (str): Open AI API key
-        Returns:
-            vector_store (ChromaCosineSimilarity)
-
-        """
-
-        openai_embeddings = OpenAIEmbeddings(
-            openai_api_key=openai_api_key, model="text-embedding-ada-002"
+    except ImportError:
+        print(
+            "To use Chromadb, please install rebuff with rebuff extras. 'pip install \"rebuff[chromadb]\"'"
         )
 
-        chroma_collection = ChromaCosineSimilarity(
-            client=chromadb.Client(),
-            collection_name=collection_name,
-            embedding_function=openai_embeddings,
-        )
-        return chroma_collection
+    openai_embeddings = OpenAIEmbeddings(
+        openai_api_key=openai_api_key, model="text-embedding-ada-002"
+    )
+
+    chroma_collection = ChromaCosineSimilarity(
+        client=chromadb.Client(),
+        collection_name=collection_name,
+        embedding_function=openai_embeddings,
+    )
+    return chroma_collection
