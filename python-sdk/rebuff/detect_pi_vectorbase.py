@@ -4,6 +4,8 @@ from langchain.vectorstores.pinecone import Pinecone
 from langchain_community.vectorstores import VectorStore
 from langchain_openai import OpenAIEmbeddings
 
+from chromadb.config import Settings
+
 
 def detect_pi_using_vector_database(
     input: str,
@@ -104,9 +106,14 @@ def init_chroma(collection_name: str, openai_api_key: str) -> Any:
         openai_api_key=openai_api_key, model="text-embedding-ada-002"
     )
 
-    chroma_collection = ChromaCosineSimilarity(
-        client=chromadb.Client(),
-        collection_name=collection_name,
-        embedding_function=openai_embeddings,
+    client = chromadb.HttpClient(
+        host="localhost",
+        port=8000,
+        settings=Settings(allow_reset=True, anonymized_telemetry=False),
     )
+
+    chroma_collection = ChromaCosineSimilarity(
+        client=client, collection_name="rebuff", embedding_function=openai_embeddings
+    )
+
     return chroma_collection

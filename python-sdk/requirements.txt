@@ -1,0 +1,3 @@
+chromadb==0.4.22
+openai==1.8.0
+langchain-openai==0.0.3

@@ -24,7 +24,7 @@ def rebuff(request) -> RebuffSdk:
         get_environment_variable("PINECONE_API_KEY"),
         get_environment_variable("PINECONE_INDEX_NAME"),
     )
-    if hasattr(request, "param") and request.param == VectorDB.CHROMA:
+    if vector_db == VectorDB.CHROMA:
         add_documents_to_chroma(rb)
     return rb
 

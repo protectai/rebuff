@@ -47,11 +47,11 @@ class RebuffSdk:
         self.openai_apikey = openai_apikey
         self.vector_db = vector_db
 
-        if self.vector_db.name == "PINECONE":
+        if self.vector_db == VectorDB.PINECONE:
             self.pinecone_apikey = pinecone_apikey
             self.pinecone_index = pinecone_index
 
-        elif self.vector_db.name == "CHROMA":
+        elif self.vector_db == VectorDB.CHROMA:
             self.chroma_collection_name = chroma_collection_name
 
         else:
@@ -61,14 +61,14 @@ class RebuffSdk:
         self.vector_store = None
 
     def initialize_vector_store(self) -> None:
-        if self.vector_db.name == "PINECONE":
+        if self.vector_db == VectorDB.PINECONE:
             self.vector_store = init_pinecone(
                 self.pinecone_apikey,
                 self.pinecone_index,
                 self.openai_apikey,
             )
 
-        elif self.vector_db.name == "CHROMA":
+        elif self.vector_db == VectorDB.CHROMA:
             self.vector_store = init_chroma(
                 self.chroma_collection_name,
                 self.openai_apikey,
@@ -114,7 +114,7 @@ class RebuffSdk:
             rebuff_heuristic_score = 0
 
         if check_vector:
-            if self.initialize_vector_store() is None:
+            if self.vector_store is None:
                 self.initialize_vector_store()
 
             vector_score = detect_pi_using_vector_database(
