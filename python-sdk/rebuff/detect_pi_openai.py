@@ -72,6 +72,7 @@ def call_openai_to_detect_pi(
     completion = client.chat.completions.create(
         model=model,
         messages=[{"role": "user", "content": prompt_to_detect_pi_using_openai}],
+        temperature=0.0,
     )
 
     if completion.choices[0].message.content is None:

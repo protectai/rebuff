@@ -41,7 +41,12 @@ Rebuff is still a prototype and **cannot provide 100% protection** against promp
 pip install rebuff
 ```
 
-## Getting started
+### Get API Keys
+Rebuff SDK depends on a user connecting it with their own OpenAI (for LLM). You would need an OpenAI API key for running LLM-based injection check. 
+
+For checking against previous attacks in a vector database, Rebuff supports Pinecone and Chroma. If using Pinecone, you would need Pinecone API key and Pinecone Index name. Chroma is self-hosted and does not require API key.
+
+Update `example.env` with your API keys (only OpenAI API key is required if using Chroma) and rename it `.env`.
 
 ### Detect prompt injection on user input
 
