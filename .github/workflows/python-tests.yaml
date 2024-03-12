@@ -35,7 +35,7 @@ jobs:
           sudo apt-get install -y docker-compose-plugin
 
       - name: Run Docker Compose
-        run: docker-compose -f docker-compose.yaml up -d
+        run: docker-compose -f docker-compose.yaml up --build
 
       - name: Set up Python 3.11
         uses: actions/setup-python@v5
