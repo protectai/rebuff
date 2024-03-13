@@ -73,7 +73,7 @@ if result.injection_detected:
 #### With Chroma vector database
 To use Rebuff with Chroma DB, install rebuff with extras: 
 ```bash
-pip install rebuff[chromadb]
+pip install rebuff[chromadb-client]
 ```
 
 Run Chroma DB in client-server mode by creating a Docker container for Chroma DB. Run the following docker command- ensure you have docker desktop running:

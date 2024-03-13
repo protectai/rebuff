@@ -14,18 +14,24 @@ services:
       - ./:/app/
     networks:
       - net
-   
+    restart: always
+    depends_on:
+      - chroma 
 
   chroma:
-    image: ghcr.io/chroma-core/chroma
-    container_name: chroma
-    
+    image: ghcr.io/chroma-core/chroma    
+    container_name: chroma    
     volumes:
       - index_data:/chroma/.chroma/index
     ports:
       - 8000:8000
     networks:
       - net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000"]
+      interval: 5s
+      timeout: 5s
+      retries: 3
  
 volumes:
   index_data:
