@@ -1,13 +1,16 @@
-from typing import Dict
-
+from typing import Any, Dict
 import pinecone
 from langchain.vectorstores.pinecone import Pinecone
+from langchain_community.vectorstores import VectorStore
 from langchain_openai import OpenAIEmbeddings
 
+from chromadb.config import Settings
 
-# https://api.python.langchain.com/en/latest/vectorstores/langchain.vectorstores.pinecone.Pinecone.html
+
 def detect_pi_using_vector_database(
-    input: str, similarity_threshold: float, vector_store: Pinecone
+    input: str,
+    similarity_threshold: float,
+    vector_store: VectorStore,
 ) -> Dict:
     """
     Detects Prompt Injection using similarity search with vector database.
@@ -15,7 +18,7 @@ def detect_pi_using_vector_database(
     Args:
         input (str): user input to be checked for prompt injection
         similarity_threshold (float): The threshold for similarity between entries in vector database and the user input.
-        vector_store (Pinecone): Vector database of prompt injections
+        vector_store (Pinecone or Chroma): Vector database of prompt injections
 
     Returns:
         Dict (str, Union[float, int]): top_score (float) that contains the highest score wrt similarity between vector database and the user input.
@@ -63,6 +66,9 @@ def init_pinecone(api_key: str, index: str, openai_api_key: str) -> Pinecone:
     if not api_key:
         raise ValueError("Pinecone apikey definition missing")
 
+    if not index:
+        raise ValueError("Pinecone index definition missing")
+
     pc = pinecone.Pinecone(api_key=api_key)
     pc_index = pc.Index(index)
 
@@ -73,3 +79,41 @@ def init_pinecone(api_key: str, index: str, openai_api_key: str) -> Pinecone:
     vector_store = Pinecone(pc_index, openai_embeddings, text_key="input")
 
     return vector_store
+
+
+def init_chroma(collection_name: str, openai_api_key: str) -> Any:
+    """
+    Initializes Chroma vector database.
+
+    Args:
+        collection_name: str, Chroma collection name
+        openai_api_key (str): Open AI API key
+    Returns:
+        vector_store (ChromaCosineSimilarity)
+
+    """
+
+    try:
+        import chromadb
+        from rebuff.chroma_cosine_similarity import ChromaCosineSimilarity
+
+    except ImportError:
+        print(
+            "To use Chromadb, please install rebuff with rebuff extras. 'pip install \"rebuff[chromadb]\"'"
+        )
+
+    openai_embeddings = OpenAIEmbeddings(
+        openai_api_key=openai_api_key, model="text-embedding-ada-002"
+    )
+
+    client = chromadb.HttpClient(
+        host="localhost",
+        port=8000,
+        settings=Settings(allow_reset=True, anonymized_telemetry=False),
+    )
+
+    chroma_collection = ChromaCosineSimilarity(
+        client=client, collection_name="rebuff", embedding_function=openai_embeddings
+    )
+
+    return chroma_collection
