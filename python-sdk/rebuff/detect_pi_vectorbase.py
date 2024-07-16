@@ -1,5 +1,5 @@
 from typing import Dict
-
+from langchain.vectorstores import VectorStore
 import pinecone
 from langchain.vectorstores.pinecone import Pinecone
 from langchain_openai import OpenAIEmbeddings
@@ -7,7 +7,7 @@ from langchain_openai import OpenAIEmbeddings
 
 # https://api.python.langchain.com/en/latest/vectorstores/langchain.vectorstores.pinecone.Pinecone.html
 def detect_pi_using_vector_database(
-    input: str, similarity_threshold: float, vector_store: Pinecone
+    input: str, similarity_threshold: float, vector_store: VectorStore
 ) -> Dict:
     """
     Detects Prompt Injection using similarity search with vector database.
@@ -24,7 +24,7 @@ def detect_pi_using_vector_database(
     """
 
     top_k = 20
-    results = vector_store.similarity_search_with_score(input, top_k)
+    results = vector_store.similarity_search_with_relevance_scores(input, top_k)
 
     top_score = 0
     count_over_max_vector_score = 0
